@@ -13,9 +13,10 @@ export class CategoryController {
     @Post()
     addCategory(
         @Body('name') name: string,
-        @Body('path') path: string
+        @Body('path') path: string,
+        @Body('parent_id') parentId: number
     ): object {
-        const generatedId =  this.categoryService.insertCategory(name, path)
+        const generatedId =  this.categoryService.insertCategory(name, path, parentId)
         return {id: generatedId}
     }
 }

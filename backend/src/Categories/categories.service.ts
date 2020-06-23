@@ -9,9 +9,9 @@ export class CategoryService {
         return [...this.categories]
     }
 
-    insertCategory(name: string, path: string): number {
+    insertCategory(name: string, path: string, parentId=0): number {
         const categoryId = Number(new Date())
-        const newCategory = new Category(categoryId, name, path, {created_by: '', created_at: ''})
+        const newCategory = new Category(categoryId, name, path, parentId, { created_by: '', created_at: '' })
         this.categories.push(newCategory);
         return categoryId
     }
