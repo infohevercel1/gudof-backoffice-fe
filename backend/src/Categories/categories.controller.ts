@@ -11,12 +11,12 @@ export class CategoryController {
     }
 
     @Post()
-    addCategory(
+    async addCategory(
         @Body('name') name: string,
         @Body('path') path: string,
         @Body('parent_id') parentId: number
-    ): object {
-        const generatedId =  this.categoryService.insertCategory(name, path, parentId)
+    ): Promise<object> {
+        const generatedId =  await this.categoryService.insertCategory(name, path, parentId)
         return {id: generatedId}
     }
 }
