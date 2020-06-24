@@ -11,17 +11,17 @@ export class UserController {
     }
 
     @Get(':id')
-    findSingleUser(@Param('id') userId: number) {
+    findSingleUser(@Param('id') userId: string) {
         return this.userService.getSingleUser(userId)
     }
 
     @Post()
-    addUser(
+    async addUser(
         @Body('name') name: string,
         @Body('username') username: string,
         @Body('password') password: string,
-    ): object {
-        const generatedId = this.userService.insertUser(name, username, password)
+    ): Promise<object> {
+        const generatedId = await this.userService.insertUser(name, username, password)
         return {id: generatedId}
     }
 }

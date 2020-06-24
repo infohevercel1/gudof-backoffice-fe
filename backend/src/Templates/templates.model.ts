@@ -1,18 +1,20 @@
-
 import * as mongoose from 'mongoose';
 
-export const CategorySchema = new mongoose.Schema({
+export const productTemplateSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true
     },
-    path: {
-        type: String,
+    category_id: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'Category',
         required: true
     },
-    parent_id: {
-        type: mongoose.SchemaTypes.ObjectId,
-        ref: 'Category'
+    formSchema: {
+        type: String
+    },
+    uiSchema: {
+        type: String
     },
     meta: {
         created_by: {
@@ -23,11 +25,12 @@ export const CategorySchema = new mongoose.Schema({
     }
 })
 
-export interface Category extends mongoose.Document {
+export interface productTemplate extends mongoose.Document {
     id: string
     name: string
-    path: string
-    parent_id: string
+    category_id: string
+    formSchema: string
+    uiSchema: string
     meta: {
         created_by: string,
         created_at: string

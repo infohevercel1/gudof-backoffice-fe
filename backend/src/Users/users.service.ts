@@ -1,26 +1,29 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { User } from "./users.model";
+import { InjectModel } from "@nestjs/mongoose";
+import { Model } from 'mongoose';
 
 @Injectable()
 export class UserService {
-    users: User[] = [];
+    constructor(@InjectModel('Users') private userModel: Model<User>) {}
 
-    getUsers(): User[] {
-        return [...this.users]
+    async getUsers(): Promise<User[]> {
+        return await this.userModel.find({})
     }
 
-    getSingleUser(id: number): User {
-        const user = this.users.find(user => user.id == id)
-        if(!user) {
+    async getSingleUser(id: string): Promise<User> {
+        const singleUser = await this.userModel.findById(id)
+        if (!singleUser) {
             throw new NotFoundException()
         }
-        return {...user}
+        return singleUser
     }
 
-    insertUser(name: string, username: string, password: string): number {
-        const userId = Number(new Date())
-        const newUser = new User(userId, name, username, password)
-        this.users.push(newUser)
-        return userId
+    async insertUser(name: string, username: string, password: string): Promise<string> {
+        const newUser = new this.userModel({name, username, password})
+        console.log(newUser)
+        const result = await newUser.save()
+        console.log(result)
+        return result._id
     }
 }
