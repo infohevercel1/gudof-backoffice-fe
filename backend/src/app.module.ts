@@ -9,7 +9,7 @@ import { TemplatesModule } from './Templates/templates.module';
 import { ProductModule } from './Products/products.module';
 
 @Module({
-  imports: [CategoryModule, UserModule, MongooseModule.forRoot('mongodb://localhost:27017/nest'), TemplatesModule, ProductModule],
+  imports: [CategoryModule, UserModule, MongooseModule.forRoot('mongodb+srv://newuser:check123@cluster0-mwvda.mongodb.net/infohe?retryWrites=true&w=majority'), TemplatesModule, ProductModule],
   controllers: [AppController],
   providers: [AppService],
 })
