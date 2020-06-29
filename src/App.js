@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import './App.css';
-import Category from './components/Categories'
+import Category from './components/Categories/Categories'
+import Tree from './components/Tree'
 
 class App extends Component {
   constructor (props) {
@@ -16,6 +17,7 @@ class App extends Component {
           <Switch>
             <Route path={["/category", "/"]} exact>
               <Category />
+              <Tree />
             </Route>
             <Route path="/template">
               <h1>Template</h1>

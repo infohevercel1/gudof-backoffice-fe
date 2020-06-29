@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import './Categories.css';
-
+// after
+import { SortableTreeWithoutDndContext as SortableTree } from 'react-sortable-tree';
+import "react-sortable-tree/style.css";
 // import { makeStyles } from "@material-ui/core/styles";
 import {
     Button,
@@ -9,7 +11,7 @@ import {
     ExpansionPanelSummary,
     ExpansionPanelDetails
 } from "@material-ui/core";
-import {ExpandMore } from "@material-ui/icons";
+import {ExpandMore, Sort } from "@material-ui/icons";
 
 // const useStyles = makeStyles((theme) => ({
 //     root: {
@@ -45,9 +47,13 @@ class Categories extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            categories: [],
-            rootCategories: []
-        }
+          categories: [],
+          rootCategories: [],
+          treeData: [
+            { title: "Chicken", children: [{ title: "Egg" }], id: 1 },
+            { title: "Fish", children: [{ title: "fingerline" }], id: 2 },
+          ],
+        };
         // this.list = this.list.bind(this)
     }
 
@@ -103,9 +109,15 @@ class Categories extends Component {
         return (
           <div className="Categories">
             <header className="Categories-header">
-              <div style={{width: '50%', marginLeft: '10%', marginBottom: '1%'}}>
+              <SortableTree
+                treeData={this.state.categories}
+                onChange={(treeData) => this.setState({ categories: treeData })}
+              />
+              <div
+                style={{ width: "50%", marginLeft: "10%", marginBottom: "1%" }}
+              >
                 {this.state.rootCategories.map((category) => {
-                    return this.renderCategory(category);
+                  return this.renderCategory(category);
                 })}
               </div>
               <Button variant="contained" color="primary">
