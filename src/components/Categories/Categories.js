@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import './Categories.css';
 // after
-import { SortableTreeWithoutDndContext as SortableTree } from 'react-sortable-tree';
+import SortableTree from 'react-sortable-tree';
 import "react-sortable-tree/style.css";
 // import { makeStyles } from "@material-ui/core/styles";
 import {
@@ -72,7 +72,12 @@ class Categories extends Component {
                 }
             }
         }
-        this.setState({ rootCategories, categories });
+
+        const treeData = [
+          { title: "Chicken", children: [{ title: "Egg" }], id: 1 },
+          { title: "Fish", children: [{ title: "fingerline" }], id: 2 },
+        ]; //populate this from API.
+        this.setState({ rootCategories, categories, treeData });
     }
     
     getCategory = (id) => {
@@ -109,10 +114,6 @@ class Categories extends Component {
         return (
           <div className="Categories">
             <header className="Categories-header">
-              <SortableTree
-                treeData={this.state.categories}
-                onChange={(treeData) => this.setState({ categories: treeData })}
-              />
               <div
                 style={{ width: "50%", marginLeft: "10%", marginBottom: "1%" }}
               >
@@ -124,6 +125,10 @@ class Categories extends Component {
                 Create New Category
               </Button>
             </header>
+            <SortableTree
+                treeData={this.state.treeData}
+                onChange={(treeData) => this.setState({ treeData })}
+              />
           </div>
         );
     }
