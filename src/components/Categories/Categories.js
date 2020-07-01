@@ -3,54 +3,21 @@ import axios from 'axios';
 import './Categories.css';
 // after
 import SortableTree from 'react-sortable-tree';
-import { getTreeFromFlatData } from 'react-sortable-tree'
+import { getTreeFromFlatData, addNodeUnderParent } from "react-sortable-tree";
 import "react-sortable-tree/style.css";
-// import { makeStyles } from "@material-ui/core/styles";
+
 import {
     Button,
-    ExpansionPanel,
-    ExpansionPanelSummary,
-    ExpansionPanelDetails
 } from "@material-ui/core";
-import {ExpandMore, Sort } from "@material-ui/icons";
 
-// const useStyles = makeStyles((theme) => ({
-//     root: {
-//         width: "50%",
-//     },
-//     heading: {
-//         fontSize: theme.typography.pxToRem(15),
-//         fontWeight: theme.typography.fontWeightRegular,
-//     },
-// }));
 
-function CustomList ({name, children, hasChildren}) {
-    const expandIcon = hasChildren ? (<ExpandMore />) : null
-    return (
-        <ExpansionPanel style={{width: '80%'}} key={Math.random()*10}>
-        <ExpansionPanelSummary
-          expandIcon={expandIcon}
-          aria-controls="panel1a-content"
-          id="panel1a-header"
-        >
-            {name}
-            {/* <Button variant="contained" color="primary">+</Button> */}
-        </ExpansionPanelSummary>
-        {hasChildren ? <ExpansionPanelDetails style={{display: 'flex', flexDirection: 'column'}}>
-            {children}
-        </ExpansionPanelDetails> : null}
-      </ExpansionPanel>
-    );
-}
-
-// const classes = useStyles();
 class Categories extends Component {
     constructor(props) {
         super(props)
         this.state = {
           categories: [],
         };
-        // this.list = this.list.bind(this)
+        this.saveToBackend = this.saveToBackend.bind(this)
     }
 
     async componentDidMount () {
@@ -75,7 +42,12 @@ class Categories extends Component {
         this.setState({ categories });
     }
 
+    saveToBackend (newNode) {
+      return axios.post("https://infohebackoffice.herokuapp.com/categories", {...newNode, name: newNode.title}).then(resp => resp)
+    }
+
     render() {
+      const getNodeKey = ({ treeIndex }) => treeIndex;
         return (
           <div className="Categories">
             {/* <header className="Categories-header"> */}
@@ -85,6 +57,36 @@ class Categories extends Component {
               <SortableTree
                 treeData={this.state.categories}
                 onChange={(treeData) => this.setState({ categories: treeData })}
+                generateNodeProps={({node, path}) => ({
+                  buttons: [
+                    <button
+                      onClick={() => {
+                        console.log(node, path)
+                        var title = prompt("Enter the category name")
+                        if(!title) {
+                          return ;
+                        }
+                        const newNode = {
+                          title,
+                          parent_id: node._id,
+                          path: title   // Temporary
+                        };
+                        this.setState((state) => ({
+                          categories: addNodeUnderParent({
+                            treeData: state.categories,
+                            parentKey: path[path.length - 1],
+                            expandParent: true,
+                            getNodeKey,
+                            newNode,
+                            addAsFirstChild: state.addAsFirstChild,
+                          }).treeData,
+                        }))
+                        const resp = this.saveToBackend(newNode)
+                        console.log(resp)
+                      }}
+                    >Add Child</button>
+                  ]
+                })}
               />
             {/* </header> */}
           </div>
@@ -92,21 +94,7 @@ class Categories extends Component {
           //   buttons: [
           //     <button
           //       onClick={() =>
-          //         this.setState((state) => ({
-          //           treeData: addNodeUnderParent({
-          //             treeData: state.treeData,
-          //             parentKey: path[path.length - 1],
-          //             expandParent: true,
-          //             getNodeKey,
-          //             newNode: {
-          //               title: `${getRandomName()} ${
-          //                 node.title.split(" ")[0]
-          //               }sson`,
-          //             },
-          //             addAsFirstChild: state.addAsFirstChild,
-          //           }).treeData,
-          //         }))
-          //       }
+                  
           //     >
           //       Add Child
           //     </button>,
