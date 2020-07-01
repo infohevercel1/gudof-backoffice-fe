@@ -3,6 +3,7 @@ import axios from 'axios';
 import './Categories.css';
 // after
 import SortableTree from 'react-sortable-tree';
+import { getTreeFromFlatData } from 'react-sortable-tree'
 import "react-sortable-tree/style.css";
 // import { makeStyles } from "@material-ui/core/styles";
 import {
@@ -48,88 +49,82 @@ class Categories extends Component {
         super(props)
         this.state = {
           categories: [],
-          rootCategories: [],
-          treeData: [
-            { title: "Chicken", children: [{ title: "Egg" }], id: 1 },
-            { title: "Fish", children: [{ title: "fingerline" }], id: 2 },
-          ],
         };
         // this.list = this.list.bind(this)
     }
 
     async componentDidMount () {
         const {data} = await axios.get("https://infohebackoffice.herokuapp.com/categories")
-        let rootCategories = [], categories = data;
+        let categories = data;
         for (var i = 0; i < categories.length; i++) {
-            if (categories[i].parent_id === null) {
-                rootCategories.push(categories[i]._id);
-            }
-            let parent_id = categories[i]._id
-            categories[i].children = []                     // Can be done on the back-end while data addition itself
-            for(var j = 0; j < categories.length; j++) {
-                if(categories[j].parent_id === parent_id) {
-                    categories[i].children.push(categories[j]._id)
-                }
-            }
+            categories[i].title = categories[i].name
         }
 
-        const treeData = [
-          { title: "Chicken", children: [{ title: "Egg" }], id: 1 },
-          { title: "Fish", children: [{ title: "fingerline" }], id: 2 },
-        ]; //populate this from API.
-        this.setState({ rootCategories, categories, treeData });
-    }
-    
-    getCategory = (id) => {
-        const category = this.state.categories.filter(cat => cat._id === id)
-        if (category.length === 0) {
-            return ""
-        } else {
-            return category[0]
+        function getKey(node) {
+          return node._id;
         }
-    }
 
-    renderCategory = (category_id) => {
-        const {name, children} = this.getCategory(category_id)
-        let hasChildren = true;
-        if(children.length === 0) {
-            hasChildren=false;
+        function getParentKey(node) {
+          return node.parent_id
         }
-        return (
-            <CustomList name={name} hasChildren={hasChildren} key={Math.random()*10}>
-                {children.map(id => {
-                        return this.renderCategory(id)
-                    })}
-            </CustomList>
-            // <li key={Math.random()*10}>
-            //     {name}
-            //     <ul className="list-of-categories">
-                    
-            //     </ul>
-            // </li>
-        )
+
+        const tree = getTreeFromFlatData({flatData: categories, getKey, getParentKey, rootKey: null})
+        console.log(tree)
+
+        categories = tree; //populate this from API.
+        this.setState({ categories });
     }
 
     render() {
         return (
           <div className="Categories">
-            <header className="Categories-header">
-              <div
-                style={{ width: "50%", marginLeft: "10%", marginBottom: "1%" }}
-              >
-                {this.state.rootCategories.map((category) => {
-                  return this.renderCategory(category);
-                })}
-              </div>
+            {/* <header className="Categories-header"> */}
               <Button variant="contained" color="primary">
                 Create New Category
               </Button>
-            </header>
-            <SortableTree
-                treeData={this.state.treeData}
-                onChange={(treeData) => this.setState({ treeData })}
+              <SortableTree
+                treeData={this.state.categories}
+                onChange={(treeData) => this.setState({ categories: treeData })}
               />
+            {/* </header> */}
           </div>
+          // generateNodeProps={({ node, path }) => ({
+          //   buttons: [
+          //     <button
+          //       onClick={() =>
+          //         this.setState((state) => ({
+          //           treeData: addNodeUnderParent({
+          //             treeData: state.treeData,
+          //             parentKey: path[path.length - 1],
+          //             expandParent: true,
+          //             getNodeKey,
+          //             newNode: {
+          //               title: `${getRandomName()} ${
+          //                 node.title.split(" ")[0]
+          //               }sson`,
+          //             },
+          //             addAsFirstChild: state.addAsFirstChild,
+          //           }).treeData,
+          //         }))
+          //       }
+          //     >
+          //       Add Child
+          //     </button>,
+          //     <button
+          //       onClick={() =>
+          //         this.setState((state) => ({
+          //           treeData: removeNodeAtPath({
+          //             treeData: state.treeData,
+          //             path,
+          //             getNodeKey,
+          //           }),
+          //         }))
+          //       }
+          //     >
+          //       Remove
+          //     </button>,
+          //   ],
+          // })}
         );
     }
 }
