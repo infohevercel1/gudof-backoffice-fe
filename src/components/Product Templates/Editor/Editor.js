@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import MonacoEditor from "react-monaco-editor";
 
+import '../Templates.css';
+
 const monacoEditorOptions = {
   minimap: {
     enabled: false,
@@ -44,7 +46,7 @@ class Editor extends Component {
     const icon = this.state.valid ? "ok" : "remove";
     const cls = this.state.valid ? "valid" : "invalid";
     return (
-      <div className="panel panel-default">
+      <div className={this.props.className}>
         <div className="panel-heading">
           <span className={`${cls} glyphicon glyphicon-${icon}`} />
           {" " + title}

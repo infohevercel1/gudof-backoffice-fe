@@ -1,0 +1,12 @@
+.flex-display {
+    display: flex;
+}
+
+.editor {
+    text-align: left; 
+    width: inherit;
+}
+
+.equal-width {
+    width: 50%;
+}
