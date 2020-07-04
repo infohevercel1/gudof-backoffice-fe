@@ -6,6 +6,7 @@ import axios from "axios";
 
 import Editor from './Editor/Editor';
 import "./Templates.css";
+import Tree from './Tree';
 
 const log = (type) => console.log.bind(console, type);
 const toJson = (val) => JSON.stringify(val, null, 2);
@@ -30,7 +31,6 @@ class Templates extends Component {
 
   async componentDidMount () {
     const { data: templates } = await axios.get("https://infohebackoffice.herokuapp.com/templates")
-    console.log(templates)
     this.setState({templates})
   }
 
@@ -65,7 +65,6 @@ class Templates extends Component {
   onSchemaEdited = (schema) => this.setState({ schema, shareURL: null });
 
   list = (anchor) => {
-
     return (
       <div
         role="presentation"
@@ -88,33 +87,38 @@ class Templates extends Component {
   render() {
     return (
       <>
-        <Drawer open={this.state.anchor} onClose={this.toggleDrawer('', false)}>
-          {this.list('')}  
-      </Drawer>
-      <div className="flex-display">
-        <Editor
-          className="equal-width editor"
-          title="JSONSchema"
-          code={toJson(this.state.schema)}
-          onChange={this.onSchemaEdited}
-        />
-        <div className="equal-width">
-          <Form
-            schema={this.state.schema}
-            onChange={log("changed")}
-            onSubmit={log("submitted")}
-            onError={log("errors")}
-          />
+        <Drawer open={this.state.anchor} onClose={this.toggleDrawer("", false)}>
+          {this.list("")}
+        </Drawer>
+        <div className="flex-display">
+          <div className="equal-width">
+            <Tree 
+              code={this.state.schema} 
+              onChange={this.onSchemaEdited} 
+            />
+          </div>
+            <Form
+              schema={this.state.schema}
+              onChange={log("changed")}
+              onSubmit={log("submitted")}
+              onError={log("errors")}
+            />
         </div>
-      </div>
-      <Button 
-        color="primary"
-        variant="contained" 
-        onClick={this.postTemplate}>Post Template</Button>
-      <Button onClick={this.toggleDrawer('', true)}>View Templates</Button>
+        <Button color="primary" variant="contained" onClick={this.postTemplate}>
+          Post Template
+        </Button>
+        <Button onClick={this.toggleDrawer("", true)}>View Templates</Button>
       </>
     );
   }
 }
 
 export default Templates;
+{/* <>
+  <Editor
+    className="editor"
+    title="JSONSchema"
+    code={toJson(this.state.schema)}
+    onChange={this.onSchemaEdited}
+  />
+</> */}
