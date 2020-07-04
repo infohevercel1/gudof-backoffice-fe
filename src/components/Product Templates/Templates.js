@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 import Form from "@rjsf/material-ui";
-import { Button, Drawer, List, ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
-import { Update as UpdateIcon, Delete as DeleteIcon } from "@material-ui/icons"
+import { Button } from '@material-ui/core';
 import axios from "axios";
 
 import Editor from './Editor/Editor';
 import "./Templates.css";
 import Tree from './Tree';
+import Sidebar from './Sidebar';
 
 const log = (type) => console.log.bind(console, type);
 const toJson = (val) => JSON.stringify(val, null, 2);
@@ -15,8 +15,8 @@ class Templates extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      anchor: false,
       templates: [],
+      anchor: false,
       schema: {
         title: "Todo",
         type: "object",
@@ -32,14 +32,6 @@ class Templates extends Component {
   async componentDidMount () {
     const { data: templates } = await axios.get("https://infohebackoffice.herokuapp.com/templates")
     this.setState({templates})
-  }
-
-  toggleDrawer = (anchor, open) => (event) => {
-    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
-      return;
-    }
-
-    this.setState({anchor: open})
   }
 
   postTemplate = async () => {
@@ -62,36 +54,34 @@ class Templates extends Component {
     }
   }
 
-  onSchemaEdited = (schema) => this.setState({ schema, shareURL: null });
-
-  list = (anchor) => {
-    return (
-      <div
-        role="presentation"
-        onClick={this.toggleDrawer(anchor, false)}
-        onKeyDown={this.toggleDrawer(anchor, false)}
-      >
-        <List>
-          {this.state.templates.map((obj, index) => (
-            <ListItem button key={index}>
-              <ListItemText primary={obj.name} />
-              <ListItemIcon><DeleteIcon /></ListItemIcon>
-              <ListItemIcon><UpdateIcon /></ListItemIcon>
-            </ListItem>
-          ))}
-        </List>
-      </div>
-    );
+  toggleDrawer = (anchor, open) => (event) => {
+    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+      return;
+    }
+    this.setState({anchor: open});
   }
+
+  updateTemplate = (_id) => {
+    let templates = this.state.templates;
+    let [thisTemplate] = templates.filter(template => template._id === _id)
+    // console.log(thisTemplate)
+    let formSchema = JSON.parse(thisTemplate.formSchema)
+    this.setState({schema: formSchema})
+  }
+
+  onSchemaEdited = (schema) => this.setState({ schema, shareURL: null });
 
   render() {
     return (
       <>
-        <Drawer open={this.state.anchor} onClose={this.toggleDrawer("", false)}>
-          {this.list("")}
-        </Drawer>
+        <Sidebar 
+          anchor={this.state.anchor}
+          toggleDrawer={this.toggleDrawer}
+          templates={this.state.templates}
+          updateTemplate={this.updateTemplate}
+        />
         <div className="flex-display">
-          <div className="equal-width">
+          <div className="left-width">
             <Tree 
               code={this.state.schema} 
               onChange={this.onSchemaEdited} 
@@ -104,6 +94,14 @@ class Templates extends Component {
               onError={log("errors")}
             />
         </div>
+        <>
+          <Editor
+            className="editor"
+            title="JSONSchema"
+            code={toJson(this.state.schema)}
+            onChange={this.onSchemaEdited}
+          />
+        </>
         <Button color="primary" variant="contained" onClick={this.postTemplate}>
           Post Template
         </Button>
@@ -114,11 +112,3 @@ class Templates extends Component {
 }
 
 export default Templates;
-{/* <>
-  <Editor
-    className="editor"
-    title="JSONSchema"
-    code={toJson(this.state.schema)}
-    onChange={this.onSchemaEdited}
-  />
-</> */}

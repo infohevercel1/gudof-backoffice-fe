@@ -15,10 +15,10 @@ const Tree = ({code, onChange}) => {
     const list = (code) => {
         return Object.keys(code).map(key => {
             return (
-              <TreeItem nodeId={Math.random() * 10} label={key}>
+              <TreeItem nodeId={(Math.random() * 10).toString()} label={key} key={key}>
                 {Object.keys(code[key]).map((property) => {
                   return (
-                    <div style={{display: 'flex'}}>
+                    <div key={property} style={{display: 'flex'}}>
                         <p>{property}</p>
                         <input 
                             type="text" 
