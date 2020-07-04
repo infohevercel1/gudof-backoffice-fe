@@ -1,7 +1,10 @@
 import React, { Component } from "react";
 import Form from "@rjsf/material-ui";
-import Editor from './Editor'
+import { Button, Drawer, List, ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
+import { Update as UpdateIcon, Delete as DeleteIcon } from "@material-ui/icons"
+import axios from "axios";
 
+import Editor from './Editor/Editor';
 import "./Templates.css";
 
 const log = (type) => console.log.bind(console, type);
@@ -11,6 +14,8 @@ class Templates extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      anchor: false,
+      templates: [],
       schema: {
         title: "Todo",
         type: "object",
@@ -21,54 +26,79 @@ class Templates extends Component {
         },
       },
     };
-    this.handleClick = this.handleClick.bind(this);
-    this.handleChange = this.handleChange.bind(this);
-  }
-  handleClick() {
-    const clone = (obj) => Object.assign({}, obj);
-
-    const renameKey = (object, key, newKey) => {
-      const clonedObj = clone(object);
-
-      const targetKey = clonedObj[key];
-
-      delete clonedObj[key];
-
-      clonedObj[newKey] = targetKey;
-
-      return clonedObj;
-    };
-
-    let schema = this.state.schema;
-    let properties = renameKey(schema.properties, "title", "name");
-    schema.properties = properties;
-    schema.properties.name.title = "Name";
-    console.log(schema);
-    // schema.properties.title.title = "Name"
-    this.setState({ schema });
   }
 
-  handleChange(e) {
-    const schema = this.state.schema;
-    const newSchema = Object.assign(schema);
-    newSchema.properties[e.target.value] = {
-      title: e.target.value,
-      type: "string",
-    };
-    console.log(schema);
-    this.setState({ schema });
+  async componentDidMount () {
+    const { data: templates } = await axios.get("https://infohebackoffice.herokuapp.com/templates")
+    console.log(templates)
+    this.setState({templates})
   }
+
+  toggleDrawer = (anchor, open) => (event) => {
+    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+      return;
+    }
+
+    this.setState({anchor: open})
+  }
+
+  postTemplate = async () => {
+    const schema = this.state.schema,
+          category_id = "5ef5e95f6d957a00173e32b5", // Temp
+          body = {
+            name: schema.title,
+            category_id,
+            formSchema: JSON.stringify(schema),
+            uiSchema: ""
+          }
+    const resp = await axios.post('https://infohebackoffice.herokuapp.com/templates', body)
+    const newId = resp.data.id,
+          response = resp.status
+    if (response === 201) {
+      let templates = this.state.templates
+      templates.push(body)
+      this.setState({templates})
+      alert('Template Created')
+    }
+  }
+
   onSchemaEdited = (schema) => this.setState({ schema, shareURL: null });
+
+  list = (anchor) => {
+
+    return (
+      <div
+        role="presentation"
+        onClick={this.toggleDrawer(anchor, false)}
+        onKeyDown={this.toggleDrawer(anchor, false)}
+      >
+        <List>
+          {this.state.templates.map((obj, index) => (
+            <ListItem button key={index}>
+              <ListItemText primary={obj.name} />
+              <ListItemIcon><DeleteIcon /></ListItemIcon>
+              <ListItemIcon><UpdateIcon /></ListItemIcon>
+            </ListItem>
+          ))}
+        </List>
+      </div>
+    );
+  }
 
   render() {
     return (
-      <div>
+      <>
+        <Drawer open={this.state.anchor} onClose={this.toggleDrawer('', false)}>
+          {this.list('')}  
+      </Drawer>
+      <div className="flex-display">
         <Editor
+          className="equal-width editor"
           title="JSONSchema"
           code={toJson(this.state.schema)}
           onChange={this.onSchemaEdited}
         />
-        <div style={{ width: "50%" }}>
+        <div className="equal-width">
           <Form
             schema={this.state.schema}
             onChange={log("changed")}
@@ -77,6 +107,12 @@ class Templates extends Component {
           />
         </div>
       </div>
+      <Button 
+        color="primary"
+        variant="contained" 
+        onClick={this.postTemplate}>Post Template</Button>
+      <Button onClick={this.toggleDrawer('', true)}>View Templates</Button>
+      </>
     );
   }
 }
