@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import Form from "@rjsf/material-ui";
-import { Button } from '@material-ui/core';
+import { Button, Card } from '@material-ui/core';
 import axios from "axios";
 
 import Editor from './Editor/Editor';
@@ -53,7 +53,7 @@ class Templates extends Component {
             formSchema: JSON.stringify(schema),
             uiSchema: ""
           }
-    const resp = await axios.post('https://infohebackoffice.herokuapp.com/templates', body)
+    const resp = await axios.post("https://infohebackoffice.herokuapp.com/templates", body)
     const newId = resp.data.id,
           response = resp.status
     if (response === 201) {
@@ -91,27 +91,25 @@ class Templates extends Component {
           updateTemplate={this.updateTemplate}
         />
         <div className="flex-display">
-          <div className="left-width">
-            <Tree 
-              code={this.state.schema} 
-              onChange={this.onSchemaEdited} 
-            />
-          </div>
+          <Tree 
+            code={this.state.schema} 
+            onChange={this.onSchemaEdited} 
+          />
+          <Card className="card">
             <Form
               schema={this.state.schema}
               onChange={log("changed")}
               onSubmit={log("submitted")}
               onError={log("errors")}
             />
+          </Card>
         </div>
-        <>
-          <Editor
-            className="editor"
-            title="JSONSchema"
-            code={toJson(this.state.schema)}
-            onChange={this.onSchemaEdited}
-          />
-        </>
+        <Editor
+          className="editor"
+          title="JSONSchema"
+          code={toJson(this.state.schema)}
+          onChange={this.onSchemaEdited}
+        />
         <div className="list-buttons">
           {this.state.updateMode ?
             (
