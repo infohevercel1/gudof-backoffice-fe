@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import './App.css';
 import Category from './components/Categories/Categories';
 import Templates from './components/Product Templates/Templates';
+import Products from './components/Products';
 
 class App extends Component {
   constructor (props) {
@@ -21,9 +22,9 @@ class App extends Component {
             <Route path={["/template", "/"]} exact>
               <Templates />
             </Route>
-            <Route path="/product">
-              <h1>Product</h1>
-            </Route>
+            <Route path="/product/:id" component={Products} />
+              {/* <Products />
+            </Route> */}
           </Switch>
         </div>
       </Router>

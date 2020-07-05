@@ -15,7 +15,7 @@ const Tree = ({code, onChange}) => {
     const list = (code) => {
         return Object.keys(code).map(key => {
             return (
-              <TreeItem nodeId={(Math.random() * 10).toString()} label={key} key={key}>
+              <TreeItem nodeId={key} label={key} key={key}>
                 {Object.keys(code[key]).map((property) => {
                   return (
                     <div key={property} style={{display: 'flex'}}>

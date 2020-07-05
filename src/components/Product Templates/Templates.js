@@ -112,16 +112,21 @@ class Templates extends Component {
             onChange={this.onSchemaEdited}
           />
         </>
-        {this.state.updateMode ?
-          (
-          <Button color="primary" variant="contained" onClick={this.patchTemplate}>
-            Update Template
+        <div className="list-buttons">
+          {this.state.updateMode ?
+            (
+              <>
+              <Button color="primary" variant="outlined" onClick={this.patchTemplate}>
+                Update Template
+              </Button>
+              <Button href={"/product/"+this.state.updateId}>Add Product for this Template</Button>
+            </>
+          ) : null}
+          <Button color="primary" variant="outlined" onClick={this.postTemplate}>
+            Post Template
           </Button>
-        ) : null}
-        <Button color="primary" variant="contained" onClick={this.postTemplate}>
-          Post Template
-        </Button>
-        <Button onClick={this.toggleDrawer("", true)}>View Templates</Button>
+          <Button onClick={this.toggleDrawer("", true)}>View Templates</Button>
+        </div>
       </>
     );
   }

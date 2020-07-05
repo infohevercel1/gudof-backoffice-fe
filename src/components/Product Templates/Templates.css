@@ -1,5 +1,7 @@
 .flex-display {
     display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .editor {
@@ -9,4 +11,9 @@
 
 .left-width {
     width: 30%;
+}
+
+.list-buttons {
+    display: flex;
+    justify-content: space-evenly;
 }
