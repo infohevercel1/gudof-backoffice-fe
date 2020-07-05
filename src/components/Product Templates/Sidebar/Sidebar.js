@@ -12,7 +12,7 @@ const list = (toggleDrawer, updateTemplate, templates) => {
             <List>
                 {templates.map((obj, index) => (
                     <ListItem button key={index}>
-                        <ListItemText primary={obj.name} />
+                        <ListItemText onClick={(e) => updateTemplate(obj._id)} primary={obj.name} />
                         <ListItemIcon><DeleteIcon /></ListItemIcon>
                         <ListItemIcon onClick={(e) => updateTemplate(obj._id)}><UpdateIcon /></ListItemIcon>
                     </ListItem>

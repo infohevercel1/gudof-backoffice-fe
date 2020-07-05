@@ -26,12 +26,22 @@ class Templates extends Component {
           done: { type: "boolean", title: "Done?" },
         },
       },
+      updateMode: false,
+      updateId: null
     };
   }
 
   async componentDidMount () {
     const { data: templates } = await axios.get("https://infohebackoffice.herokuapp.com/templates")
     this.setState({templates})
+  }
+
+  patchTemplate = async () => {
+    try {
+      const response = await axios.patch("https://infohebackoffice.herokuapp.com/templates", {template: this.state.schema, _id: this.state.updateId})
+    } catch (e) {
+      alert('URL Not Working')
+    }
   }
 
   postTemplate = async () => {
@@ -64,9 +74,9 @@ class Templates extends Component {
   updateTemplate = (_id) => {
     let templates = this.state.templates;
     let [thisTemplate] = templates.filter(template => template._id === _id)
-    // console.log(thisTemplate)
     let formSchema = JSON.parse(thisTemplate.formSchema)
-    this.setState({schema: formSchema})
+    this.setState({schema: formSchema, updateMode: true, updateId: thisTemplate._id})
+    console.log(this.state.schema)
   }
 
   onSchemaEdited = (schema) => this.setState({ schema, shareURL: null });
@@ -102,6 +112,12 @@ class Templates extends Component {
             onChange={this.onSchemaEdited}
           />
         </>
+        {this.state.updateMode ?
+          (
+          <Button color="primary" variant="contained" onClick={this.patchTemplate}>
+            Update Template
+          </Button>
+        ) : null}
         <Button color="primary" variant="contained" onClick={this.postTemplate}>
           Post Template
         </Button>
