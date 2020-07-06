@@ -1,11 +1,12 @@
 import React, { Component } from "react";
 import Form from "@rjsf/material-ui";
-import { Button, Drawer, List, ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
-import { Update as UpdateIcon, Delete as DeleteIcon } from "@material-ui/icons"
+import { Button, Card } from '@material-ui/core';
 import axios from "axios";
 
 import Editor from './Editor/Editor';
 import "./Templates.css";
+import Tree from './Tree';
+import Sidebar from './Sidebar';
 
 const log = (type) => console.log.bind(console, type);
 const toJson = (val) => JSON.stringify(val, null, 2);
@@ -14,8 +15,8 @@ class Templates extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      anchor: false,
       templates: [],
+      anchor: false,
       schema: {
         title: "Todo",
         type: "object",
@@ -25,21 +26,22 @@ class Templates extends Component {
           done: { type: "boolean", title: "Done?" },
         },
       },
+      updateMode: false,
+      updateId: null
     };
   }
 
   async componentDidMount () {
     const { data: templates } = await axios.get("https://infohebackoffice.herokuapp.com/templates")
-    console.log(templates)
     this.setState({templates})
   }
 
-  toggleDrawer = (anchor, open) => (event) => {
-    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
-      return;
+  patchTemplate = async () => {
+    try {
+      const response = await axios.patch("https://infohebackoffice.herokuapp.com/templates", {template: this.state.schema, _id: this.state.updateId})
+    } catch (e) {
+      alert('URL Not Working')
     }
-
-    this.setState({anchor: open})
   }
 
   postTemplate = async () => {
@@ -51,7 +53,7 @@ class Templates extends Component {
             formSchema: JSON.stringify(schema),
             uiSchema: ""
           }
-    const resp = await axios.post('https://infohebackoffice.herokuapp.com/templates', body)
+    const resp = await axios.post("https://infohebackoffice.herokuapp.com/templates", body)
     const newId = resp.data.id,
           response = resp.status
     if (response === 201) {
@@ -62,56 +64,67 @@ class Templates extends Component {
     }
   }
 
-  onSchemaEdited = (schema) => this.setState({ schema, shareURL: null });
-
-  list = (anchor) => {
-
-    return (
-      <div
-        role="presentation"
-        onClick={this.toggleDrawer(anchor, false)}
-        onKeyDown={this.toggleDrawer(anchor, false)}
-      >
-        <List>
-          {this.state.templates.map((obj, index) => (
-            <ListItem button key={index}>
-              <ListItemText primary={obj.name} />
-              <ListItemIcon><DeleteIcon /></ListItemIcon>
-              <ListItemIcon><UpdateIcon /></ListItemIcon>
-            </ListItem>
-          ))}
-        </List>
-      </div>
-    );
+  toggleDrawer = (anchor, open) => (event) => {
+    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+      return;
+    }
+    this.setState({anchor: open});
   }
+
+  updateTemplate = (_id) => {
+    let templates = this.state.templates;
+    let [thisTemplate] = templates.filter(template => template._id === _id)
+    let formSchema = JSON.parse(thisTemplate.formSchema)
+    this.setState({schema: formSchema, updateMode: true, updateId: thisTemplate._id})
+    console.log(this.state.schema)
+  }
+
+  onSchemaEdited = (schema) => this.setState({ schema, shareURL: null });
 
   render() {
     return (
       <>
-        <Drawer open={this.state.anchor} onClose={this.toggleDrawer('', false)}>
-          {this.list('')}  
-      </Drawer>
-      <div className="flex-display">
+        <Sidebar 
+          anchor={this.state.anchor}
+          toggleDrawer={this.toggleDrawer}
+          templates={this.state.templates}
+          updateTemplate={this.updateTemplate}
+        />
+        <div className="flex-display">
+          <Tree 
+            code={this.state.schema} 
+            onChange={this.onSchemaEdited} 
+          />
+          <Card className="card">
+            <Form
+              schema={this.state.schema}
+              onChange={log("changed")}
+              onSubmit={log("submitted")}
+              onError={log("errors")}
+            />
+          </Card>
+        </div>
         <Editor
-          className="equal-width editor"
+          className="editor"
           title="JSONSchema"
           code={toJson(this.state.schema)}
           onChange={this.onSchemaEdited}
         />
-        <div className="equal-width">
-          <Form
-            schema={this.state.schema}
-            onChange={log("changed")}
-            onSubmit={log("submitted")}
-            onError={log("errors")}
-          />
+        <div className="list-buttons">
+          {this.state.updateMode ?
+            (
+              <>
+              <Button color="primary" variant="outlined" onClick={this.patchTemplate}>
+                Update Template
+              </Button>
+              <Button href={"/product/"+this.state.updateId}>Add Product for this Template</Button>
+            </>
+          ) : null}
+          <Button color="primary" variant="outlined" onClick={this.postTemplate}>
+            Post Template
+          </Button>
+          <Button onClick={this.toggleDrawer("", true)}>View Templates</Button>
         </div>
-      </div>
-      <Button 
-        color="primary"
-        variant="contained" 
-        onClick={this.postTemplate}>Post Template</Button>
-      <Button onClick={this.toggleDrawer('', true)}>View Templates</Button>
       </>
     );
   }
