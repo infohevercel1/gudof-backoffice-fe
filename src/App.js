@@ -23,8 +23,6 @@ class App extends Component {
               <Templates />
             </Route>
             <Route path="/product/:id" component={Products} />
-              {/* <Products />
-            </Route> */}
           </Switch>
         </div>
       </Router>
