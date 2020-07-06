@@ -66,12 +66,12 @@ class NewTemplate extends Component {
                                             <SchemaView />
                                         </Card>
                                     );
-                                case 'uiSchema':
-                                    return (
-                                        <Card key="uiSchema" title="Ui Schema" style={style}>
-                                            <UiSchemaView />
-                                        </Card>
-                                    );
+                                // case 'uiSchema':
+                                //     return (
+                                //         <Card key="uiSchema" title="Ui Schema" style={style}>
+                                //             <UiSchemaView />
+                                //         </Card>
+                                //     );
                                 case 'formData':
                                     return (
                                         <Card key="formData" title="Form Data" style={style}>
@@ -84,18 +84,6 @@ class NewTemplate extends Component {
                         })}
                     </Content>
                 </Layout>
-                <Sider
-                    width={this.props.activeNodeKey ? settings.rightSiderWidth : 0}
-                    style={{
-                        overflow: 'auto',
-                        background: '#fff',
-                        boxShadow: '0 2px 3px 0 rgba(0, 0, 0, 0.2), 0 2px 3px 0 rgba(0, 0, 0, 0.2)',
-                        position: 'fixed',
-                        height: '100vh',
-                        right: 0,
-                    }}
-                >
-                </Sider>
             </Layout>
         );
     }
