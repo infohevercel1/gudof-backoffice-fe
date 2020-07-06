@@ -22,14 +22,6 @@ const list = (toggleDrawer, updateTemplate, templates) => {
     );
 }
 
-// const toggleDrawer = (setAnchor, open) => (event) => {
-//     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
-//         return;
-//     }
-
-//     setAnchor(open);
-// }
-
 const Sidebar = ({anchor, toggleDrawer, updateTemplate, templates}) => {
     return (
         <Drawer open={anchor} onClose={toggleDrawer('', false)}>
