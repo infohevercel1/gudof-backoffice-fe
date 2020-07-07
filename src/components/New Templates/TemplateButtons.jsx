@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Modal, Button, List } from 'antd';
+import { Modal, Button } from 'antd';
 import axios from "axios";
 import { connect } from "react-redux";
 
@@ -7,8 +7,10 @@ class TemplateButtons extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      visibile: false,
-      templates: []
+      visible: false,
+      templates: [],
+      existingTemplate: false,
+      templateId: null
     };
   }
 
@@ -19,22 +21,33 @@ class TemplateButtons extends Component {
       this.setState({ templates });
   }
 
+  renderThisTemplate = async (_id) => {
+    console.log('Calling this function')
+    console.log(this.props.tree)
+    let [thisTemplate] = this.state.templates.filter(template => template._id === _id)
+    console.log(thisTemplate)
+    let schema = JSON.parse(thisTemplate.formSchema),
+      uiSchema = this.props.tree.present[0].uiSchema,
+      name = thisTemplate.name
+    this.props.setTree({ name, schema, uiSchema });
+    this.setState({ visible: false, existingTemplate: true, templateId: thisTemplate._id})
+  }
+
   postToBackend = async (e) => {
     const schema = this.props.tree.present[0].schema,
       uiSchema = this.props.tree.present[0].uiSchema,
       category_id = "5ef5e95f6d957a00173e32b5", // Temp
       body = {
-        name: schema.title,
+        name: schema.title ? schema.title : "New Product Template",
         category_id,
         formSchema: JSON.stringify(schema),
-        uiSchema: JSON.stringify(uiSchema),
+        uiSchema: uiSchema ? JSON.stringify(uiSchema): "",
       };
     const resp = await axios.post(
       "https://infohebackoffice.herokuapp.com/templates",
       body
     );
-    const newId = resp.data.id,
-      response = resp.status;
+    const response = resp.status;
     if (response === 201) {
       alert("Template Created");
     }
@@ -55,7 +68,7 @@ class TemplateButtons extends Component {
   render() {
     return (
       <>
-        <Button style={{ marginLeft: "10%" }} onClick={this.postToBackend}>
+        <Button style={{ marginLeft: "2%" }} onClick={this.postToBackend}>
           Add Template
         </Button>
         <Button style={{ marginLeft: "2%" }} onClick={this.showTemplates}>
@@ -74,10 +87,13 @@ class TemplateButtons extends Component {
         >
           <ul>
             {this.state.templates.map((template) => (
-              <li key={template._id}>{template.name}</li>
+              <li key={template._id} onClick={() => this.renderThisTemplate(template._id)}>{template.name}</li>
             ))}
           </ul>
         </Modal>
+        {this.state.existingTemplate ? (
+          <Button style={{marginLeft: '2%'}} href={"/product/" + this.state.templateId}>Add Product for this Template</Button>
+        ): null}
       </>
     );
   }
@@ -85,4 +101,11 @@ class TemplateButtons extends Component {
 
 export default connect(
   ({ tree }) => ({ tree }),
+  (dispatch) => ({
+    setTree: (payload) =>
+      dispatch({
+        type: 'TREE_SET_TREE',
+        payload,
+      }),
+  })
 )(TemplateButtons);

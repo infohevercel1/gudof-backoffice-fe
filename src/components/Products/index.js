@@ -38,11 +38,11 @@ class Products extends Component {
         return (
             <div className="product">
                 <Card variant="elevation" raised className="card">
-                    <h1>Form Page</h1>
-                <Form
-                    schema={this.state.schema}
-                    formData={this.state.formData}
-                    onSubmit={this.submitHandler}
+                    <h4>Form Page</h4>
+                    <Form
+                        schema={this.state.schema}
+                        formData={this.state.formData}
+                        onSubmit={this.submitHandler}
                     />
                 </Card>
             </div>

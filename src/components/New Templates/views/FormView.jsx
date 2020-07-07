@@ -1,7 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import Form from '../rjsf-patch/Form';
+// import Form from '../rjsf-patch/Form';
+import { withTheme } from "@rjsf/core";
+import { Theme as AntDTheme } from "@rjsf/antd";
+
 import { FieldTemplate, ObjectFieldTemplate } from '../Template';
+
+const Form = withTheme(AntDTheme);
 
 class FormView extends React.Component {
   render() {

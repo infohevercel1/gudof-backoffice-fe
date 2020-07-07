@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { Provider, connect } from "react-redux";
+import { connect } from "react-redux";
 import './css';
 import { Layout, Tabs, Card } from 'antd';
 import Tree from './Tree';
-import { FormView, SchemaView, UiSchemaView, FormDataView } from './views';
+import { FormView, SchemaView, UiSchemaView } from "./views";
 import Toolbar from './Toolbar';
 import Settings from './Settings';
 const { Header, Sider, Content } = Layout;
@@ -60,26 +60,28 @@ class NewTemplate extends Component {
                         {(settings.subViews || []).map((a) => {
                             const style = { margin: '12px 8px', width: 400, display: 'inline-block', verticalAlign: 'top' };
                             switch (a) {
-                                case 'schema':
-                                    return (
-                                        <Card key="schema" title="Schema" style={style}>
-                                            <SchemaView />
-                                        </Card>
-                                    );
-                                // case 'uiSchema':
-                                //     return (
-                                //         <Card key="uiSchema" title="Ui Schema" style={style}>
-                                //             <UiSchemaView />
-                                //         </Card>
-                                //     );
-                                case 'formData':
-                                    return (
-                                        <Card key="formData" title="Form Data" style={style}>
-                                            <FormDataView />
-                                        </Card>
-                                    );
-                                default:
-                                    return <div key="null" />;
+                              case "schema":
+                                return (
+                                  <Card
+                                    key="schema"
+                                    title="Schema"
+                                    style={style}
+                                  >
+                                    <SchemaView />
+                                  </Card>
+                                );
+                              case "uiSchema":
+                                return (
+                                  <Card
+                                    key="uischema"
+                                    title="UiSchema"
+                                    style={style}
+                                  >
+                                    <UiSchemaView />
+                                  </Card>
+                                );
+                              default:
+                                return <div key="null" />;
                             }
                         })}
                     </Content>

@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import './App.css';
+import "./index.css";
 import Category from './components/Categories/Categories';
-import Templates from './components/Product Templates/Templates';
 import Products from './components/Products';
-import NewTemplate from './components/New Templates/Templates';
+import NewTemplate from './components/New Templates/Templates.jsx';
 
 import { Provider, connect } from "react-redux";
 import { store, persistor } from "./components/New Templates/store";
@@ -25,12 +25,9 @@ class App extends Component {
               <Category />
             </Route>
             <Route path={["/template", "/"]} exact>
-              <Templates />
-            </Route>
-            <Route path="/product/:id" component={Products} />
-            <Route path="/newtemplate">
               <NewTemplate />
             </Route>
+            <Route path="/product/:id" component={Products} />
           </Switch>
         </div>
       </Router>
