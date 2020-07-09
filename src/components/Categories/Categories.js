@@ -9,8 +9,7 @@ import {
   Button,
 } from "@material-ui/core";
 
-import NewCategoryModal from './newCategory'; 
-
+import NewCategoryModal from './newCategory';
 
 class Categories extends Component {
     constructor(props) {
@@ -24,6 +23,7 @@ class Categories extends Component {
         };
         this.saveToBackend = this.saveToBackend.bind(this)
         this.setVisibility = this.setVisibility.bind(this)
+        this.saveNewCategory = this.saveNewCategory.bind(this)
     }
 
     async componentDidMount () {
@@ -78,10 +78,10 @@ class Categories extends Component {
                 generateNodeProps={({node, path}) => ({
                   buttons: [
                     <button
-                      onClick={() => {
-                        // var title = prompt("Enter the category name")
+                      onClick={async () => {
+                        var title = prompt("Enter the category name")
                         let title = ""
-                        this.setVisibility(true)
+                        // this.setVisibility(true)
                         if(!title) {
                           return ;
                         }
@@ -102,7 +102,7 @@ class Categories extends Component {
                         }))
                         // const resp = this.saveToBackend(newNode)
                         // console.log(resp)
-                        this.setState({newCategory: {ModalVisiblity: false, name: ""}})
+                        // this.setState({newCategory: {ModalVisiblity: false, name: ""}})
                       }}
                     >Add Child</button>
                   ]
