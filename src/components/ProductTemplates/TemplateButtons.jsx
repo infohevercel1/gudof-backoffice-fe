@@ -3,6 +3,8 @@ import { Modal, Button, notification } from 'antd';
 import axios from "axios";
 import { connect } from "react-redux";
 
+import './TemplateButtons.css';
+
 class TemplateButtons extends Component {
   constructor(props) {
     super(props);
@@ -94,7 +96,7 @@ class TemplateButtons extends Component {
         >
           <ul>
             {this.state.templates.map((template) => (
-              <li key={template._id} onClick={() => this.renderThisTemplate(template._id)}>{template.name}</li>
+              <li className="template-list" key={template._id} onClick={() => this.renderThisTemplate(template._id)}>{template.name}</li>
             ))}
           </ul>
         </Modal>

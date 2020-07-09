@@ -1,6 +1,10 @@
 .Categories {
-  text-align: center;
-  height: 600px;
+  /* text-align: center; */
+  height: 100vh;
+  margin: auto;
+  margin-top: 5%;
+  padding-left: 20%;
+  width: 60%;
 }
 
 .App-logo {
