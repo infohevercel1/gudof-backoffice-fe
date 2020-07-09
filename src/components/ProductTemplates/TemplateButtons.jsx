@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Modal, Button } from 'antd';
+import { Modal, Button, notification } from 'antd';
 import axios from "axios";
 import { connect } from "react-redux";
 
@@ -49,7 +49,14 @@ class TemplateButtons extends Component {
     );
     const response = resp.status;
     if (response === 201) {
-      alert("Template Created");
+      notification.open({
+        message: 'Template Created',
+        description:
+          'Your new template was added to the database.',
+        onClick: () => {
+          console.log('Notification Clicked!');
+        },
+      });
     }
   };
 

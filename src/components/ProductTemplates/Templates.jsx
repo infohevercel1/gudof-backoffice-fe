@@ -4,6 +4,7 @@ import './css';
 import { Layout, Tabs, Card } from 'antd';
 import Tree from './Tree';
 import { FormView, SchemaView, UiSchemaView } from "./views";
+import NodeEditor from './Editor';
 import Toolbar from './Toolbar';
 import Settings from './Settings';
 const { Header, Sider, Content } = Layout;
@@ -86,6 +87,19 @@ class NewTemplate extends Component {
                         })}
                     </Content>
                 </Layout>
+              <Sider
+                width={this.props.activeNodeKey ? settings.rightSiderWidth : 0}
+                style={{
+                  overflow: 'auto',
+                  background: '#fff',
+                  boxShadow: '0 2px 3px 0 rgba(0, 0, 0, 0.2), 0 2px 3px 0 rgba(0, 0, 0, 0.2)',
+                  position: 'fixed',
+                  height: '100vh',
+                  right: 0,
+                }}
+              >
+                <NodeEditor />
+              </Sider>
             </Layout>
         );
     }

@@ -5,10 +5,11 @@ import './Categories.css';
 import SortableTree from 'react-sortable-tree';
 import { getTreeFromFlatData, addNodeUnderParent } from "react-sortable-tree";
 import "react-sortable-tree/style.css";
-
 import {
-    Button,
+  Button,
 } from "@material-ui/core";
+
+import NewCategoryModal from './newCategory'; 
 
 
 class Categories extends Component {
@@ -16,8 +17,13 @@ class Categories extends Component {
         super(props)
         this.state = {
           categories: [],
+          newCategory: {
+            ModalVisiblity: false,
+            name: ""
+          },
         };
         this.saveToBackend = this.saveToBackend.bind(this)
+        this.setVisibility = this.setVisibility.bind(this)
     }
 
     async componentDidMount () {
@@ -46,6 +52,18 @@ class Categories extends Component {
       return axios.post("https://infohebackoffice.herokuapp.com/categories", {...newNode, name: newNode.title}).then(resp => resp)
     }
 
+    setVisibility (bool) {
+      let newCategory = this.state.newCategory
+      newCategory.ModalVisiblity = bool
+      this.setState({newCategory})
+    }
+
+    saveNewCategory (name) {
+      let newCategory = this.state.newCategory
+      newCategory.name = name
+      this.setState({ newCategory })
+    }
+
     render() {
       const getNodeKey = ({ treeIndex }) => treeIndex;
         return (
@@ -61,8 +79,9 @@ class Categories extends Component {
                   buttons: [
                     <button
                       onClick={() => {
-                        console.log(node, path)
-                        var title = prompt("Enter the category name")
+                        // var title = prompt("Enter the category name")
+                        let title = ""
+                        this.setVisibility(true)
                         if(!title) {
                           return ;
                         }
@@ -81,12 +100,18 @@ class Categories extends Component {
                             addAsFirstChild: state.addAsFirstChild,
                           }).treeData,
                         }))
-                        const resp = this.saveToBackend(newNode)
-                        console.log(resp)
+                        // const resp = this.saveToBackend(newNode)
+                        // console.log(resp)
+                        this.setState({newCategory: {ModalVisiblity: false, name: ""}})
                       }}
                     >Add Child</button>
                   ]
                 })}
+              />
+              <NewCategoryModal
+                visibility={this.state.newCategory.ModalVisiblity}
+                setVisibility={this.setVisibility}
+                saveNewCategory={this.saveNewCategory}
               />
             {/* </header> */}
           </div>

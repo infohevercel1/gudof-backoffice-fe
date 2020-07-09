@@ -4,10 +4,10 @@ import './App.css';
 import "./index.css";
 import Category from './components/Categories/Categories';
 import Products from './components/Products';
-import NewTemplate from './components/New Templates/Templates.jsx';
+import NewTemplate from './components/ProductTemplates/Templates.jsx';
 
 import { Provider, connect } from "react-redux";
-import { store, persistor } from "./components/New Templates/store";
+import { store, persistor } from "./components/ProductTemplates/store";
 import { PersistGate } from "redux-persist/integration/react";
 
 class App extends Component {
