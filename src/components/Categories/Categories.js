@@ -80,7 +80,6 @@ class Categories extends Component {
                     <button
                       onClick={async () => {
                         var title = prompt("Enter the category name")
-                        let title = ""
                         // this.setVisibility(true)
                         if(!title) {
                           return ;
