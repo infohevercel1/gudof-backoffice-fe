@@ -42,7 +42,7 @@ class App extends Component {
             mode="horizontal"
           >
             <Menu.Item key="category" icon={<UnorderedListOutlined />}>
-              <Link to="/category">View Categories </Link>
+              <Link to="/category">Categories </Link>
             </Menu.Item>
             {/* <SubMenu
               icon={<SettingOutlined />}
@@ -58,10 +58,10 @@ class App extends Component {
               </Menu.ItemGroup>
             </SubMenu> */}
             <Menu.Item key="template" icon={<ContainerOutlined />}>
-              <Link to="/template">View Product Templates</Link>
+              <Link to="/template">Product Templates</Link>
             </Menu.Item>
             <Menu.Item disabled key="product" icon={<DatabaseFilled />}>
-              <Link> View Products</Link>
+              <Link>Products</Link>
             </Menu.Item>
           </Menu>
           <Switch>

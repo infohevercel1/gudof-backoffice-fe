@@ -22,3 +22,7 @@ body {
 .checkbox {
   position: inherit;
 }
+
+.template-list {
+    cursor: pointer;
+}
