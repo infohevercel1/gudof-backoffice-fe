@@ -65,7 +65,6 @@ class Categories extends Component {
           this.setState({ newCategory });
         }
       })
-
     }
 
     handleClose = (event, reason) => {
@@ -108,6 +107,9 @@ class Categories extends Component {
                   parent_id: null,
                   path: title,
                 };
+                this.setState(state => ({
+                  categories: state.categories.concat(newNode),
+                }))
                 this.saveToBackend(newNode);
               }}
             >
@@ -119,7 +121,7 @@ class Categories extends Component {
               generateNodeProps={({ node, path }) => ({
                 buttons: [
                   <button
-                    class="btn"
+                    className="btn"
                     onClick={async () => {
                       var title = prompt("Enter the category name");
                       if (!title) {
