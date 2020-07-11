@@ -68,14 +68,14 @@ class Categories extends Component {
     }
 
     handleClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
+      if (reason === 'clickaway') {
+        return;
+      }
 
-    let newCategory = this.state.newCategory;
-    newCategory.categorySaved = false;
-    this.setState({ newCategory });
-  };
+      let newCategory = this.state.newCategory;
+      newCategory.categorySaved = false;
+      this.setState({ newCategory });
+    };
 
     setVisibility (bool) {
       let newCategory = this.state.newCategory
@@ -83,6 +83,7 @@ class Categories extends Component {
       this.setState({newCategory})
     }
 
+    // Redundant function. Saved for new Category Modal
     saveNewCategory (name) {
       let newCategory = this.state.newCategory
       newCategory.name = name
@@ -161,6 +162,8 @@ class Categories extends Component {
               </Alert>
             </Snackbar>
           </div>
+
+          // Will add this code after building a delete category route in the backend. 
           // generateNodeProps={({ node, path }) => ({
           //   buttons: [
           //     <button
