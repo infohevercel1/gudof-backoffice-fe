@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import Form from "@rjsf/material-ui";
+import Form from "@rjsf/core";
 import { Card, Snackbar } from '@material-ui/core';
 import { Alert as MuiAlert } from "@material-ui/lab";
 
@@ -16,7 +16,8 @@ class Products extends Component {
     this.state = {
       formData: {},
       schema: {},
-      templateId: "",
+      templateId: null,
+      categoryId: null,
       productAdded: false,
     };
   }
@@ -31,17 +32,22 @@ class Products extends Component {
   };
 
   async componentDidMount() {
-    let id = this.props.match.params.id;
+    const query = new URLSearchParams(this.props.location.search)
+    let templateId = query.get('template'), categoryId = query.get('category')
     const { data: template } = await axios.get(
-      "https://infohebackoffice.herokuapp.com/templates/" + id
+      "https://infohebackoffice.herokuapp.com/templates/" + templateId
     );
-    this.setState({ schema: JSON.parse(template.formSchema), templateId: id });
+    if (categoryId === null) {
+      categoryId = template.category_id
+    }
+    this.setState({ schema: JSON.parse(template.formSchema), templateId, categoryId });
   }
 
   submitHandler = async () => {
     this.setState({ productAdded: false });
     const body = {
       template_id: this.state.templateId,
+      category_id: this.state.categoryId,
       data: JSON.stringify(this.state.formData),
     };
     const data = await axios.post(
@@ -71,7 +77,7 @@ class Products extends Component {
           onClose={this.handleClose}
         >
           <Alert onClose={this.handleClose} severity="success">
-            New Category Saved!
+            New Product Saved!
           </Alert>
         </Snackbar>
       </div>
