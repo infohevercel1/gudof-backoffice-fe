@@ -28,24 +28,27 @@ class Editor extends React.Component {
     if (!(node && node.schema)) return null;
     const filteredEditors = editorList.filter((a) => a.filter(node));
     return (
-      <Tabs defaultActiveKey={filteredEditors[0].key} type="card">
-        {filteredEditors.map((Editor) => (
-          <TabPane tab={Editor.name} key={Editor.key}>
-            <div style={{ margin: '0px 16px' }}>
-              <Editor
-                key={node.key}
-                node={node}
-                updateNode={(nodeUpdate) => updateNode(node.key, nodeUpdate)}
-                updateSchema={(schemaUpdate) => updateNode(node.key, { schema: { ...node.schema, ...schemaUpdate } })}
-                updateUiSchema={(uiSchemaUpdate) =>
-                  updateNode(node.key, { uiSchema: { ...node.uiSchema, ...uiSchemaUpdate } })
-                }
-                updateUiOptions={this.updateUiOptions}
-              />
-            </div>
-          </TabPane>
-        ))}
-      </Tabs>
+      <>
+        <Tabs defaultActiveKey={filteredEditors[0].key} type="card">
+          {filteredEditors.map((Editor) => (
+            <TabPane tab={Editor.name} key={Editor.key}>
+              <div style={{ margin: '0px 16px' }}>
+                <Editor
+                  key={node.key}
+                  node={node}
+                  updateNode={(nodeUpdate) => updateNode(node.key, nodeUpdate)}
+                  updateSchema={(schemaUpdate) => updateNode(node.key, { schema: { ...node.schema, ...schemaUpdate } })}
+                  updateUiSchema={(uiSchemaUpdate) =>
+                    updateNode(node.key, { uiSchema: { ...node.uiSchema, ...uiSchemaUpdate } })
+                  }
+                  updateUiOptions={this.updateUiOptions}
+                />
+              </div>
+            </TabPane>
+          ))}
+        </Tabs>
+        <p>Click on the selected form in the left sidebar to push this drawer in.</p>
+      </>
     );
   }
 }

@@ -1,80 +1,110 @@
 import React from 'react';
+import axios from "axios";
 import { connect } from 'react-redux';
-import { Button, Tooltip, message, Select } from 'antd';
+import { Button, Tooltip, Select, Modal, notification, List } from 'antd';
 import { FileAddOutlined, FolderOpenOutlined, SaveOutlined, UndoOutlined, RedoOutlined } from '@ant-design/icons';
 import { ActionTypes } from 'redux-undo';
-
-import TemplateButtons from './TemplateButtons';
-
-function write(filename, json) {
-    const a = window.document.createElement('a');
-    a.href = window.URL.createObjectURL(new Blob([JSON.stringify(json, null, 2)], { type: 'application/json' }));
-    a.download = `${filename}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-}
-
-function read(e) {
-    var file = e.target.files[0];
-    if (!file) {
-        return;
-    }
-    var reader = new FileReader();
-
-    const p = new Promise(function (resolve) {
-        reader.onload = function (e) {
-            var contents = e.target.result;
-            resolve(contents);
-        };
-    });
-    reader.readAsText(file);
-    return p;
-}
+import './index.css';
 
 const buttonStyle = { marginLeft: 8 };
 class Toolbar extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      visible: false,
+      templates: [],
+      templateId: null
+    };
   }
-  save = () => {
+
+  async componentDidMount() {
+    const { data: templates } = await axios.get(
+      "https://infohebackoffice.herokuapp.com/templates"
+    );
+    this.setState({ templates });
+  }
+
+  newTemplate = () => {
+    this.setState({ templateId: null })
+  }
+
+  save = async () => {
     const { name, schema, uiSchema } = this.props.tree.present[0];
-    write(name, { name, schema, uiSchema });
-  };
-  open = async (e) => {
-    const s = await read(e);
+    const body = {
+        name,
+      category_id: "5ef5e95f6d957a00173e32b5",
+        formSchema: JSON.stringify(schema),
+        uiSchema: (uiSchema !== undefined) ? JSON.stringify(uiSchema) : "",
+      };
     try {
-      const { name, schema, uiSchema } = JSON.parse(s);
-      this.props.setTree({ name, schema, uiSchema });
+      let resp;
+
+      if(this.state.templateId === null) {
+        resp = await axios.post(
+          "https://infohebackoffice.herokuapp.com/templates",
+          body
+        );
+      } else {
+        resp = await axios.patch(
+          "https://infohebackoffice.herokuapp.com/templates",
+          body
+        );
+      }
+      const response = resp.status;
+      if (response === 201) {
+        notification.open({
+          message: 'Template Created',
+          description:
+          'Your new template was added to the database.'
+        });
+      }
     } catch (e) {
-      message.error("Invalid json file!");
+      console.log(e);
+      notification.open({
+        message: 'Sorry, Template could not be created.',
+        description: 'There was some error in the backend'
+      })
     }
   };
+
+  showTemplates = () => {
+    this.setState({
+      visible: true,
+    });
+  };
+
+  handleOk = (e) => {
+    this.setState({
+      visible: false,
+    });
+  };
+
+  renderThisTemplate = async (_id) => {
+    let [thisTemplate] = this.state.templates.filter(template => template._id === _id)
+    let schema = JSON.parse(thisTemplate.formSchema), uiSchema = {}, name = thisTemplate.name
+    if (thisTemplate.uiSchema !== "") {
+      uiSchema = JSON.parse(thisTemplate.uiSchema)
+    }
+    this.props.setTree({ name, schema, uiSchema });
+    this.setState({ visible: false, existingTemplate: true, templateId: thisTemplate._id })
+  }
 
   render() {
     const { tree, undo, redo, settings, updateSettings, newForm } = this.props;
     const { past, future } = tree;
     return (
       <span>
-        <input
-          ref={(ref) => (this.loadFile = ref)}
-          type="file"
-          accept="application/json"
-          onChange={this.open}
-          hidden
-        />
-        <Tooltip title="New">
+        <Tooltip title="New" onClick={this.newTemplate}>
           <Button
             style={buttonStyle}
             onClick={newForm}
             icon={<FileAddOutlined />}
           />
         </Tooltip>
-        <Tooltip title="Open">
+        <Tooltip title="Open">  
           <Button
             style={buttonStyle}
-            onClick={() => this.loadFile && this.loadFile.click()}
+            onClick={() => this.showTemplates()}
             icon={<FolderOpenOutlined />}
           />
         </Tooltip>
@@ -112,7 +142,30 @@ class Toolbar extends React.Component {
           <Select.Option key="uiSchema">Ui Schema</Select.Option>
           <Select.Option key="formData">Data</Select.Option>
         </Select>
-        <TemplateButtons />
+        <Modal
+          title="View Existing Templates"
+          visible={this.state.visible}
+          onOk={this.handleOk}
+          onCancel={this.handleOk}
+          footer={[
+            <Button key="back" onClick={this.handleOk}>
+              Okay
+            </Button>,
+          ]}
+        >
+          <List
+            bordered
+            dataSource={this.state.templates}
+            renderItem={item => (
+              <List.Item 
+                className="template-list" 
+                onClick={() => this.renderThisTemplate(item._id)}
+              >
+                {item.name}
+              </List.Item>
+            )}
+          />
+        </Modal>
       </span>
     );
   }
