@@ -3,7 +3,7 @@ import axios from 'axios';
 import './Categories.css';
 // after
 import SortableTree from 'react-sortable-tree';
-import { getTreeFromFlatData, addNodeUnderParent } from "react-sortable-tree";
+import { getTreeFromFlatData, addNodeUnderParent, removeNodeAtPath, removeNode } from "react-sortable-tree";
 import "react-sortable-tree/style.css";
 import {
   Button,
@@ -31,6 +31,7 @@ class Categories extends Component {
         this.saveToBackend = this.saveToBackend.bind(this)
         this.setVisibility = this.setVisibility.bind(this)
         this.saveNewCategory = this.saveNewCategory.bind(this)
+        this.deleteFromBackend = this.deleteFromBackend.bind(this)
     }
 
     async componentDidMount () {
@@ -55,16 +56,22 @@ class Categories extends Component {
         this.setState({ categories });
     }
 
+    async deleteFromBackend (id) {
+      const resp = await axios.delete('https://infohebackoffice.herokuapp.com/categories/'+id)
+      console.log(resp)
+    }
+
     saveToBackend (newNode) {
       let newCategory = this.state.newCategory;
       newCategory.categorySaved = false
       this.setState({newCategory})
-      return axios.post("https://infohebackoffice.herokuapp.com/categories", {...newNode, name: newNode.title}).then(resp => {
-        if(resp.status === 201) {
-          newCategory.categorySaved = true;
-          this.setState({ newCategory });
-        }
-      })
+      return axios.post("https://infohebackoffice.herokuapp.com/categories", {...newNode, name: newNode.title})
+        .then(resp => {
+          if(resp.status === 201) {
+            newCategory.categorySaved = true;
+            this.setState({ newCategory });
+          }
+        })
     }
 
     handleClose = (event, reason) => {
@@ -119,7 +126,7 @@ class Categories extends Component {
             <SortableTree
               treeData={this.state.categories}
               onChange={(treeData) => this.setState({ categories: treeData })}
-              generateNodeProps={({ node, path }) => ({
+              generateNodeProps={({ node, treeIndex, path }) => ({
                 buttons: [
                   <button
                     className="btn"
@@ -148,6 +155,21 @@ class Categories extends Component {
                   >
                     Add Child
                   </button>,
+                  <button
+                    className="btn"
+                    onClick={(event) => {
+                      this.setState(state => ({
+                        categories: removeNodeAtPath({
+                          treeData: state.categories,
+                          path,
+                          getNodeKey,
+                        }),
+                      }))
+                      this.deleteFromBackend(node._id)
+                    }
+                  }>
+                    Remove
+                  </button>,
                 ],
               })}
             />
@@ -166,25 +188,7 @@ class Categories extends Component {
           // Will add this code after building a delete category route in the backend. 
           // generateNodeProps={({ node, path }) => ({
           //   buttons: [
-          //     <button
-          //       onClick={() =>
-
-          //     >
-          //       Add Child
-          //     </button>,
-          //     <button
-          //       onClick={() =>
-          //         this.setState((state) => ({
-          //           treeData: removeNodeAtPath({
-          //             treeData: state.treeData,
-          //             path,
-          //             getNodeKey,
-          //           }),
-          //         }))
-          //       }
-          //     >
-          //       Remove
-          //     </button>,
+          //     
           //   ],
           // })}
         );
