@@ -25,7 +25,9 @@ class Categories extends Component {
           newCategory: {
             ModalVisiblity: false,
             name: "",
-            categorySaved: false
+            categorySaved: false,
+            node: null,
+            path: null
           },
         };
         this.saveToBackend = this.saveToBackend.bind(this)
@@ -84,17 +86,42 @@ class Categories extends Component {
       this.setState({ newCategory });
     };
 
-    setVisibility (bool) {
+    setVisibility (bool, node, path) {
       let newCategory = this.state.newCategory
       newCategory.ModalVisiblity = bool
+      if(node) {
+        newCategory.node = node
+      }
+      if(path) {
+        newCategory.path = path
+      }
       this.setState({newCategory})
     }
 
     // Redundant function. Saved for new Category Modal
     saveNewCategory (name) {
+      const getNodeKey = ({ treeIndex }) => treeIndex;
       let newCategory = this.state.newCategory
-      newCategory.name = name
-      this.setState({ newCategory })
+      let {node, path} = newCategory, title = name
+      if (!title) {
+        return;
+      }
+      const newNode = {
+        title,
+        parent_id: node._id,
+        path: title, // Temporary
+      };
+      this.setState((state) => ({
+        categories: addNodeUnderParent({
+          treeData: state.categories,
+          parentKey: path[path.length - 1],
+          expandParent: true,
+          getNodeKey,
+          newNode,
+          addAsFirstChild: state.addAsFirstChild,
+        }).treeData,
+      }));
+      this.saveToBackend(newNode);
     }
 
     render() {
@@ -126,31 +153,13 @@ class Categories extends Component {
             <SortableTree
               treeData={this.state.categories}
               onChange={(treeData) => this.setState({ categories: treeData })}
-              generateNodeProps={({ node, treeIndex, path }) => ({
+              generateNodeProps={({ node, path }) => ({
                 buttons: [
                   <button
                     className="btn"
                     onClick={async () => {
-                      var title = prompt("Enter the category name");
-                      if (!title) {
-                        return;
-                      }
-                      const newNode = {
-                        title,
-                        parent_id: node._id,
-                        path: title, // Temporary
-                      };
-                      this.setState((state) => ({
-                        categories: addNodeUnderParent({
-                          treeData: state.categories,
-                          parentKey: path[path.length - 1],
-                          expandParent: true,
-                          getNodeKey,
-                          newNode,
-                          addAsFirstChild: state.addAsFirstChild,
-                        }).treeData,
-                      }));
-                      this.saveToBackend(newNode);
+                      this.setVisibility(true, node, path)
+                      // var title = prompt("Enter the category name");
                     }}
                   >
                     Add Child
