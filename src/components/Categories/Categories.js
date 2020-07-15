@@ -10,6 +10,7 @@ import {
   Snackbar
 } from "@material-ui/core";
 import { Alert as MuiAlert } from '@material-ui/lab';
+import { notification } from 'antd';
 
 import NewCategoryModal from './newCategory';
 
@@ -25,7 +26,6 @@ class Categories extends Component {
           newCategory: {
             ModalVisiblity: false,
             name: "",
-            categorySaved: false,
             node: null,
             path: null
           },
@@ -60,31 +60,29 @@ class Categories extends Component {
 
     async deleteFromBackend (id) {
       const resp = await axios.delete('https://infohebackoffice.herokuapp.com/categories/'+id)
-      console.log(resp)
+      if (resp.status === 204) {
+        notification['success']({
+          message: 'Category Deleted',
+          description:
+            'The category has been deleted from the database!',
+        });
+      }
     }
 
     saveToBackend (newNode) {
       let newCategory = this.state.newCategory;
-      newCategory.categorySaved = false
       this.setState({newCategory})
       return axios.post("https://infohebackoffice.herokuapp.com/categories", {...newNode, name: newNode.title})
         .then(resp => {
           if(resp.status === 201) {
-            newCategory.categorySaved = true;
-            this.setState({ newCategory });
+            notification['success']({
+              message: 'New Category Saved',
+              description:
+                'The new category has been added to the database!',
+            });
           }
         })
     }
-
-    handleClose = (event, reason) => {
-      if (reason === 'clickaway') {
-        return;
-      }
-
-      let newCategory = this.state.newCategory;
-      newCategory.categorySaved = false;
-      this.setState({ newCategory });
-    };
 
     setVisibility (bool, node, path) {
       let newCategory = this.state.newCategory
@@ -108,19 +106,26 @@ class Categories extends Component {
       }
       const newNode = {
         title,
-        parent_id: node._id,
+        parent_id: node ? node._id : null,
         path: title, // Temporary
       };
-      this.setState((state) => ({
-        categories: addNodeUnderParent({
-          treeData: state.categories,
-          parentKey: path[path.length - 1],
-          expandParent: true,
-          getNodeKey,
-          newNode,
-          addAsFirstChild: state.addAsFirstChild,
-        }).treeData,
-      }));
+
+      if(node === null) {
+        this.setState(state => ({
+          categories: state.categories.concat(newNode),
+        }))
+      } else {
+        this.setState((state) => ({
+          categories: addNodeUnderParent({
+            treeData: state.categories,
+            parentKey: path[path.length - 1],
+            expandParent: true,
+            getNodeKey,
+            newNode,
+            addAsFirstChild: state.addAsFirstChild,
+          }).treeData,
+        }));
+      }
       this.saveToBackend(newNode);
     }
 
@@ -133,19 +138,7 @@ class Categories extends Component {
               variant="contained"
               color="primary"
               onClick={() => {
-                let title = prompt("Enter a category name");
-                if (!title) {
-                  return;
-                }
-                const newNode = {
-                  title,
-                  parent_id: null,
-                  path: title,
-                };
-                this.setState(state => ({
-                  categories: state.categories.concat(newNode),
-                }))
-                this.saveToBackend(newNode);
+                this.setVisibility(true)
               }}
             >
               Add New Category
@@ -159,7 +152,6 @@ class Categories extends Component {
                     className="btn"
                     onClick={async () => {
                       this.setVisibility(true, node, path)
-                      // var title = prompt("Enter the category name");
                     }}
                   >
                     Add Child
@@ -187,19 +179,7 @@ class Categories extends Component {
               setVisibility={this.setVisibility}
               saveNewCategory={this.saveNewCategory}
             />
-            <Snackbar open={this.state.newCategory.categorySaved} autoHideDuration={6000} onClose={this.handleClose}>
-              <Alert onClose={this.handleClose} severity="success">
-                New Category Saved!
-              </Alert>
-            </Snackbar>
           </div>
-
-          // Will add this code after building a delete category route in the backend. 
-          // generateNodeProps={({ node, path }) => ({
-          //   buttons: [
-          //     
-          //   ],
-          // })}
         );
     }
 }
