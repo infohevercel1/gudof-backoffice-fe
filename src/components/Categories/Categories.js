@@ -6,11 +6,11 @@ import SortableTree from 'react-sortable-tree';
 import { getTreeFromFlatData, addNodeUnderParent, removeNodeAtPath, removeNode } from "react-sortable-tree";
 import "react-sortable-tree/style.css";
 import {
-  Button,
+  // Button,
   Snackbar
 } from "@material-ui/core";
 import { Alert as MuiAlert } from '@material-ui/lab';
-import { notification } from 'antd';
+import { notification, Button } from 'antd';
 
 import NewCategoryModal from './newCategory';
 
@@ -135,8 +135,7 @@ class Categories extends Component {
           <div className="Categories">
             <h3>List of Categories</h3>
             <Button
-              variant="contained"
-              color="primary"
+              type="primary"
               onClick={() => {
                 this.setVisibility(true)
               }}
@@ -148,16 +147,14 @@ class Categories extends Component {
               onChange={(treeData) => this.setState({ categories: treeData })}
               generateNodeProps={({ node, path }) => ({
                 buttons: [
-                  <button
-                    className="btn"
+                  <Button
                     onClick={async () => {
                       this.setVisibility(true, node, path)
                     }}
                   >
                     Add Child
-                  </button>,
-                  <button
-                    className="btn"
+                  </Button>,
+                  <Button
                     onClick={(event) => {
                       this.setState(state => ({
                         categories: removeNodeAtPath({
@@ -170,7 +167,7 @@ class Categories extends Component {
                     }
                   }>
                     Remove
-                  </button>,
+                  </Button>,
                 ],
               })}
             />
