@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import { List, Button } from 'antd';
 import axios from 'axios';
 
+import './ProductList.css';
+
+let selectedTemplate = null, selectedCategory = null;
 class ProductList extends Component {
     constructor (props) {
         super(props);
@@ -28,37 +31,48 @@ class ProductList extends Component {
     }
 
     render() {
+        let listStyle = ["list-item"]
         return (
-        <div style={{ margin: 'auto', width: '80%'}}>
+        <div className="container main-container">
         <div style={{ display: 'flex'}}>
-            <div style={{ width: '100%', display: 'flex', flexDirection: 'column'}}>
-                <h5 style={{textAlign: 'center'}}>Choose Product Template</h5>
+            <div className="list-box">
+                <h4 style={{textAlign: 'center'}}>Choose Product Template</h4>
                 <List
-                    style={{ height: '300px', overflow: 'scroll' }}
+                    className="list"
                     bordered
                     dataSource={this.state.templates}
                     renderItem={item => (
-                        <List.Item onClick={() => this.productTemplateChoice(item._id)}>
+                        <List.Item 
+                            className={[...listStyle, this.state.template_id === item._id ? "selected-item" : null]} 
+                            onClick={() => this.productTemplateChoice(item._id)}
+                        >
                             {item.name}
                         </List.Item>
                     )}
                 />
             </div>
-            <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
-                <h5 style={{ textAlign: 'center' }}>Choose Parent Category</h5>
+            <div className="list-box">
+                <h4 style={{ textAlign: 'center' }}>Choose Parent Category</h4>
                 <List
-                    style={{ height: '300px', overflow: 'scroll'}}
+                    className="list"
                     bordered
                     dataSource={this.state.categories}
                     renderItem={item => (
-                        <List.Item onClick={() => this.categoryChoice(item._id)}>
+                        <List.Item 
+                            className={[...listStyle, this.state.category_id === item._id ? "selected-item" : null]} 
+                            onClick={() => this.categoryChoice(item._id)}
+                        >
                             {item.name}
                         </List.Item>
                     )}
                 />
             </div>
         </div>
-        <Button href={`/addproduct?template=${this.state.template_id}&category=${this.state.category_id}`}>Add Product</Button>
+        <Button
+            style={{marginLeft: '45%'}}
+            href={`/addproduct?template=${this.state.template_id}&category=${this.state.category_id}`}
+        >Add Product
+        </Button>
         </div>
         )
     }
