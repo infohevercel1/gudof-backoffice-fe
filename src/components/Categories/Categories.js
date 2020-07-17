@@ -3,13 +3,14 @@ import axios from 'axios';
 import './Categories.css';
 // after
 import SortableTree from 'react-sortable-tree';
-import { getTreeFromFlatData, addNodeUnderParent } from "react-sortable-tree";
+import { getTreeFromFlatData, addNodeUnderParent, removeNodeAtPath, removeNode } from "react-sortable-tree";
 import "react-sortable-tree/style.css";
 import {
-  Button,
+  // Button,
   Snackbar
 } from "@material-ui/core";
 import { Alert as MuiAlert } from '@material-ui/lab';
+import { notification, Button } from 'antd';
 
 import NewCategoryModal from './newCategory';
 
@@ -25,12 +26,14 @@ class Categories extends Component {
           newCategory: {
             ModalVisiblity: false,
             name: "",
-            categorySaved: false
+            node: null,
+            path: null
           },
         };
         this.saveToBackend = this.saveToBackend.bind(this)
         this.setVisibility = this.setVisibility.bind(this)
         this.saveNewCategory = this.saveNewCategory.bind(this)
+        this.deleteFromBackend = this.deleteFromBackend.bind(this)
     }
 
     async componentDidMount () {
@@ -55,39 +58,75 @@ class Categories extends Component {
         this.setState({ categories });
     }
 
-    saveToBackend (newNode) {
-      let newCategory = this.state.newCategory;
-      newCategory.categorySaved = false
-      this.setState({newCategory})
-      return axios.post("https://infohebackoffice.herokuapp.com/categories", {...newNode, name: newNode.title}).then(resp => {
-        if(resp.status === 201) {
-          newCategory.categorySaved = true;
-          this.setState({ newCategory });
-        }
-      })
+    async deleteFromBackend (id) {
+      const resp = await axios.delete('https://infohebackoffice.herokuapp.com/categories/'+id)
+      if (resp.status === 204) {
+        notification['success']({
+          message: 'Category Deleted',
+          description:
+            'The category has been deleted from the database!',
+        });
+      }
     }
 
-    handleClose = (event, reason) => {
-      if (reason === 'clickaway') {
-        return;
-      }
-
+    saveToBackend (newNode) {
       let newCategory = this.state.newCategory;
-      newCategory.categorySaved = false;
-      this.setState({ newCategory });
-    };
+      this.setState({newCategory})
+      return axios.post("https://infohebackoffice.herokuapp.com/categories", {...newNode, name: newNode.title})
+        .then(resp => {
+          if(resp.status === 201) {
+            notification['success']({
+              message: 'New Category Saved',
+              description:
+                'The new category has been added to the database!',
+            });
+          }
+        })
+    }
 
-    setVisibility (bool) {
+    setVisibility (bool, node, path) {
       let newCategory = this.state.newCategory
       newCategory.ModalVisiblity = bool
+      if(node) {
+        newCategory.node = node
+      }
+      if(path) {
+        newCategory.path = path
+      }
       this.setState({newCategory})
     }
 
     // Redundant function. Saved for new Category Modal
     saveNewCategory (name) {
+      const getNodeKey = ({ treeIndex }) => treeIndex;
       let newCategory = this.state.newCategory
-      newCategory.name = name
-      this.setState({ newCategory })
+      let {node, path} = newCategory, title = name
+      if (!title) {
+        return;
+      }
+      const newNode = {
+        title,
+        parent_id: node ? node._id : null,
+        path: title, // Temporary
+      };
+
+      if(node === null) {
+        this.setState(state => ({
+          categories: state.categories.concat(newNode),
+        }))
+      } else {
+        this.setState((state) => ({
+          categories: addNodeUnderParent({
+            treeData: state.categories,
+            parentKey: path[path.length - 1],
+            expandParent: true,
+            getNodeKey,
+            newNode,
+            addAsFirstChild: state.addAsFirstChild,
+          }).treeData,
+        }));
+      }
+      this.saveToBackend(newNode);
     }
 
     render() {
@@ -96,22 +135,9 @@ class Categories extends Component {
           <div className="Categories">
             <h3>List of Categories</h3>
             <Button
-              variant="contained"
-              color="primary"
+              type="primary"
               onClick={() => {
-                let title = prompt("Enter a category name");
-                if (!title) {
-                  return;
-                }
-                const newNode = {
-                  title,
-                  parent_id: null,
-                  path: title,
-                };
-                this.setState(state => ({
-                  categories: state.categories.concat(newNode),
-                }))
-                this.saveToBackend(newNode);
+                this.setVisibility(true)
               }}
             >
               Add New Category
@@ -121,33 +147,27 @@ class Categories extends Component {
               onChange={(treeData) => this.setState({ categories: treeData })}
               generateNodeProps={({ node, path }) => ({
                 buttons: [
-                  <button
-                    className="btn"
+                  <Button
                     onClick={async () => {
-                      var title = prompt("Enter the category name");
-                      if (!title) {
-                        return;
-                      }
-                      const newNode = {
-                        title,
-                        parent_id: node._id,
-                        path: title, // Temporary
-                      };
-                      this.setState((state) => ({
-                        categories: addNodeUnderParent({
-                          treeData: state.categories,
-                          parentKey: path[path.length - 1],
-                          expandParent: true,
-                          getNodeKey,
-                          newNode,
-                          addAsFirstChild: state.addAsFirstChild,
-                        }).treeData,
-                      }));
-                      this.saveToBackend(newNode);
+                      this.setVisibility(true, node, path)
                     }}
                   >
                     Add Child
-                  </button>,
+                  </Button>,
+                  <Button
+                    onClick={(event) => {
+                      this.setState(state => ({
+                        categories: removeNodeAtPath({
+                          treeData: state.categories,
+                          path,
+                          getNodeKey,
+                        }),
+                      }))
+                      this.deleteFromBackend(node._id)
+                    }
+                  }>
+                    Remove
+                  </Button>,
                 ],
               })}
             />
@@ -156,37 +176,7 @@ class Categories extends Component {
               setVisibility={this.setVisibility}
               saveNewCategory={this.saveNewCategory}
             />
-            <Snackbar open={this.state.newCategory.categorySaved} autoHideDuration={6000} onClose={this.handleClose}>
-              <Alert onClose={this.handleClose} severity="success">
-                New Category Saved!
-              </Alert>
-            </Snackbar>
           </div>
-
-          // Will add this code after building a delete category route in the backend. 
-          // generateNodeProps={({ node, path }) => ({
-          //   buttons: [
-          //     <button
-          //       onClick={() =>
-
-          //     >
-          //       Add Child
-          //     </button>,
-          //     <button
-          //       onClick={() =>
-          //         this.setState((state) => ({
-          //           treeData: removeNodeAtPath({
-          //             treeData: state.treeData,
-          //             path,
-          //             getNodeKey,
-          //           }),
-          //         }))
-          //       }
-          //     >
-          //       Remove
-          //     </button>,
-          //   ],
-          // })}
         );
     }
 }

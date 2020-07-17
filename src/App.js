@@ -5,6 +5,7 @@ import "./index.css";
 import Category from './components/Categories/Categories';
 import Products from './components/Products';
 import NewTemplate from './components/ProductTemplates/Templates.jsx';
+import ProductList from './components/Products/ProductList';
 
 import { Provider, connect } from "react-redux";
 import { store, persistor } from "./components/ProductTemplates/store";
@@ -42,7 +43,7 @@ class App extends Component {
             mode="horizontal"
           >
             <Menu.Item key="category" icon={<UnorderedListOutlined />}>
-              <Link to="/category">Categories </Link>
+              <Link to="/category">Categories</Link>
             </Menu.Item>
             {/* <SubMenu
               icon={<SettingOutlined />}
@@ -60,8 +61,8 @@ class App extends Component {
             <Menu.Item key="template" icon={<ContainerOutlined />}>
               <Link to="/template">Product Templates</Link>
             </Menu.Item>
-            <Menu.Item disabled key="product" icon={<DatabaseFilled />}>
-              <Link>Products</Link>
+            <Menu.Item key="product" icon={<DatabaseFilled />}>
+              <Link to="/product">Products</Link>
             </Menu.Item>
           </Menu>
           <Switch>
@@ -71,7 +72,10 @@ class App extends Component {
             <Route path={"/template"} exact>
               <NewTemplate />
             </Route>
-            <Route path="/product/:id" component={Products} />
+            <Route path={"/product"} exact>
+              <ProductList />
+            </Route>
+            <Route path="/addproduct/" component={Products} />
           </Switch>
         </div>
       </Router>
