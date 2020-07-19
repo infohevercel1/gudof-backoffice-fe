@@ -5,18 +5,10 @@ import './Categories.css';
 import SortableTree from 'react-sortable-tree';
 import { getTreeFromFlatData, addNodeUnderParent, removeNodeAtPath, removeNode } from "react-sortable-tree";
 import "react-sortable-tree/style.css";
-import {
-  // Button,
-  Snackbar
-} from "@material-ui/core";
 import { Alert as MuiAlert } from '@material-ui/lab';
 import { notification, Button } from 'antd';
 
-import NewCategoryModal from './newCategory';
-
-function Alert(props) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
+import NewCategoryModal from './New';
 
 class Categories extends Component {
     constructor(props) {
