@@ -5,10 +5,10 @@ import './Categories.css';
 import SortableTree from 'react-sortable-tree';
 import { getTreeFromFlatData, addNodeUnderParent, removeNodeAtPath, removeNode } from "react-sortable-tree";
 import "react-sortable-tree/style.css";
-import { Alert as MuiAlert } from '@material-ui/lab';
 import { notification, Button } from 'antd';
 
 import NewCategoryModal from './New';
+import DeleteCategoryModal  from './Delete';
 
 class Categories extends Component {
     constructor(props) {
@@ -21,11 +21,19 @@ class Categories extends Component {
             node: null,
             path: null
           },
+          deleteCategory: {
+            ModalVisiblity: false,
+            node: null,
+            path: null
+          }
         };
         this.saveToBackend = this.saveToBackend.bind(this)
-        this.setVisibility = this.setVisibility.bind(this)
+        this.newModalVisibility = this.newModalVisibility.bind(this)
         this.saveNewCategory = this.saveNewCategory.bind(this)
+        
         this.deleteFromBackend = this.deleteFromBackend.bind(this)
+        this.deleteModalVisibility = this.deleteModalVisibility.bind(this)
+        this.deleteCategory = this.deleteCategory.bind(this)
     }
 
     async componentDidMount () {
@@ -76,7 +84,7 @@ class Categories extends Component {
         })
     }
 
-    setVisibility (bool, node, path) {
+    newModalVisibility (bool, node, path) {
       let newCategory = this.state.newCategory
       newCategory.ModalVisiblity = bool
       if(node) {
@@ -121,15 +129,39 @@ class Categories extends Component {
       this.saveToBackend(newNode);
     }
 
-    render() {
+    deleteModalVisibility(bool, node, path) {
+      let deleteCategory = this.state.deleteCategory
+      deleteCategory.ModalVisiblity = bool
+      if (node) {
+        deleteCategory.node = node
+      }
+      if (path) {
+        deleteCategory.path = path
+      }
+      this.setState({ deleteCategory })
+    }
+
+    deleteCategory (bool) {
       const getNodeKey = ({ treeIndex }) => treeIndex;
+      let {node, path} = this.state.deleteCategory
+      this.setState(state => ({
+        categories: removeNodeAtPath({
+          treeData: state.categories,
+          path,
+          getNodeKey,
+        }),
+      }))
+      this.deleteFromBackend(node._id)
+    }
+
+    render() {
         return (
           <div className="Categories">
             <h3>List of Categories</h3>
             <Button
               type="primary"
               onClick={() => {
-                this.setVisibility(true)
+                this.newModalVisibility(true)
               }}
             >
               Add New Category
@@ -141,21 +173,14 @@ class Categories extends Component {
                 buttons: [
                   <Button
                     onClick={async () => {
-                      this.setVisibility(true, node, path)
+                      this.newModalVisibility(true, node, path)
                     }}
                   >
                     Add Child
                   </Button>,
                   (!node.children) ? <Button
                     onClick={(event) => {
-                      this.setState(state => ({
-                        categories: removeNodeAtPath({
-                          treeData: state.categories,
-                          path,
-                          getNodeKey,
-                        }),
-                      }))
-                      this.deleteFromBackend(node._id)
+                      this.deleteModalVisibility(true, node, path)
                     }
                   }>
                     Remove
@@ -165,8 +190,13 @@ class Categories extends Component {
             />
             <NewCategoryModal
               visibility={this.state.newCategory.ModalVisiblity}
-              setVisibility={this.setVisibility}
+              setVisibility={this.newModalVisibility}
               saveNewCategory={this.saveNewCategory}
+            />
+            <DeleteCategoryModal
+              visibility={this.state.deleteCategory.ModalVisiblity}
+              setVisibility={this.deleteModalVisibility}
+              deleteCategory={this.deleteCategory}
             />
           </div>
         );

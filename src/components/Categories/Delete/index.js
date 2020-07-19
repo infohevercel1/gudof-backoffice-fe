@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import { Modal, Input } from 'antd';
 
-const NewCategoryModal = ({ visibility, setVisibility, saveNewCategory }) => {
-
-    let [name, setName] = useState('')
+const DeleteCategoryModal = ({ visibility, setVisibility, deleteCategory }) => {
 
     const handleOk = e => {
-        saveNewCategory(name)
+        deleteCategory(true)
         setVisibility(false)
     };
 
@@ -21,9 +19,9 @@ const NewCategoryModal = ({ visibility, setVisibility, saveNewCategory }) => {
             onOk={handleOk}
             onCancel={handleCancel}
         >
-            <Input size="large" placeholder="Enter category" onChange={e => setName(e.target.value)} defaultValue=''/>
+            <p>Are you sure you want to delete this Category?</p>
         </Modal>
     )
 }
 
-export default NewCategoryModal
+export default DeleteCategoryModal
