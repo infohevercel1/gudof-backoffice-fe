@@ -156,7 +156,14 @@ class Categories extends Component {
                   </Button>,
                   <Button
                     onClick={(event) => {
-                      console.log(node)
+                      if(node.children) {
+                        notification['error']({
+                          message: 'Category has sub-categories!',
+                          description:
+                            'A category that has sub-categories cannot be deleted.',
+                        });
+                        return ;
+                      }
                       this.setState(state => ({
                         categories: removeNodeAtPath({
                           treeData: state.categories,
