@@ -36,6 +36,22 @@ class ProductList extends Component {
         <div className="container main-container">
         <div style={{ display: 'flex'}}>
             <div className="list-box">
+                <h4 style={{ textAlign: 'center' }}>Choose Parent Category</h4>
+                <List
+                    className="list"
+                    bordered
+                    dataSource={this.state.categories}
+                    renderItem={item => (
+                        <List.Item
+                            className={[...listStyle, this.state.category_id === item._id ? "selected-item" : null]}
+                            onClick={() => this.categoryChoice(item._id)}
+                        >
+                            {item.name}
+                        </List.Item>
+                    )}
+                />
+            </div>
+            <div className="list-box">
                 <h4 style={{textAlign: 'center'}}>Choose Product Template</h4>
                 <List
                     className="list"
@@ -45,22 +61,6 @@ class ProductList extends Component {
                         <List.Item 
                             className={[...listStyle, this.state.template_id === item._id ? "selected-item" : null]} 
                             onClick={() => this.productTemplateChoice(item._id)}
-                        >
-                            {item.name}
-                        </List.Item>
-                    )}
-                />
-            </div>
-            <div className="list-box">
-                <h4 style={{ textAlign: 'center' }}>Choose Parent Category</h4>
-                <List
-                    className="list"
-                    bordered
-                    dataSource={this.state.categories}
-                    renderItem={item => (
-                        <List.Item 
-                            className={[...listStyle, this.state.category_id === item._id ? "selected-item" : null]} 
-                            onClick={() => this.categoryChoice(item._id)}
                         >
                             {item.name}
                         </List.Item>

@@ -156,6 +156,7 @@ class Categories extends Component {
                   </Button>,
                   <Button
                     onClick={(event) => {
+                      console.log(node)
                       this.setState(state => ({
                         categories: removeNodeAtPath({
                           treeData: state.categories,
