@@ -181,18 +181,38 @@ class Categories extends Component {
                   >
                     Add Child
                   </Button>,
-                  (!node.children) ? <Button
+                  // If a category has children or a category has an existing template, it cannot be deleted. 
+                  (!node.children && node.template_id === null) ? (<Button
                     onClick={(event) => {
                       this.deleteModalVisibility(true, node, path)
                     }
                   }>
                     Remove
-                  </Button> : null,
-                  (!node.template_id) ? <Button
+                  </Button>) : null,
+                  (!node.template_id) ? (<Button
                     href={`/template?category=${node._id}`}
                   >
                     Add Template
-                  </Button> : null
+                  </Button>) : [(<Button
+                    href={`/template?category=${node._id}&template=${node.template_id}`}
+                  >
+                    View/Edit Template
+                  </Button>),
+                  (<Button
+                    href={`https://infohebackoffice.herokuapp.com/templates`}
+                  >
+                    Remove Template
+                  </Button>),
+                  (<Button
+                    href={`/addproduct?category=${node._id}&template=${node.template_id}`}
+                  >
+                    Add Product
+                  </Button>),
+                  (<Button
+                    href='/product'
+                  >
+                    View/Edit Product
+                  </Button>)]
                 ],
               })}
             />

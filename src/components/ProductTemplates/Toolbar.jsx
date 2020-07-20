@@ -13,7 +13,8 @@ class Toolbar extends React.Component {
     this.state = {
       visible: false,
       templates: [],
-      templateId: null
+      templateId: null,
+      categoryId: null
     };
   }
 
@@ -21,7 +22,12 @@ class Toolbar extends React.Component {
     const { data: templates } = await axios.get(
       "https://infohebackoffice.herokuapp.com/templates"
     );
-    this.setState({ templates });
+    const templateProperties = {
+      categoryId: this.props.category,
+      templateId: this.props.template
+    }
+    this.setState({ templates, ...templateProperties });
+    this.renderThisTemplate(templateProperties.templateId)
   }
 
   newTemplate = () => {
@@ -32,13 +38,13 @@ class Toolbar extends React.Component {
     const { name, schema, uiSchema } = this.props.tree.present[0];
     const body = {
         name,
-      category_id: "5ef5e95f6d957a00173e32b5",
+        category_id: this.state.categoryId,
         formSchema: JSON.stringify(schema),
         uiSchema: (uiSchema !== undefined) ? JSON.stringify(uiSchema) : "",
       };
     try {
       let resp;
-
+      console.log(body)
       if(this.state.templateId === null) {
         resp = await axios.post(
           "https://infohebackoffice.herokuapp.com/templates",
@@ -80,7 +86,9 @@ class Toolbar extends React.Component {
   };
 
   renderThisTemplate = async (_id) => {
+    console.log(_id)
     let [thisTemplate] = this.state.templates.filter(template => template._id === _id)
+    console.log(thisTemplate);
     let schema = JSON.parse(thisTemplate.formSchema), uiSchema = {}, name = thisTemplate.name
     if (thisTemplate.uiSchema !== "") {
       uiSchema = JSON.parse(thisTemplate.uiSchema)
@@ -94,13 +102,13 @@ class Toolbar extends React.Component {
     const { past, future } = tree;
     return (
       <span>
-        <Tooltip title="New" onClick={this.newTemplate}>
+        {/* <Tooltip title="New" onClick={this.newTemplate}>
           <Button
             style={buttonStyle}
             onClick={newForm}
             icon={<FileAddOutlined />}
           />
-        </Tooltip>
+        </Tooltip> */}
         <Tooltip title="Open">  
           <Button
             style={buttonStyle}
@@ -131,17 +139,6 @@ class Toolbar extends React.Component {
             icon={<RedoOutlined />}
           />
         </Tooltip>
-        <Select
-          mode="multiple"
-          style={{ width: 290, marginLeft: 12 }}
-          value={settings.subViews}
-          onChange={updateSettings}
-          placeholder="Select sub views..."
-        >
-          <Select.Option key="schema">Schema</Select.Option>
-          <Select.Option key="uiSchema">Ui Schema</Select.Option>
-          <Select.Option key="formData">Data</Select.Option>
-        </Select>
         <Modal
           title="View Existing Templates"
           visible={this.state.visible}
@@ -186,6 +183,8 @@ export default connect(
         undo: () => dispatch({ type: ActionTypes.UNDO }),
         redo: () => dispatch({ type: ActionTypes.REDO }),
         updateSettings: (subViews) =>
+        // This function was needed before when a select search bar to toggle subviews of 
+        // schema, ui-schema and formData was used in this component. 
             dispatch({
                 type: 'SETTINGS_UPDATE',
                 payload: { subViews },

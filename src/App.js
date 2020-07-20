@@ -69,9 +69,7 @@ class App extends Component {
             <Route path={["/category", "/"]} exact>
               <Category />
             </Route>
-            <Route path={"/template"} exact>
-              <NewTemplate />
-            </Route>
+            <Route path={"/template"} component={NewTemplate} />
             <Route path={"/product"} exact>
               <ProductList />
             </Route>
@@ -94,6 +92,5 @@ export default () => (
     </PersistGate>
   </Provider>
 );
-
 
 // export default App;
