@@ -39,8 +39,10 @@ class Categories extends Component {
     async componentDidMount () {
         const {data} = await axios.get("https://infohebackoffice.herokuapp.com/categories")
         let categories = data;
+        console.log(categories)
+        categories.splice(i, 1); // Removing an erroneous null value. Will be omitted after backend changes.
         for (var i = 0; i < categories.length; i++) {
-            categories[i].title = categories[i].name
+          categories[i].title = categories[i].name
         }
 
         function getKey(node) {
@@ -173,6 +175,7 @@ class Categories extends Component {
                 buttons: [
                   <Button
                     onClick={async () => {
+                      console.log(node)
                       this.newModalVisibility(true, node, path)
                     }}
                   >
@@ -185,6 +188,11 @@ class Categories extends Component {
                   }>
                     Remove
                   </Button> : null,
+                  (!node.template_id) ? <Button
+                    href={`/template?category=${node._id}`}
+                  >
+                    Add Template
+                  </Button> : null
                 ],
               })}
             />
