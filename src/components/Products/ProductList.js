@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { List, Button } from 'antd';
+import { Table, Button } from 'antd';
 import axios from 'axios';
 
 import './ProductList.css';
@@ -10,7 +10,9 @@ class ProductList extends Component {
         super(props);
         this.state = {
             template_id: null,
-            category_id: null
+            category_id: null,
+            products: [],
+            columns: []
         }
     }
 
@@ -18,8 +20,21 @@ class ProductList extends Component {
         const query = new URLSearchParams(this.props.location.search)
         let categoryId = query.get('category');
         this.setState({categoryId})
-        const { data: products } = await axios.get("https://infohebackoffice.herokuapp.com/product/category/"+categoryId)
-        console.log(products)
+        let { data: products } = await axios.get("https://infohebackoffice.herokuapp.com/product/category/"+categoryId)
+        products = products.filter(prod => prod.data !== "{}")
+        const data = products.map(product => {
+            return JSON.parse(product.data);
+        })
+        const columns = Object.keys(data[0]).map(key => {
+            return {
+                title: key,
+                dataIndex: key,
+                key: key
+            }
+        })
+        console.log(columns, data)
+        this.setState({products: data, columns})
+
     }
 
     render() {
@@ -27,7 +42,7 @@ class ProductList extends Component {
         return (
         <div className="container main-container">
         <div style={{ display: 'flex'}}>
-            
+            <Table dataSource={this.state.products} columns={this.state.columns} />
         </div>
         <Button
             style={{marginLeft: '45%'}}
