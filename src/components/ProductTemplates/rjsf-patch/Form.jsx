@@ -12,6 +12,7 @@ export default class FormPatch extends Form {
       FieldTemplate: this.props.FieldTemplate,
       definitions: this.props.schema.definitions || {},
       formContext: this.props.formContext || {},
+      onSubmit: this.props.onSubmit
     };
   }
 }

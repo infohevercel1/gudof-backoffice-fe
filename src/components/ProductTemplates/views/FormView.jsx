@@ -9,7 +9,7 @@ class FormView extends React.Component {
     if (!this.props.schema) {
       return null;
     }
-    const { name, schema, uiSchema, formData, setFormData, liveValidate } = this.props;
+    const { name, schema, uiSchema, formData, setFormData, liveValidate, onSubmit } = this.props;
     return (
       <Form
         schema={schema}
@@ -20,6 +20,7 @@ class FormView extends React.Component {
         ObjectFieldTemplate={ObjectFieldTemplate}
         idPrefix={name}
         onChange={setFormData}
+        onSubmit={onSubmit}
       />
     );
   }

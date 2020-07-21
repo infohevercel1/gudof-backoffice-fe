@@ -69,10 +69,8 @@ class App extends Component {
             <Route path={["/category", "/"]} exact>
               <Category />
             </Route>
-            <Route path={"/template"} component={NewTemplate} />
-            <Route path={"/product"} exact>
-              <ProductList />
-            </Route>
+            <Route path="/template" component={NewTemplate} />
+            <Route path="/product" component={ProductList} />
             <Route path="/addproduct/" component={Products} />
           </Switch>
         </div>

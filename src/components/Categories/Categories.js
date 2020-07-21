@@ -209,7 +209,7 @@ class Categories extends Component {
                     Add Product
                   </Button>),
                   (<Button
-                    href='/product'
+                    href={`/product?category=${node._id}`}
                   >
                     View/Edit Product
                   </Button>)]

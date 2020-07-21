@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import Form from "@rjsf/core";
+import { connect } from 'react-redux';
 import { Card, Snackbar } from '@material-ui/core';
 import { Alert as MuiAlert } from "@material-ui/lab";
+import { FormView } from '../ProductTemplates/views/index';
+import { notification } from 'antd';
 
 import './Products.css';
 
@@ -40,34 +43,43 @@ class Products extends Component {
     if (categoryId === null) {
       categoryId = template.category_id
     }
+    this.props.setTree(JSON.parse(template.formSchema))
     this.setState({ schema: JSON.parse(template.formSchema), templateId, categoryId });
   }
 
   submitHandler = async () => {
-    this.setState({ productAdded: false });
     const body = {
       template_id: this.state.templateId,
       category_id: this.state.categoryId,
-      data: JSON.stringify(this.state.formData),
+      data: JSON.stringify(this.props.formData),
     };
+    console.log(this.props.formData)
     const data = await axios.post(
       "https://infohebackoffice.herokuapp.com/product",
       body
     );
     if (data.status === 201) {
-      this.setState({ productAdded: true });
+      notification['success']({
+        message: 'Product Added',
+        description:
+          'The product has been added to the database!',
+      });
+      this.props.setFormData({})
+    } else {
+      notification['error']({
+        message: 'An Error Occurred',
+        description: 'The product was not saved to the database. Please try again later.'
+      })
     }
   };
 
   render() {
-    console.log(this.state.formData);
     return (
       <div className="product">
         <Card variant="elevation" raised className="card">
           <h4>Form Page</h4>
-          <Form
-            schema={this.state.schema}
-            formData={this.state.formData}
+          <FormView
+            schema={this.props.schema}
             onSubmit={this.submitHandler}
           />
         </Card>
@@ -85,4 +97,25 @@ class Products extends Component {
   }
 }
 
-export default Products;
+export default connect(({ 
+  formData, 
+  tree: {
+    present: [{ schema }]
+  }
+}) => ({
+  schema,
+  formData
+}), (dispatch) => ({
+  setTree: (schema) =>
+    dispatch({
+      type: 'TREE_SET_TREE',
+      payload: {
+        schema,
+      },
+    }),
+  setFormData: ({ formData }) =>
+    dispatch({
+      type: 'FORM_DATA_SET',
+      payload: formData,
+    }),
+}))(Products);

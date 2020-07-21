@@ -9,25 +9,17 @@ class ProductList extends Component {
     constructor (props) {
         super(props);
         this.state = {
-            templates: [],
-            categories: [],
             template_id: null,
             category_id: null
         }
     }
 
     async componentDidMount () {
-        const { data: templates } = await axios.get("https://infohebackoffice.herokuapp.com/templates")
-        const { data: categories } = await axios.get("https://infohebackoffice.herokuapp.com/categories")
-        this.setState({templates, categories})
-    }
-
-    productTemplateChoice = (id) => {
-        this.setState({template_id: id})
-    }
-
-    categoryChoice = (id) => {
-        this.setState({category_id: id})
+        const query = new URLSearchParams(this.props.location.search)
+        let categoryId = query.get('category');
+        this.setState({categoryId})
+        const { data: products } = await axios.get("https://infohebackoffice.herokuapp.com/product/category/"+categoryId)
+        console.log(products)
     }
 
     render() {
@@ -35,38 +27,7 @@ class ProductList extends Component {
         return (
         <div className="container main-container">
         <div style={{ display: 'flex'}}>
-            <div className="list-box">
-                <h4 style={{ textAlign: 'center' }}>Choose Parent Category</h4>
-                <List
-                    className="list"
-                    bordered
-                    dataSource={this.state.categories}
-                    renderItem={item => (
-                        <List.Item
-                            className={[...listStyle, this.state.category_id === item._id ? "selected-item" : null]}
-                            onClick={() => this.categoryChoice(item._id)}
-                        >
-                            {item.name}
-                        </List.Item>
-                    )}
-                />
-            </div>
-            <div className="list-box">
-                <h4 style={{textAlign: 'center'}}>Choose Product Template</h4>
-                <List
-                    className="list"
-                    bordered
-                    dataSource={this.state.templates}
-                    renderItem={item => (
-                        <List.Item 
-                            className={[...listStyle, this.state.template_id === item._id ? "selected-item" : null]} 
-                            onClick={() => this.productTemplateChoice(item._id)}
-                        >
-                            {item.name}
-                        </List.Item>
-                    )}
-                />
-            </div>
+            
         </div>
         <Button
             style={{marginLeft: '45%'}}
