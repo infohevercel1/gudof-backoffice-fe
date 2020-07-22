@@ -39,7 +39,6 @@ class Categories extends Component {
     async componentDidMount () {
         const {data} = await axios.get("https://infohebackoffice.herokuapp.com/categories")
         let categories = data;
-        console.log(categories)
         categories.splice(i, 1); // Removing an erroneous null value. Will be omitted after backend changes.
         for (var i = 0; i < categories.length; i++) {
           categories[i].title = categories[i].name
@@ -194,21 +193,41 @@ class Categories extends Component {
                   >
                     Add Template
                   </Button>) : [(<Button
+                    key={`edit-${node._id}`}
                     href={`/template?category=${node._id}&template=${node.template_id}`}
                   >
                     View/Edit Template
                   </Button>),
                   (<Button
-                    href={`https://infohebackoffice.herokuapp.com/templates`}
+                    key={`remove-${node._id}`}
+                    onClick={async (event) => {
+                      const resp = await axios.delete(`https://infohebackoffice.herokuapp.com/templates/${node.template_id}`)
+                      if (resp.status === 204) {
+                        notification['success']({
+                          message: 'Template Deleted',
+                          description:
+                            'The template has been removed from the database!',
+                        });
+                        let categories = this.state.categories;
+                        categories.forEach(cat => {
+                          if (cat._id === node._id) {
+                            cat.template_id = null;
+                          }
+                        })
+                        this.setState({categories})
+                      }
+                    }}
                   >
                     Remove Template
                   </Button>),
                   (<Button
+                    key={`addprod-${node._id}`}
                     href={`/addproduct?category=${node._id}&template=${node.template_id}`}
                   >
                     Add Product
                   </Button>),
                   (<Button
+                    key={`editprod-${node._id}`}
                     href={`/product?category=${node._id}`}
                   >
                     View/Edit Product
