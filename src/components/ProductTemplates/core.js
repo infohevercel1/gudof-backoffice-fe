@@ -136,6 +136,7 @@ function updateNodeParentKeyAndName(node, parentKey, name) {
   }
   const newKey = parentKey ? parentKey + '.' + name : name;
   if (node.key === newKey) return node;
+  node.schema.title = name[0].toUpperCase() + name.slice(1, name.length);
   return Object.assign(
     {},
     node,
@@ -320,7 +321,7 @@ function removeNodeByPath(tree, path) {
 }
 
 function removeNode(tree, key) {
-  if (key === 'root.manuf' || key === 'root.model') {
+  if (key === `${tree[0].key}.manuf` || key === `${tree[0].key}.model`) {
     return tree; // Just a double check. It should never arrive at this condition.
   }
   return _removeNodeByPath(tree, key.split('.'));
@@ -337,6 +338,7 @@ function _addNodeByPath(tree, [head, ...tail], position, node2Add, arrayItemsFla
     let added = false;
     for (const i in tree) {
       const cn = tree[i];
+      console.log(cn);
       if (cn.name !== head) {
         newTree.push(cn);
         continue;
@@ -357,6 +359,7 @@ function _addNodeByPath(tree, [head, ...tail], position, node2Add, arrayItemsFla
         }
 
         let newNodeChildren = [...(cn.children || []), updateNodeParentKeyAndName(node2Add, cn.key)];
+        console.log(newNodeChildren)
         if (arrayItemsFlag === 1) {
           newNodeChildren = updateArrayIndex(newNodeChildren);
         }

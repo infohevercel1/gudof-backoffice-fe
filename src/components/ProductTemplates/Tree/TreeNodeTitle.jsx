@@ -42,7 +42,8 @@ class TreeNodeTitle extends PureComponent {
                 placement="rightTop"
                 title={`Delete "${key}"?`}
                 onConfirm={() => {
-                  if (key === 'root.manuf' || key === 'root.model') {
+                  let thisKey = node.key.split('.')[1]
+                  if (thisKey === 'model' || thisKey === 'manuf') {
                     return notification['error']({
                       message: 'Cannot delete basic fields!',
                       description: 'You cannot delete the basic fields required for templates.'
