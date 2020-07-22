@@ -13,7 +13,14 @@ const { TabPane } = Tabs;
 class NewTemplate extends Component {
     state = {
         collapsed: false,
+        categoryId: null,
+        templateId: null
     };
+    componentDidMount () {
+      const query = new URLSearchParams(this.props.location.search)
+      let categoryId = query.get('category'), templateId = query.get('template')
+      this.setState({categoryId, templateId})
+    }
     toggle = () => {
         this.setState({
             collapsed: !this.state.collapsed,
@@ -49,7 +56,7 @@ class NewTemplate extends Component {
                 </Sider>
                 <Layout style={{ marginLeft: settings.leftSiderWidth }}>
                     <Header style={{ background: '#fff', padding: 0 }}>
-                        <Toolbar />
+                        <Toolbar category={this.state.categoryId} template={this.state.templateId}/>
                     </Header>
                     <Content style={{ minHeight: 280, padding: '12px 8px' }}>
                         <Card

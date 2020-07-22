@@ -5,17 +5,12 @@ const NewCategoryModal = ({ visibility, setVisibility, saveNewCategory }) => {
 
     let [name, setName] = useState('')
 
-    const showModal = () => {
-        setVisibility(true)
-    };
-
     const handleOk = e => {
         saveNewCategory(name)
         setVisibility(false)
     };
 
     const handleCancel = e => {
-        console.log(e);
         setVisibility(false)
     };
 
@@ -26,7 +21,7 @@ const NewCategoryModal = ({ visibility, setVisibility, saveNewCategory }) => {
             onOk={handleOk}
             onCancel={handleCancel}
         >
-            <Input size="large" placeholder="large size" onChange={e => setName(e.target.value)}/>
+            <Input size="large" placeholder="Enter category" onChange={e => setName(e.target.value)} defaultValue=''/>
         </Modal>
     )
 }

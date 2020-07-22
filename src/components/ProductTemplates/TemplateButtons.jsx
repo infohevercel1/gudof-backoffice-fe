@@ -17,6 +17,7 @@ class TemplateButtons extends Component {
   }
 
   async componentDidMount () {
+    console.log(this.props)
       const { data: templates } = await axios.get(
         "https://infohebackoffice.herokuapp.com/templates"
       );

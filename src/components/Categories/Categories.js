@@ -5,18 +5,10 @@ import './Categories.css';
 import SortableTree from 'react-sortable-tree';
 import { getTreeFromFlatData, addNodeUnderParent, removeNodeAtPath, removeNode } from "react-sortable-tree";
 import "react-sortable-tree/style.css";
-import {
-  // Button,
-  Snackbar
-} from "@material-ui/core";
-import { Alert as MuiAlert } from '@material-ui/lab';
 import { notification, Button } from 'antd';
 
-import NewCategoryModal from './newCategory';
-
-function Alert(props) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
+import NewCategoryModal from './New';
+import DeleteCategoryModal  from './Delete';
 
 class Categories extends Component {
     constructor(props) {
@@ -29,18 +21,28 @@ class Categories extends Component {
             node: null,
             path: null
           },
+          deleteCategory: {
+            ModalVisiblity: false,
+            node: null,
+            path: null
+          }
         };
         this.saveToBackend = this.saveToBackend.bind(this)
-        this.setVisibility = this.setVisibility.bind(this)
+        this.newModalVisibility = this.newModalVisibility.bind(this)
         this.saveNewCategory = this.saveNewCategory.bind(this)
+        
         this.deleteFromBackend = this.deleteFromBackend.bind(this)
+        this.deleteModalVisibility = this.deleteModalVisibility.bind(this)
+        this.deleteCategory = this.deleteCategory.bind(this)
     }
 
     async componentDidMount () {
         const {data} = await axios.get("https://infohebackoffice.herokuapp.com/categories")
         let categories = data;
+        console.log(categories)
+        categories.splice(i, 1); // Removing an erroneous null value. Will be omitted after backend changes.
         for (var i = 0; i < categories.length; i++) {
-            categories[i].title = categories[i].name
+          categories[i].title = categories[i].name
         }
 
         function getKey(node) {
@@ -84,7 +86,7 @@ class Categories extends Component {
         })
     }
 
-    setVisibility (bool, node, path) {
+    newModalVisibility (bool, node, path) {
       let newCategory = this.state.newCategory
       newCategory.ModalVisiblity = bool
       if(node) {
@@ -129,15 +131,39 @@ class Categories extends Component {
       this.saveToBackend(newNode);
     }
 
-    render() {
+    deleteModalVisibility(bool, node, path) {
+      let deleteCategory = this.state.deleteCategory
+      deleteCategory.ModalVisiblity = bool
+      if (node) {
+        deleteCategory.node = node
+      }
+      if (path) {
+        deleteCategory.path = path
+      }
+      this.setState({ deleteCategory })
+    }
+
+    deleteCategory (bool) {
       const getNodeKey = ({ treeIndex }) => treeIndex;
+      let {node, path} = this.state.deleteCategory
+      this.setState(state => ({
+        categories: removeNodeAtPath({
+          treeData: state.categories,
+          path,
+          getNodeKey,
+        }),
+      }))
+      this.deleteFromBackend(node._id)
+    }
+
+    render() {
         return (
           <div className="Categories">
             <h3>List of Categories</h3>
             <Button
               type="primary"
               onClick={() => {
-                this.setVisibility(true)
+                this.newModalVisibility(true)
               }}
             >
               Add New Category
@@ -149,32 +175,56 @@ class Categories extends Component {
                 buttons: [
                   <Button
                     onClick={async () => {
-                      this.setVisibility(true, node, path)
+                      console.log(node)
+                      this.newModalVisibility(true, node, path)
                     }}
                   >
                     Add Child
                   </Button>,
-                  <Button
+                  // If a category has children or a category has an existing template, it cannot be deleted. 
+                  (!node.children && node.template_id === null) ? (<Button
                     onClick={(event) => {
-                      this.setState(state => ({
-                        categories: removeNodeAtPath({
-                          treeData: state.categories,
-                          path,
-                          getNodeKey,
-                        }),
-                      }))
-                      this.deleteFromBackend(node._id)
+                      this.deleteModalVisibility(true, node, path)
                     }
                   }>
                     Remove
-                  </Button>,
+                  </Button>) : null,
+                  (!node.template_id) ? (<Button
+                    href={`/template?category=${node._id}`}
+                  >
+                    Add Template
+                  </Button>) : [(<Button
+                    href={`/template?category=${node._id}&template=${node.template_id}`}
+                  >
+                    View/Edit Template
+                  </Button>),
+                  (<Button
+                    href={`https://infohebackoffice.herokuapp.com/templates`}
+                  >
+                    Remove Template
+                  </Button>),
+                  (<Button
+                    href={`/addproduct?category=${node._id}&template=${node.template_id}`}
+                  >
+                    Add Product
+                  </Button>),
+                  (<Button
+                    href={`/product?category=${node._id}`}
+                  >
+                    View/Edit Product
+                  </Button>)]
                 ],
               })}
             />
             <NewCategoryModal
               visibility={this.state.newCategory.ModalVisiblity}
-              setVisibility={this.setVisibility}
+              setVisibility={this.newModalVisibility}
               saveNewCategory={this.saveNewCategory}
+            />
+            <DeleteCategoryModal
+              visibility={this.state.deleteCategory.ModalVisiblity}
+              setVisibility={this.deleteModalVisibility}
+              deleteCategory={this.deleteCategory}
             />
           </div>
         );
