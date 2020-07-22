@@ -320,6 +320,9 @@ function removeNodeByPath(tree, path) {
 }
 
 function removeNode(tree, key) {
+  if (key === 'root.manuf' || key === 'root.model') {
+    return tree; // Just a double check. It should never arrive at this condition.
+  }
   return _removeNodeByPath(tree, key.split('.'));
 }
 

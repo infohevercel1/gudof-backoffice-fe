@@ -32,9 +32,7 @@ class ProductList extends Component {
                 key: key
             }
         })
-        console.log(columns, data)
         this.setState({products: data, columns})
-
     }
 
     render() {

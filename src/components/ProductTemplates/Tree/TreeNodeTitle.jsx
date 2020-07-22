@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Popconfirm } from 'antd';
 import { PlusCircleOutlined, CloseCircleFilled } from '@ant-design/icons';
 import InlineEditor from '../InlineEditor';
-import { Dropdown } from 'antd';
+import { Dropdown, notification } from 'antd';
 import AddItemMenu from './Menu';
 
 class TreeNodeTitle extends PureComponent {
@@ -41,7 +41,14 @@ class TreeNodeTitle extends PureComponent {
               <Popconfirm
                 placement="rightTop"
                 title={`Delete "${key}"?`}
-                onConfirm={() => removeNode(key)}
+                onConfirm={() => {
+                  if (key === 'root.manuf' || key === 'root.model') {
+                    return notification['error']({
+                      message: 'Cannot delete basic fields!',
+                      description: 'You cannot delete the basic fields required for templates.'
+                    })
+                  }
+                  removeNode(key)}}
                 okText="Yes"
                 cancelText="No"
               >

@@ -27,7 +27,10 @@ class Toolbar extends React.Component {
       templateId: this.props.template
     }
     this.setState({ templates, ...templateProperties });
-    this.renderThisTemplate(templateProperties.templateId)
+    if (templateProperties.templateId !== null)
+      this.renderThisTemplate(templateProperties.templateId)
+    else
+      this.props.newForm();
   }
 
   newTemplate = () => {

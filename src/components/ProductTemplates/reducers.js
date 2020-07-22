@@ -8,7 +8,16 @@ import { combineReducers } from 'redux';
 const defaultMenu = schema2node(['menu'], defaultMenuSchema.schema, defaultMenuSchema.uiSchema);
 const DEFAULT_TREE_NAME = 'root';
 
-const emptyTree = schema2tree(DEFAULT_TREE_NAME, { type: 'object', properties: {} });
+const emptyTree = schema2tree(DEFAULT_TREE_NAME, { type: 'object', properties: {
+  manuf: {
+    type: 'string',
+    title: 'Manufacturer'
+  },
+  model: {
+    type: 'string',
+    title: 'Model'
+  }
+} });
 
 function tree(state = emptyTree, action) {
   switch (action.type) {
