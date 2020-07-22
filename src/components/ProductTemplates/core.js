@@ -1,3 +1,5 @@
+import { notification } from 'antd';
+
 function isEmptyObject(obj) {
   if (!obj) return true;
   for (const i in obj) {
@@ -322,7 +324,12 @@ function removeNodeByPath(tree, path) {
 
 function removeNode(tree, key) {
   if (key === `${tree[0].key}.manuf` || key === `${tree[0].key}.model`) {
-    return tree; // Just a double check. It should never arrive at this condition.
+    // Antd modal error notification.
+    notification['error']({
+      message: 'Cannot delete basic fields!',
+      description: 'You cannot delete the basic fields required for templates.'
+    })
+    return tree;
   }
   return _removeNodeByPath(tree, key.split('.'));
 }

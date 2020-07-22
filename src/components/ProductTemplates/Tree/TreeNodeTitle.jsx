@@ -42,6 +42,7 @@ class TreeNodeTitle extends PureComponent {
                 placement="rightTop"
                 title={`Delete "${key}"?`}
                 onConfirm={() => {
+                  // This check is really not needed right now, but still
                   let thisKey = node.key.split('.')[1]
                   if (thisKey === 'model' || thisKey === 'manuf') {
                     return notification['error']({
