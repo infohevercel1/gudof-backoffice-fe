@@ -29,8 +29,26 @@ class Toolbar extends React.Component {
     this.setState({ templates, ...templateProperties });
     if (templateProperties.templateId !== null)
       this.renderThisTemplate(templateProperties.templateId)
-    else
-      this.props.newForm();
+    else {
+      let schema = {
+        type: "object",
+        properties: {
+          manuf: {
+            type: "string",
+            title: "Manufacturer"
+          },
+          model: {
+            type: "string",
+            title: "Model"
+          }
+        }
+      },
+      uiSchema = {}
+      // const { data: category } = await axios.get('https://infohebackoffice.herokuapp.com/category')
+      // Will receive category_name to add in name of template
+      let name=`template-${templateProperties.categoryId}`;
+      this.props.setTree({name, schema, uiSchema});
+    }
   }
 
   newTemplate = () => {
