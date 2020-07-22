@@ -112,7 +112,7 @@ class Categories extends Component {
       const newNode = {
         title,
         parent_id: node ? node._id : null,
-        path: title, // Temporary
+        path: node.path + '/' + title, 
       };
 
       if(node === null) {
