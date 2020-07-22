@@ -13,6 +13,7 @@ class Toolbar extends React.Component {
     this.state = {
       visible: false,
       templates: [],
+      categories: [],
       templateId: null,
       categoryId: null
     };
@@ -94,9 +95,14 @@ class Toolbar extends React.Component {
     }
   };
 
-  showTemplates = () => {
+  showTemplates = async () => {
+    let { data: categories } = await axios.get(
+      "https://infohebackoffice.herokuapp.com/categories"
+    );
+    categories = categories.filter(category => category !== null && category.template_id !== null)
     this.setState({
       visible: true,
+      categories
     });
   };
 
@@ -107,9 +113,7 @@ class Toolbar extends React.Component {
   };
 
   renderThisTemplate = async (_id) => {
-    console.log(_id)
     let [thisTemplate] = this.state.templates.filter(template => template._id === _id)
-    console.log(thisTemplate);
     let schema = JSON.parse(thisTemplate.formSchema), uiSchema = {}, name = thisTemplate.name
     if (thisTemplate.uiSchema !== "") {
       uiSchema = JSON.parse(thisTemplate.uiSchema)
@@ -161,7 +165,7 @@ class Toolbar extends React.Component {
           />
         </Tooltip>
         <Modal
-          title="View Existing Templates"
+          title="View Existing Templates by Category"
           visible={this.state.visible}
           onOk={this.handleOk}
           onCancel={this.handleOk}
@@ -173,11 +177,11 @@ class Toolbar extends React.Component {
         >
           <List
             bordered
-            dataSource={this.state.templates}
+            dataSource={this.state.categories}
             renderItem={item => (
               <List.Item 
                 className="template-list" 
-                onClick={() => this.renderThisTemplate(item._id)}
+                onClick={() => this.renderThisTemplate(item.template_id)}
               >
                 {item.name}
               </List.Item>
