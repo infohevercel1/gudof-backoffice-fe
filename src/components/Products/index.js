@@ -1,16 +1,12 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux';
-import { Card, Snackbar } from '@material-ui/core';
-import { Alert as MuiAlert } from "@material-ui/lab";
+import { Card } from '@material-ui/core';
 import { FormView } from '../ProductTemplates/views/index';
 import { notification } from 'antd';
 
 import './Products.css';
 
-function Alert(props) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
 
 class Products extends Component {
   constructor(props) {
@@ -20,26 +16,23 @@ class Products extends Component {
       schema: {},
       templateId: null,
       categoryId: null,
-      productAdded: false,
+      productId: null, // Will have value when product is edited.
     };
   }
 
-  handleClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
-    
-    this.setState({ productAdded: false });
-  };
-
   async componentDidMount() {
     const query = new URLSearchParams(this.props.location.search)
-    let templateId = query.get('template'), categoryId = query.get('category')
+    let templateId = query.get('template'), 
+        categoryId = query.get('category'),
+        productId = query.get('product');
+    
+    if (productId !== null) {
+      this.setState({ productId })
+    }
     const { data: template } = await axios.get(
       "https://infohebackoffice.herokuapp.com/templates/" + templateId
     );
-    if (categoryId === null) {
+    if (categoryId === 'null') {
       categoryId = template.category_id
     }
     this.props.setTree(JSON.parse(template.formSchema))
@@ -56,11 +49,21 @@ class Products extends Component {
       data: JSON.stringify(formData),
       name
     };
-    const data = await axios.post(
+    let data;
+    if (this.state.productId !== null) {
+      body.id = this.state.productId
+      data = await axios.patch(
         "https://infohebackoffice.herokuapp.com/product",
         body
       );
-    if (data.status === 201) {
+    } else {
+      data = await axios.post(
+        "https://infohebackoffice.herokuapp.com/product",
+        body
+      );
+    }
+    console.log(data)
+    if (data.status === 201 || data.status === 200) {
       notification['success']({
           message: 'Product Added',
           description:
@@ -82,25 +85,18 @@ class Products extends Component {
   };
 
   render() {
+    console.log(this.props.formData)
     return (
       <div className="product">
+        <h4>Form Page</h4>
+        <h5>{this.state.productId ? 'Edit Product' : 'Add New Product'}</h5>
         <Card variant="elevation" raised className="card">
-          <h4>Form Page</h4>
           <FormView
             formData={this.props.formData}
             schema={this.props.schema}
             onSubmit={this.submitHandler}
           />
         </Card>
-        <Snackbar
-          open={this.state.productAdded}
-          autoHideDuration={6000}
-          onClose={this.handleClose}
-        >
-          <Alert onClose={this.handleClose} severity="success">
-            New Product Saved!
-          </Alert>
-        </Snackbar>
       </div>
     );
   }
