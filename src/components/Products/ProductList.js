@@ -4,8 +4,6 @@ import { connect } from 'react-redux';
 import axios from 'axios';
 
 import './ProductList.css';
-
-let selectedTemplate = null, selectedCategory = null;
 class ProductList extends Component {
     constructor (props) {
         super(props);
@@ -25,7 +23,6 @@ class ProductList extends Component {
         const query = new URLSearchParams(this.props.location.search)
         let categoryId = query.get('category');
         let products = []
-        console.log(categoryId)
         if (categoryId !== null){
             this.setState({categoryId})
             let { data } = await axios.get("https://infohebackoffice.herokuapp.com/product/category/"+categoryId)
@@ -35,7 +32,6 @@ class ProductList extends Component {
             let { data } = await axios.get("https://infohebackoffice.herokuapp.com/product/")
             products = data
         }
-        console.log(products)
         // For earlier products that didn't have any data
         products = products.filter(prod => prod.data !== "{}")
         const data = products.map(product => {
@@ -53,23 +49,29 @@ class ProductList extends Component {
                 created_at: product.meta.created_at,
                 updated_at: updates.length > 0 ? updates.slice(updates.length-1)[0].updated_at : '-',
                 template: product.template,
-                id: product._id
+                id: product._id,
+                key: product._id
             };
         })
         const columns = [
             {
                 title: 'Name', 
                 dataIndex: 'name', 
-                key: 'name'
+                key: 'name',
+                filters: names.map(prod => ({text: prod.name, value: prod.name}))
             }, {
                 title: 'Created At',
                 dataIndex: 'created_at',
-                key: 'created_at'
+                key: 'created_at',
+                defaultSortOrder: 'descend',
+                sorter: (a, b) => new Date(a.created_at) - new Date(b.created_at),
             }, {
                 title: 'Update At',
                 dataIndex: 'updated_at',
-                key: 'updated_at'
-            }]
+                key: 'updated_at',
+                sorter: (a, b) => new Date(a.updated_at) - new Date(b.updated_at),
+            }
+        ]
         columns.push({
             title: 'Make a Copy',
             key: 'name',
@@ -92,7 +94,6 @@ class ProductList extends Component {
             fixed: 'right',
             width: 100,
             render: (item) => {
-                console.log(item, item.id)
                 return (<a onClick={async (e) => {
                     let a = await this.props.setFormData({ formData: item.data })
                     if (typeof a === 'object') {
