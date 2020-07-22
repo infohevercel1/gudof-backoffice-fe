@@ -49,11 +49,7 @@ class Products extends Component {
   submitHandler = async () => {
   try {
     let name = '', formData = this.props.formData;
-    if(formData.manuf && formData.model) {
-      name = `${formData.manuf}-${formData.model}`;
-    } else {
-      name = `product-for-template-${this.state.templateId}`;
-    }
+    name = `${formData.manuf}-${formData.model}`;
     const body = {
       template_id: this.state.templateId,
       category_id: this.state.categoryId,
@@ -91,6 +87,7 @@ class Products extends Component {
         <Card variant="elevation" raised className="card">
           <h4>Form Page</h4>
           <FormView
+            formData={this.props.formData}
             schema={this.props.schema}
             onSubmit={this.submitHandler}
           />
