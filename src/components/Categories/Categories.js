@@ -42,6 +42,11 @@ class Categories extends Component {
         categories.splice(i, 1); // Removing an erroneous null value. Will be omitted after backend changes.
         for (var i = 0; i < categories.length; i++) {
           categories[i].title = categories[i].name
+          try {
+            const { data: products } = await axios.get("https://infohebackoffice.herokuapp.com/product/category/"+categories[i]._id)
+            categories[i].products = products.length
+          } catch (e) {
+          }
         }
 
         function getKey(node) {
@@ -53,7 +58,6 @@ class Categories extends Component {
         }
 
         const tree = getTreeFromFlatData({flatData: categories, getKey, getParentKey, rootKey: null})
-        console.log(tree)
 
         categories = tree; //populate this from API.
         this.setState({ categories });
@@ -199,6 +203,18 @@ class Categories extends Component {
                     View/Edit Template
                   </Button>),
                   (<Button
+                    key={`addprod-${node._id}`}
+                    href={`/addproduct?category=${node._id}&template=${node.template_id}`}
+                  >
+                    Add Product
+                  </Button>),
+                  (<Button
+                    key={`editprod-${node._id}`}
+                    href={`/product?category=${node._id}`}
+                  >
+                    View/Edit Product
+                  </Button>)],
+                  (node.products === 0 && node.template_id !== null) ? (<Button
                     key={`remove-${node._id}`}
                     onClick={async (event) => {
                       const resp = await axios.delete(`https://infohebackoffice.herokuapp.com/templates/${node.template_id}`)
@@ -214,24 +230,12 @@ class Categories extends Component {
                             cat.template_id = null;
                           }
                         })
-                        this.setState({categories})
+                        this.setState({ categories })
                       }
                     }}
                   >
                     Remove Template
-                  </Button>),
-                  (<Button
-                    key={`addprod-${node._id}`}
-                    href={`/addproduct?category=${node._id}&template=${node.template_id}`}
-                  >
-                    Add Product
-                  </Button>),
-                  (<Button
-                    key={`editprod-${node._id}`}
-                    href={`/product?category=${node._id}`}
-                  >
-                    View/Edit Product
-                  </Button>)]
+                  </Button>) : null
                 ],
               })}
             />

@@ -62,7 +62,6 @@ class Products extends Component {
         body
       );
     }
-    console.log(data)
     if (data.status === 201 || data.status === 200) {
       notification['success']({
           message: 'Product Added',
