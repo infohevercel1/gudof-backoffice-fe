@@ -32,6 +32,7 @@ class ProductList extends Component {
                 key: key
             }
         })
+        console.log(data)
         this.setState({products: data, columns})
     }
 

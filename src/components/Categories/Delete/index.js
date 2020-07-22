@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Modal, Input } from 'antd';
+import React from 'react';
+import { Modal } from 'antd';
 
 const DeleteCategoryModal = ({ visibility, setVisibility, deleteCategory }) => {
 

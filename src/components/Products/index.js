@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import Form from "@rjsf/core";
 import { connect } from 'react-redux';
 import { Card, Snackbar } from '@material-ui/core';
 import { Alert as MuiAlert } from "@material-ui/lab";
@@ -48,29 +47,42 @@ class Products extends Component {
   }
 
   submitHandler = async () => {
+  try {
+    let name = '', formData = this.props.formData;
+    if(formData.manuf && formData.model) {
+      name = `${formData.manuf}-${formData.model}`;
+    } else {
+      name = `product-for-template-${this.state.templateId}`;
+    }
     const body = {
       template_id: this.state.templateId,
       category_id: this.state.categoryId,
-      data: JSON.stringify(this.props.formData),
+      data: JSON.stringify(formData),
+      name
     };
-    console.log(this.props.formData)
     const data = await axios.post(
-      "https://infohebackoffice.herokuapp.com/product",
-      body
-    );
+        "https://infohebackoffice.herokuapp.com/product",
+        body
+      );
     if (data.status === 201) {
       notification['success']({
-        message: 'Product Added',
-        description:
-          'The product has been added to the database!',
-      });
-      this.props.setFormData({})
+          message: 'Product Added',
+          description:
+            'The product has been added to the database!',
+        });
+      this.props.setFormData({formData: {}})
     } else {
       notification['error']({
         message: 'An Error Occurred',
         description: 'The product was not saved to the database. Please try again later.'
       })
     }
+  } catch (e) {
+    notification['error']({
+      message: 'An Error Occurred',
+      description: 'The product was not saved to the database. Please try again later.'
+    })
+  }
   };
 
   render() {
