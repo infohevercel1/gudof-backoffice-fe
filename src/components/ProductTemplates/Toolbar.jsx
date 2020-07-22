@@ -45,9 +45,10 @@ class Toolbar extends React.Component {
         }
       },
       uiSchema = {}
-      // const { data: category } = await axios.get('https://infohebackoffice.herokuapp.com/category')
+      const { data: category } = await axios.get('https://infohebackoffice.herokuapp.com/categories/'+this.state.categoryId)
+      console.log(category)
       // Will receive category_name to add in name of template
-      let name=`template-${templateProperties.categoryId}`;
+      let name=`${category.name}-template`;
       this.props.setTree({name, schema, uiSchema});
     }
   }
