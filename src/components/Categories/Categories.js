@@ -39,7 +39,6 @@ class Categories extends Component {
     async componentDidMount () {
         const {data} = await axios.get("https://infohebackoffice.herokuapp.com/categories")
         let categories = data;
-        categories.splice(i, 1); // Removing an erroneous null value. Will be omitted after backend changes.
         for (var i = 0; i < categories.length; i++) {
           categories[i].title = categories[i].name
           try {
@@ -48,7 +47,7 @@ class Categories extends Component {
           } catch (e) {
           }
         }
-
+        
         function getKey(node) {
           return node._id;
         }
@@ -112,7 +111,7 @@ class Categories extends Component {
       const newNode = {
         title,
         parent_id: node ? node._id : null,
-        path: node.path + '/' + title, 
+        path: node ? node.path + '/' + title : title, 
       };
 
       if(node === null) {
