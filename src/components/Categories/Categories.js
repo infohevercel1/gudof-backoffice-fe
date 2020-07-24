@@ -42,7 +42,6 @@ class Categories extends Component {
     async componentDidMount () {
         const {data} = await axios.get("https://infohebackoffice.herokuapp.com/categories")
         let categories = data;
-        console.log(categories);
         for (var i = 0; i < categories.length; i++) {
           if (categories[i] === null) {
             categories.splice(i, 1);
