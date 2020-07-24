@@ -5,7 +5,7 @@ import './Categories.css';
 import SortableTree from 'react-sortable-tree';
 import { getTreeFromFlatData, addNodeUnderParent, removeNodeAtPath, removeNode } from "react-sortable-tree";
 import "react-sortable-tree/style.css";
-import { notification, Button } from 'antd';
+import { notification, Button, Input } from 'antd';
 
 import NewCategoryModal from './New';
 import DeleteCategoryModal  from './Delete';
@@ -14,6 +14,9 @@ class Categories extends Component {
     constructor(props) {
         super(props)
         this.state = {
+          searchString: '',
+          searchFocusIndex: 0,
+          searchFoundCount: null,
           categories: [],
           newCategory: {
             ModalVisiblity: false,
@@ -40,6 +43,7 @@ class Categories extends Component {
         const {data} = await axios.get("https://infohebackoffice.herokuapp.com/categories")
         let categories = data;
         categories.splice(i, 1); // Removing an erroneous null value. Will be omitted after backend changes.
+        console.log(categories)
         for (var i = 0; i < categories.length; i++) {
           categories[i].title = categories[i].name
           try {
@@ -112,8 +116,10 @@ class Categories extends Component {
       const newNode = {
         title,
         parent_id: node ? node._id : null,
-        path: node.path + '/' + title, 
+        path: node ? node.path + '/' + title : title, 
       };
+
+      console.log(newNode)
 
       if(node === null) {
         this.setState(state => ({
@@ -160,9 +166,69 @@ class Categories extends Component {
     }
 
     render() {
+      const { searchString, searchFocusIndex, searchFoundCount } = this.state;
+      // Case insensitive search of `node.title`
+      const customSearchMethod = ({ node, searchQuery }) =>
+        searchQuery &&
+        node.title.toLowerCase().indexOf(searchQuery.toLowerCase()) > -1;
+
+      const selectPrevMatch = () =>
+        this.setState({
+          searchFocusIndex:
+            searchFocusIndex !== null
+              ? (searchFoundCount + searchFocusIndex - 1) % searchFoundCount
+              : searchFoundCount - 1,
+        });
+
+      const selectNextMatch = () =>
+        this.setState({
+          searchFocusIndex:
+            searchFocusIndex !== null
+              ? (searchFocusIndex + 1) % searchFoundCount
+              : 0,
+        });
         return (
           <div className="Categories">
             <h3>List of Categories</h3>
+            <form
+              style={{ display: 'flex', width: '60%' }}
+              onSubmit={event => {
+                event.preventDefault();
+              }}
+            >
+              <Input
+                id="find-box"
+                type="text"
+                placeholder="Search..."
+                value={searchString}
+                onChange={event =>
+                  this.setState({ searchString: event.target.value })
+                }
+              />
+
+              <button
+                type="button"
+                disabled={!searchFoundCount}
+                onClick={selectPrevMatch}
+              >
+                &lt;
+          </button>
+
+              <button
+                type="submit"
+                disabled={!searchFoundCount}
+                onClick={selectNextMatch}
+              >
+                &gt;
+          </button>
+
+              <span>
+                &nbsp;
+            {searchFoundCount > 0 ? searchFocusIndex + 1 : 0}
+            &nbsp;/&nbsp;
+            {searchFoundCount || 0}
+              </span>
+            </form>
             <Button
               type="primary"
               onClick={() => {
@@ -238,6 +304,27 @@ class Categories extends Component {
                   </Button>) : null
                 ],
               })}
+              searchMethod={customSearchMethod}
+              //
+              // The query string used in the search. This is required for searching.
+              searchQuery={searchString}
+              //
+              // When matches are found, this property lets you highlight a specific
+              // match and scroll to it. This is optional.
+              searchFocusOffset={searchFocusIndex}
+              //
+              // This callback returns the matches from the search,
+              // including their `node`s, `treeIndex`es, and `path`s
+              // Here I just use it to note how many matches were found.
+              // This is optional, but without it, the only thing searches
+              // do natively is outline the matching nodes.
+              searchFinishCallback={matches =>
+                this.setState({
+                  searchFoundCount: matches.length,
+                  searchFocusIndex:
+                    matches.length > 0 ? searchFocusIndex % matches.length : 0,
+                })
+              }
             />
             <NewCategoryModal
               visibility={this.state.newCategory.ModalVisiblity}
