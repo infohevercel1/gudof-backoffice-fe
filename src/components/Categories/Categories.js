@@ -42,9 +42,13 @@ class Categories extends Component {
     async componentDidMount () {
         const {data} = await axios.get("https://infohebackoffice.herokuapp.com/categories")
         let categories = data;
-        categories.splice(i, 1); // Removing an erroneous null value. Will be omitted after backend changes.
-        console.log(categories)
+        console.log(categories);
         for (var i = 0; i < categories.length; i++) {
+          if (categories[i] === null) {
+            categories.splice(i, 1);
+            i--;
+            continue;
+          }
           categories[i].title = categories[i].name
           try {
             const { data: products } = await axios.get("https://infohebackoffice.herokuapp.com/product/category/"+categories[i]._id)
@@ -52,7 +56,7 @@ class Categories extends Component {
           } catch (e) {
           }
         }
-
+        
         function getKey(node) {
           return node._id;
         }
@@ -62,7 +66,7 @@ class Categories extends Component {
         }
 
         const tree = getTreeFromFlatData({flatData: categories, getKey, getParentKey, rootKey: null})
-
+        console.log(tree)
         categories = tree; //populate this from API.
         this.setState({ categories });
     }
@@ -89,8 +93,11 @@ class Categories extends Component {
               description:
                 'The new category has been added to the database!',
             });
+            return true;
+          } else {
+            return false;
           }
-        })
+        }).catch(e => false)
     }
 
     newModalVisibility (bool, node, path) {
@@ -102,11 +109,12 @@ class Categories extends Component {
       if(path) {
         newCategory.path = path
       }
+      console.log(newCategory)
       this.setState({newCategory})
     }
 
     // Redundant function. Saved for new Category Modal
-    saveNewCategory (name) {
+    async saveNewCategory (name) {
       const getNodeKey = ({ treeIndex }) => treeIndex;
       let newCategory = this.state.newCategory
       let {node, path} = newCategory, title = name
@@ -121,6 +129,15 @@ class Categories extends Component {
 
       console.log(newNode)
 
+      const savedToBackend = await this.saveToBackend(newNode)
+      console.log(savedToBackend)
+      if (!savedToBackend) {
+        return notification['error']({
+          message: 'An Error Occurred',
+          description:
+            'The new category was not added to the database!',
+        });
+      }
       if(node === null) {
         this.setState(state => ({
           categories: state.categories.concat(newNode),
@@ -137,7 +154,6 @@ class Categories extends Component {
           }).treeData,
         }));
       }
-      this.saveToBackend(newNode);
     }
 
     deleteModalVisibility(bool, node, path) {
@@ -167,11 +183,7 @@ class Categories extends Component {
 
     render() {
       const { searchString, searchFocusIndex, searchFoundCount } = this.state;
-      // Case insensitive search of `node.title`
-      const customSearchMethod = ({ node, searchQuery }) =>
-        searchQuery &&
-        node.title.toLowerCase().indexOf(searchQuery.toLowerCase()) > -1;
-
+      
       const selectPrevMatch = () =>
         this.setState({
           searchFocusIndex:
@@ -244,14 +256,14 @@ class Categories extends Component {
                 buttons: [
                   <Button
                     onClick={async () => {
-                      console.log(node)
+                      console.log(node, !node.children, node.template_id)
                       this.newModalVisibility(true, node, path)
                     }}
                   >
                     Add Child
                   </Button>,
                   // If a category has children or a category has an existing template, it cannot be deleted. 
-                  (!node.children && node.template_id === null) ? (<Button
+                  (!node.children && node.template_id == null) ? (<Button
                     onClick={(event) => {
                       this.deleteModalVisibility(true, node, path)
                     }
@@ -288,7 +300,7 @@ class Categories extends Component {
                         notification['success']({
                           message: 'Template Deleted',
                           description:
-                            'The template has been removed from the database!',
+                          'The template has been removed from the database!',
                         });
                         let categories = this.state.categories;
                         categories.forEach(cat => {
@@ -304,7 +316,7 @@ class Categories extends Component {
                   </Button>) : null
                 ],
               })}
-              searchMethod={customSearchMethod}
+              // searchMethod={customSearchMethod}
               //
               // The query string used in the search. This is required for searching.
               searchQuery={searchString}
@@ -322,7 +334,7 @@ class Categories extends Component {
                 this.setState({
                   searchFoundCount: matches.length,
                   searchFocusIndex:
-                    matches.length > 0 ? searchFocusIndex % matches.length : 0,
+                  matches.length > 0 ? searchFocusIndex % matches.length : 0,
                 })
               }
             />
@@ -338,7 +350,12 @@ class Categories extends Component {
             />
           </div>
         );
-    }
+      }
 }
 
 export default Categories;
+
+// // Case insensitive search of `node.title`
+// const customSearchMethod = ({ node, searchQuery }) =>
+//   searchQuery &&
+//   node.title.toLowerCase().indexOf(searchQuery.toLowerCase()) > -1;

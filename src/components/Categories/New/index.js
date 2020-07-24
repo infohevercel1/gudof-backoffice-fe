@@ -6,7 +6,9 @@ const NewCategoryModal = ({ visibility, setVisibility, saveNewCategory }) => {
     let [name, setName] = useState('')
 
     const handleOk = e => {
-        saveNewCategory(name)
+        let newName = name
+        setName('')
+        saveNewCategory(newName)
         setVisibility(false)
     };
 
