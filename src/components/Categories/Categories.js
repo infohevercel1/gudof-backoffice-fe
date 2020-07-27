@@ -42,7 +42,6 @@ class Categories extends Component {
     async componentDidMount () {
         const {data} = await axios.get("https://infohebackoffice.herokuapp.com/categories")
         let categories = data;
-        console.log(categories);
         for (var i = 0; i < categories.length; i++) {
           // To remove certain null values. This bug had been rectified in the backend.
           // Condition still kept as a double check
