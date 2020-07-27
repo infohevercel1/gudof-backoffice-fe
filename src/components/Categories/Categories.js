@@ -44,17 +44,14 @@ class Categories extends Component {
         let categories = data;
         console.log(categories);
         for (var i = 0; i < categories.length; i++) {
+          // To remove certain null values. This bug had been rectified in the backend.
+          // Condition still kept as a double check
           if (categories[i] === null) {
             categories.splice(i, 1);
             i--;
             continue;
           }
           categories[i].title = categories[i].name
-          try {
-            const { data: products } = await axios.get("https://infohebackoffice.herokuapp.com/product/category/"+categories[i]._id)
-            categories[i].products = products.length
-          } catch (e) {
-          }
         }
         
         function getKey(node) {
@@ -103,13 +100,14 @@ class Categories extends Component {
     newModalVisibility (bool, node, path) {
       let newCategory = this.state.newCategory
       newCategory.ModalVisiblity = bool
+      // We need to save the node and path of the current node so that
+      // the modal will send the data and we can have the parent_id to send to the backend. 
       if(node) {
         newCategory.node = node
       }
       if(path) {
         newCategory.path = path
       }
-      console.log(newCategory)
       this.setState({newCategory})
     }
 
@@ -118,6 +116,7 @@ class Categories extends Component {
       const getNodeKey = ({ treeIndex }) => treeIndex;
       let newCategory = this.state.newCategory
       let {node, path} = newCategory, title = name
+
       if (!title) {
         return;
       }
@@ -126,16 +125,15 @@ class Categories extends Component {
         parent_id: node ? node._id : null,
         path: node ? node.path + '/' + title : title, 
       };
-
-      console.log(newNode)
-
+      
+      console.log(newNode, node)
+      
       const savedToBackend = await this.saveToBackend(newNode)
       console.log(savedToBackend)
       if (!savedToBackend) {
         return notification['error']({
           message: 'An Error Occurred',
-          description:
-            'The new category was not added to the database!',
+          description: 'The new category was not added to the database!',
         });
       }
       if(node === null) {
@@ -154,6 +152,17 @@ class Categories extends Component {
           }).treeData,
         }));
       }
+      // After addition of the new node, the newCategory variable in state needs to be updated.
+      // BUG: This code is not working. newCategory is not updated.
+      newCategory.ModalVisiblity = false
+      if (node) {
+        newCategory.node = node
+      }
+      if (path) {
+        newCategory.path = path
+      }
+      this.setState({ newCategory })
+      // Buggy code ends
     }
 
     deleteModalVisibility(bool, node, path) {
@@ -182,6 +191,7 @@ class Categories extends Component {
     }
 
     render() {
+      console.log(this.state.newCategory)
       const { searchString, searchFocusIndex, searchFoundCount } = this.state;
       
       const selectPrevMatch = () =>
@@ -244,7 +254,7 @@ class Categories extends Component {
             <Button
               type="primary"
               onClick={() => {
-                this.newModalVisibility(true)
+                this.newModalVisibility(true, null, null)
               }}
             >
               Add New Category
@@ -256,7 +266,6 @@ class Categories extends Component {
                 buttons: [
                   <Button
                     onClick={async () => {
-                      console.log(node, !node.children, node.template_id)
                       this.newModalVisibility(true, node, path)
                     }}
                   >
