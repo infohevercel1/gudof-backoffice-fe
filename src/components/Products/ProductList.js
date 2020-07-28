@@ -79,10 +79,11 @@ class ProductList extends Component {
             width: 100,
             render: (item) => {
                 return (<a onClick={async (e) => {
+                    // console.log(item)
                     let a = await this.props.setFormData({ formData: item.data });
                     if (typeof a === 'object') {
                         setTimeout(() => {
-                            let path = `addproduct?category=${this.state.categoryId}&template=${item.template._id}`;
+                            let path = `addproduct?category=${this.state.categoryId}&template=${item.template}`;
                             window.location.href = path;
                         }, 1000)
                     }
@@ -98,12 +99,33 @@ class ProductList extends Component {
                     let a = await this.props.setFormData({ formData: item.data })
                     if (typeof a === 'object') {
                         setTimeout(() => {
-                            let path = `addproduct?category=${this.state.categoryId}&template=${item.template._id}&product=${item.id}`
+                            let path = `addproduct?category=${this.state.categoryId}&template=${item.template}&product=${item.id}`
                             window.location.href = path;
                         }, 1000)
                     }
                 }}>Edit</a>)
             },
+        }, {
+            title: 'Remove Product',
+            key: 'name',
+            fixed: 'right',
+            width: 100,
+            render: (item) => {
+                return (<a onClick={async (e) => {
+                    const resp = await axios.delete(`https://infohebackoffice.herokuapp.com/product/${this.state.categoryId}/${item.id}`)
+                    if(resp.status === 204) {
+                        notification['success']({
+                            message: 'Product Deleted',
+                            description: 'This product was deleted from the database.'
+                        })
+                    } else {
+                        notification['error']({
+                            message: 'An Error Occurred',
+                            description: 'There was an error while deleting this product.'
+                        })
+                    }
+                }}>Remove Product</a>)
+            }
         })
         this.setState({products: {data, names}, columns})
     } catch (e) {
@@ -121,12 +143,14 @@ class ProductList extends Component {
         <div style={{ display: 'flex' }}>
             <Table dataSource={this.state.products.names} columns={this.state.columns} />
         </div>
-        <Button
-            style={{marginLeft: '45%'}}
-            href={`/addproduct?template=${this.state.templateId}&category=${this.state.categoryId}`}
-        >
+        {this.state.categoryId && this.state.templateId ? (
+            <Button
+                style={{marginLeft: '45%'}}
+                href={`/addproduct?template=${this.state.templateId}&category=${this.state.categoryId}`}
+            >
             Add Product
-        </Button>
+            </Button>
+        ): null}
         </div>
         )
     }
