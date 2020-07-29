@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import axios from 'axios';
+import {instance as api} from '../../axios';
 import { connect } from 'react-redux';
 import { Card } from '@material-ui/core';
 import { FormView } from '../ProductTemplates/views/index';
@@ -29,9 +29,7 @@ class Products extends Component {
     if (productId !== null) {
       this.setState({ productId })
     }
-    const { data: template } = await axios.get(
-      "https://infohebackoffice.herokuapp.com/templates/" + templateId
-    );
+    const { data: template } = await api.get("/templates/" + templateId);
     if (categoryId === 'null') {
       categoryId = template.category_id
     }
@@ -52,15 +50,9 @@ class Products extends Component {
     let data;
     if (this.state.productId !== null) {
       body.id = this.state.productId
-      data = await axios.patch(
-        "https://infohebackoffice.herokuapp.com/product",
-        body
-      );
+      data = await api.patch("/product", body);
     } else {
-      data = await axios.post(
-        "https://infohebackoffice.herokuapp.com/product",
-        body
-      );
+      data = await api.post("/product", body);
     }
     if (data.status === 201 || data.status === 200) {
       notification['success']({

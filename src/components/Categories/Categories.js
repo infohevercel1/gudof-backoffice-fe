@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import axios from 'axios';
+import {instance as api} from '../../axios';
 import './Categories.css';
 // after
 import SortableTree from 'react-sortable-tree';
@@ -40,7 +40,7 @@ class Categories extends Component {
     }
 
     async componentDidMount () {
-        const {data} = await axios.get("https://infohebackoffice.herokuapp.com/categories")
+        const {data} = await api.get("/categories")
         let categories = data;
         for (var i = 0; i < categories.length; i++) {
           // To remove certain null values. This bug had been rectified in the backend.
@@ -68,7 +68,7 @@ class Categories extends Component {
     }
 
     async deleteFromBackend (id) {
-      const resp = await axios.delete('https://infohebackoffice.herokuapp.com/categories/'+id)
+      const resp = await api.delete('/categories/'+id)
       if (resp.status === 204) {
         notification['success']({
           message: 'Category Deleted',
@@ -81,7 +81,7 @@ class Categories extends Component {
     saveToBackend (newNode) {
       let newCategory = this.state.newCategory;
       this.setState({newCategory})
-      return axios.post("https://infohebackoffice.herokuapp.com/categories", {...newNode, name: newNode.title})
+      return api.post("/categories", {...newNode, name: newNode.title})
         .then(resp => {
           if(resp.status === 201) {
             notification['success']({
@@ -303,7 +303,7 @@ class Categories extends Component {
                   (node.products === 0 && node.template_id !== null) ? (<Button
                     key={`remove-${node._id}`}
                     onClick={async (event) => {
-                      const resp = await axios.delete(`https://infohebackoffice.herokuapp.com/templates/${node.template_id}`)
+                      const resp = await api.delete(`/templates/${node.template_id}`)
                       if (resp.status === 204) {
                         notification['success']({
                           message: 'Template Deleted',

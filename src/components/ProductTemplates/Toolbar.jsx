@@ -1,5 +1,5 @@
 import React from 'react';
-import axios from "axios";
+import {instance as api} from "../../axios";
 import { connect } from 'react-redux';
 import { Button, Tooltip, Select, Modal, notification, List } from 'antd';
 import { FileAddOutlined, FolderOpenOutlined, SaveOutlined, UndoOutlined, RedoOutlined } from '@ant-design/icons';
@@ -20,8 +20,8 @@ class Toolbar extends React.Component {
   }
 
   async componentDidMount() {
-    const { data: templates } = await axios.get(
-      "https://infohebackoffice.herokuapp.com/templates"
+    const { data: templates } = await api.get(
+      "/templates"
     );
     const templateProperties = {
       categoryId: this.props.category,
@@ -45,7 +45,7 @@ class Toolbar extends React.Component {
         }
       },
       uiSchema = {}
-      const { data: category } = await axios.get('https://infohebackoffice.herokuapp.com/categories/'+this.state.categoryId)
+      const { data: category } = await api.get('/categories/'+this.state.categoryId)
       console.log(category)
       // Will receive category_name to add in name of template
       let name=`${category.name}-template`;
@@ -69,13 +69,13 @@ class Toolbar extends React.Component {
       let resp;
       console.log(body)
       if(this.state.templateId === null) {
-        resp = await axios.post(
-          "https://infohebackoffice.herokuapp.com/templates",
+        resp = await api.post(
+          "/templates",
           body
         );
       } else {
-        resp = await axios.patch(
-          "https://infohebackoffice.herokuapp.com/templates",
+        resp = await api.patch(
+          "/templates",
           body
         );
       }
@@ -97,8 +97,8 @@ class Toolbar extends React.Component {
   };
 
   showTemplates = async () => {
-    let { data: categories } = await axios.get(
-      "https://infohebackoffice.herokuapp.com/categories"
+    let { data: categories } = await api.get(
+      "/categories"
     );
     categories = categories.filter(category => category !== null && category.template_id !== null)
     this.setState({
