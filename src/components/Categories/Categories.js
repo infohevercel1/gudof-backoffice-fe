@@ -3,7 +3,7 @@ import {instance as api} from '../../axios';
 import './Categories.css';
 // after
 import SortableTree from 'react-sortable-tree';
-import { getTreeFromFlatData, addNodeUnderParent, removeNodeAtPath, removeNode } from "react-sortable-tree";
+import { getTreeFromFlatData, addNodeUnderParent, removeNodeAtPath } from "react-sortable-tree";
 import "react-sortable-tree/style.css";
 import { notification, Button, Input } from 'antd';
 

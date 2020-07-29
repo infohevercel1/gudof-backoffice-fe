@@ -80,7 +80,7 @@ class ProductList extends Component {
             fixed: 'right',
             width: 100,
             render: (item) => {
-                return (<a onClick={async (e) => {
+                return (<span onClick={async (e) => {
                     console.log(item)
                     let a = await this.props.setFormData({ formData: item.data });
                     // Due to asynchronous behaviour, the above line does not work without the setTimeout 
@@ -90,7 +90,7 @@ class ProductList extends Component {
                             window.location.href = path;
                         }, 1000)
                     }
-                }}>Make a Copy</a>)
+                }}>Make a Copy</span>)
             },
         }, {
             title: 'Edit',
@@ -98,7 +98,7 @@ class ProductList extends Component {
             fixed: 'right',
             width: 100,
             render: (item) => {
-                return (<a
+                return (<span
                     onClick={async (e) => {
                     let a = await this.props.setFormData({ formData: item.data })
                     // Due to asynchronous behaviour, the above line does not work without the setTimeout
@@ -108,7 +108,7 @@ class ProductList extends Component {
                             window.location.href = path;
                         }, 1000)
                     }
-                }}>Edit</a>)
+                }}>Edit</span>)
             },
         }, {
             title: 'Remove Product',
@@ -116,7 +116,7 @@ class ProductList extends Component {
             fixed: 'right',
             width: 100,
             render: (item) => {
-                return (<a onClick={async (e) => {
+                return (<span onClick={async (e) => {
                     const resp = await api.delete(`/product/${item.category._id}/${item.id}`)
                     if(resp.status === 204) {
                         notification['success']({
@@ -129,7 +129,7 @@ class ProductList extends Component {
                             description: 'There was an error while deleting this product.'
                         })
                     }
-                }}>Remove Product</a>)
+                }}>Remove Product</span>)
             }
         })
         this.setState({products: {data, names}, columns})

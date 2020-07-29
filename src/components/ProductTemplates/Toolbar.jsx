@@ -1,8 +1,8 @@
 import React from 'react';
 import {instance as api} from "../../axios";
 import { connect } from 'react-redux';
-import { Button, Tooltip, Select, Modal, notification, List } from 'antd';
-import { FileAddOutlined, FolderOpenOutlined, SaveOutlined, UndoOutlined, RedoOutlined } from '@ant-design/icons';
+import { Button, Tooltip, Modal, notification, List } from 'antd';
+import { FolderOpenOutlined, SaveOutlined, UndoOutlined, RedoOutlined } from '@ant-design/icons';
 import { ActionTypes } from 'redux-undo';
 import './index.css';
 
@@ -124,7 +124,7 @@ class Toolbar extends React.Component {
   }
 
   render() {
-    const { tree, undo, redo, settings, updateSettings, newForm } = this.props;
+    const { tree, undo, redo } = this.props;
     const { past, future } = tree;
     return (
       <span>
