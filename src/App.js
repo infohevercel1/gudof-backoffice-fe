@@ -17,8 +17,6 @@ import {
   DatabaseFilled,
 } from "@ant-design/icons";
 
-const { SubMenu } = Menu;
-
 class App extends Component {
   constructor(props) {
     super(props);

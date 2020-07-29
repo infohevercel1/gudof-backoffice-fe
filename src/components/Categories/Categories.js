@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import axios from 'axios';
+import {instance as api} from '../../axios';
 import './Categories.css';
 // after
 import SortableTree from 'react-sortable-tree';
-import { getTreeFromFlatData, addNodeUnderParent, removeNodeAtPath, removeNode } from "react-sortable-tree";
+import { getTreeFromFlatData, addNodeUnderParent, removeNodeAtPath } from "react-sortable-tree";
 import "react-sortable-tree/style.css";
-import { notification, Button } from 'antd';
+import { notification, Button, Input } from 'antd';
 
 import NewCategoryModal from './New';
 import DeleteCategoryModal  from './Delete';
@@ -14,6 +14,9 @@ class Categories extends Component {
     constructor(props) {
         super(props)
         this.state = {
+          searchString: '',
+          searchFocusIndex: 0,
+          searchFoundCount: null,
           categories: [],
           newCategory: {
             ModalVisiblity: false,
@@ -37,15 +40,17 @@ class Categories extends Component {
     }
 
     async componentDidMount () {
-        const {data} = await axios.get("https://infohebackoffice.herokuapp.com/categories")
+        const {data} = await api.get("/categories")
         let categories = data;
         for (var i = 0; i < categories.length; i++) {
-          categories[i].title = categories[i].name
-          try {
-            const { data: products } = await axios.get("https://infohebackoffice.herokuapp.com/product/category/"+categories[i]._id)
-            categories[i].products = products.length
-          } catch (e) {
+          // To remove certain null values. This bug had been rectified in the backend.
+          // Condition still kept as a double check
+          if (categories[i] === null) {
+            categories.splice(i, 1);
+            i--;
+            continue;
           }
+          categories[i].title = categories[i].name
         }
         
         function getKey(node) {
@@ -57,13 +62,13 @@ class Categories extends Component {
         }
 
         const tree = getTreeFromFlatData({flatData: categories, getKey, getParentKey, rootKey: null})
-
+        console.log(tree)
         categories = tree; //populate this from API.
         this.setState({ categories });
     }
 
     async deleteFromBackend (id) {
-      const resp = await axios.delete('https://infohebackoffice.herokuapp.com/categories/'+id)
+      const resp = await api.delete('/categories/'+id)
       if (resp.status === 204) {
         notification['success']({
           message: 'Category Deleted',
@@ -76,7 +81,7 @@ class Categories extends Component {
     saveToBackend (newNode) {
       let newCategory = this.state.newCategory;
       this.setState({newCategory})
-      return axios.post("https://infohebackoffice.herokuapp.com/categories", {...newNode, name: newNode.title})
+      return api.post("/categories", {...newNode, name: newNode.title})
         .then(resp => {
           if(resp.status === 201) {
             notification['success']({
@@ -84,13 +89,18 @@ class Categories extends Component {
               description:
                 'The new category has been added to the database!',
             });
+            return true;
+          } else {
+            return false;
           }
-        })
+        }).catch(e => false)
     }
 
     newModalVisibility (bool, node, path) {
       let newCategory = this.state.newCategory
       newCategory.ModalVisiblity = bool
+      // We need to save the node and path of the current node so that
+      // the modal will send the data and we can have the parent_id to send to the backend. 
       if(node) {
         newCategory.node = node
       }
@@ -101,10 +111,11 @@ class Categories extends Component {
     }
 
     // Redundant function. Saved for new Category Modal
-    saveNewCategory (name) {
+    async saveNewCategory (name) {
       const getNodeKey = ({ treeIndex }) => treeIndex;
       let newCategory = this.state.newCategory
       let {node, path} = newCategory, title = name
+
       if (!title) {
         return;
       }
@@ -113,7 +124,17 @@ class Categories extends Component {
         parent_id: node ? node._id : null,
         path: node ? node.path + '/' + title : title, 
       };
-
+      
+      console.log(newNode, node)
+      
+      const savedToBackend = await this.saveToBackend(newNode)
+      console.log(savedToBackend)
+      if (!savedToBackend) {
+        return notification['error']({
+          message: 'An Error Occurred',
+          description: 'The new category was not added to the database!',
+        });
+      }
       if(node === null) {
         this.setState(state => ({
           categories: state.categories.concat(newNode),
@@ -130,7 +151,17 @@ class Categories extends Component {
           }).treeData,
         }));
       }
-      this.saveToBackend(newNode);
+      // After addition of the new node, the newCategory variable in state needs to be updated.
+      // BUG: This code is not working. newCategory is not updated.
+      newCategory.ModalVisiblity = false
+      if (node) {
+        newCategory.node = node
+      }
+      if (path) {
+        newCategory.path = path
+      }
+      this.setState({ newCategory })
+      // Buggy code ends
     }
 
     deleteModalVisibility(bool, node, path) {
@@ -159,13 +190,70 @@ class Categories extends Component {
     }
 
     render() {
+      console.log(this.state.newCategory)
+      const { searchString, searchFocusIndex, searchFoundCount } = this.state;
+      
+      const selectPrevMatch = () =>
+        this.setState({
+          searchFocusIndex:
+            searchFocusIndex !== null
+              ? (searchFoundCount + searchFocusIndex - 1) % searchFoundCount
+              : searchFoundCount - 1,
+        });
+
+      const selectNextMatch = () =>
+        this.setState({
+          searchFocusIndex:
+            searchFocusIndex !== null
+              ? (searchFocusIndex + 1) % searchFoundCount
+              : 0,
+        });
         return (
           <div className="Categories">
             <h3>List of Categories</h3>
+            <form
+              style={{ display: 'flex', width: '60%' }}
+              onSubmit={event => {
+                event.preventDefault();
+              }}
+            >
+              <Input
+                id="find-box"
+                type="text"
+                placeholder="Search..."
+                value={searchString}
+                onChange={event =>
+                  this.setState({ searchString: event.target.value })
+                }
+              />
+
+              <button
+                type="button"
+                disabled={!searchFoundCount}
+                onClick={selectPrevMatch}
+              >
+                &lt;
+          </button>
+
+              <button
+                type="submit"
+                disabled={!searchFoundCount}
+                onClick={selectNextMatch}
+              >
+                &gt;
+          </button>
+
+              <span>
+                &nbsp;
+            {searchFoundCount > 0 ? searchFocusIndex + 1 : 0}
+            &nbsp;/&nbsp;
+            {searchFoundCount || 0}
+              </span>
+            </form>
             <Button
               type="primary"
               onClick={() => {
-                this.newModalVisibility(true)
+                this.newModalVisibility(true, null, null)
               }}
             >
               Add New Category
@@ -177,14 +265,13 @@ class Categories extends Component {
                 buttons: [
                   <Button
                     onClick={async () => {
-                      console.log(node)
                       this.newModalVisibility(true, node, path)
                     }}
                   >
                     Add Child
                   </Button>,
                   // If a category has children or a category has an existing template, it cannot be deleted. 
-                  (!node.children && node.template_id === null) ? (<Button
+                  (!node.children && node.template_id == null) ? (<Button
                     onClick={(event) => {
                       this.deleteModalVisibility(true, node, path)
                     }
@@ -216,12 +303,12 @@ class Categories extends Component {
                   (node.products === 0 && node.template_id !== null) ? (<Button
                     key={`remove-${node._id}`}
                     onClick={async (event) => {
-                      const resp = await axios.delete(`https://infohebackoffice.herokuapp.com/templates/${node.template_id}`)
+                      const resp = await api.delete(`/templates/${node.template_id}`)
                       if (resp.status === 204) {
                         notification['success']({
                           message: 'Template Deleted',
                           description:
-                            'The template has been removed from the database!',
+                          'The template has been removed from the database!',
                         });
                         let categories = this.state.categories;
                         categories.forEach(cat => {
@@ -237,6 +324,27 @@ class Categories extends Component {
                   </Button>) : null
                 ],
               })}
+              // searchMethod={customSearchMethod}
+              //
+              // The query string used in the search. This is required for searching.
+              searchQuery={searchString}
+              //
+              // When matches are found, this property lets you highlight a specific
+              // match and scroll to it. This is optional.
+              searchFocusOffset={searchFocusIndex}
+              //
+              // This callback returns the matches from the search,
+              // including their `node`s, `treeIndex`es, and `path`s
+              // Here I just use it to note how many matches were found.
+              // This is optional, but without it, the only thing searches
+              // do natively is outline the matching nodes.
+              searchFinishCallback={matches =>
+                this.setState({
+                  searchFoundCount: matches.length,
+                  searchFocusIndex:
+                  matches.length > 0 ? searchFocusIndex % matches.length : 0,
+                })
+              }
             />
             <NewCategoryModal
               visibility={this.state.newCategory.ModalVisiblity}
@@ -250,7 +358,12 @@ class Categories extends Component {
             />
           </div>
         );
-    }
+      }
 }
 
 export default Categories;
+
+// // Case insensitive search of `node.title`
+// const customSearchMethod = ({ node, searchQuery }) =>
+//   searchQuery &&
+//   node.title.toLowerCase().indexOf(searchQuery.toLowerCase()) > -1;

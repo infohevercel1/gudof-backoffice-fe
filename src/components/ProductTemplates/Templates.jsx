@@ -20,6 +20,7 @@ class NewTemplate extends Component {
       const query = new URLSearchParams(this.props.location.search)
       let categoryId = query.get('category'), templateId = query.get('template')
       this.setState({categoryId, templateId})
+      this.props.setFormData({ formData: {}})
     }
     toggle = () => {
         this.setState({
@@ -115,6 +116,12 @@ class NewTemplate extends Component {
 export default connect(({ activeNodeKey, settings }) => ({
   activeNodeKey,
   settings,
+}), (dispatch) => ({
+  setFormData: ({ formData }) =>
+    dispatch({
+      type: 'FORM_DATA_SET',
+      payload: formData,
+    }),
 }))(NewTemplate);
 
 // export default NewTemplate;

@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { Table, Button, notification } from 'antd';
 import { connect } from 'react-redux';
-import axios from 'axios';
-
+import {instance as api} from '../../axios';
 import './ProductList.css';
+
 class ProductList extends Component {
     constructor (props) {
         super(props);
@@ -25,11 +25,12 @@ class ProductList extends Component {
         let products = []
         if (categoryId !== null){
             this.setState({categoryId})
-            let { data } = await axios.get("https://infohebackoffice.herokuapp.com/product/category/"+categoryId)
+            let { data } = await api.get("/product/category/"+categoryId)
             products = data
             this.setState({templateId: products[0].template})
         } else {
-            let { data } = await axios.get("https://infohebackoffice.herokuapp.com/product/")
+            let { data } = await api.get("/product/")
+            console.log(data)
             products = data
         }
         // For earlier products that didn't have any data
@@ -49,6 +50,7 @@ class ProductList extends Component {
                 created_at: product.meta.created_at,
                 updated_at: updates.length > 0 ? updates.slice(updates.length-1)[0].updated_at : '-',
                 template: product.template,
+                category: product.category,
                 id: product._id,
                 key: product._id
             };
@@ -78,15 +80,17 @@ class ProductList extends Component {
             fixed: 'right',
             width: 100,
             render: (item) => {
-                return (<a onClick={async (e) => {
+                return (<span onClick={async (e) => {
+                    console.log(item)
                     let a = await this.props.setFormData({ formData: item.data });
+                    // Due to asynchronous behaviour, the above line does not work without the setTimeout 
                     if (typeof a === 'object') {
                         setTimeout(() => {
-                            let path = `addproduct?category=${this.state.categoryId}&template=${item.template._id}`;
+                            let path = `addproduct?category=${item.category._id}&template=${item.template._id}`;
                             window.location.href = path;
                         }, 1000)
                     }
-                }}>Make a Copy</a>)
+                }}>Make a Copy</span>)
             },
         }, {
             title: 'Edit',
@@ -94,16 +98,39 @@ class ProductList extends Component {
             fixed: 'right',
             width: 100,
             render: (item) => {
-                return (<a onClick={async (e) => {
+                return (<span
+                    onClick={async (e) => {
                     let a = await this.props.setFormData({ formData: item.data })
+                    // Due to asynchronous behaviour, the above line does not work without the setTimeout
                     if (typeof a === 'object') {
                         setTimeout(() => {
-                            let path = `addproduct?category=${this.state.categoryId}&template=${item.template._id}&product=${item.id}`
+                            let path = `addproduct?category=${item.category._id}&template=${item.template._id}&product=${item.id}`
                             window.location.href = path;
                         }, 1000)
                     }
-                }}>Edit</a>)
+                }}>Edit</span>)
             },
+        }, {
+            title: 'Remove Product',
+            key: 'name',
+            fixed: 'right',
+            width: 100,
+            render: (item) => {
+                return (<span onClick={async (e) => {
+                    const resp = await api.delete(`/product/${item.category._id}/${item.id}`)
+                    if(resp.status === 204) {
+                        notification['success']({
+                            message: 'Product Deleted',
+                            description: 'This product was deleted from the database.'
+                        })
+                    } else {
+                        notification['error']({
+                            message: 'An Error Occurred',
+                            description: 'There was an error while deleting this product.'
+                        })
+                    }
+                }}>Remove Product</span>)
+            }
         })
         this.setState({products: {data, names}, columns})
     } catch (e) {
@@ -121,12 +148,14 @@ class ProductList extends Component {
         <div style={{ display: 'flex' }}>
             <Table dataSource={this.state.products.names} columns={this.state.columns} />
         </div>
-        <Button
-            style={{marginLeft: '45%'}}
-            href={`/addproduct?template=${this.state.templateId}&category=${this.state.categoryId}`}
-        >
+        {this.state.categoryId && this.state.templateId ? (
+            <Button
+                style={{marginLeft: '45%'}}
+                href={`/addproduct?template=${this.state.templateId}&category=${this.state.categoryId}`}
+            >
             Add Product
-        </Button>
+            </Button>
+        ): null}
         </div>
         )
     }
