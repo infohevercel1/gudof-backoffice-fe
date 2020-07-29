@@ -5,7 +5,7 @@ import "./index.css";
 import Category from './components/Categories/Categories';
 import Products from './components/Products';
 import NewTemplate from './components/ProductTemplates/Templates.jsx';
-import ProductList from './components/Products/ProductList';
+import ProductList from './components/Products/List/ProductList';
 
 import { Provider, connect } from "react-redux";
 import { store, persistor } from "./components/ProductTemplates/store";
@@ -43,19 +43,6 @@ class App extends Component {
             <Menu.Item key="category" icon={<UnorderedListOutlined />}>
               <Link to="/category">Categories</Link>
             </Menu.Item>
-            {/* <SubMenu
-              icon={<SettingOutlined />}
-              title="Navigation Three - Submenu"
-            >
-              <Menu.ItemGroup title="Item 1">
-                <Menu.Item key="setting:1">Option 1</Menu.Item>
-                <Menu.Item key="setting:2">Option 2</Menu.Item>
-              </Menu.ItemGroup>
-              <Menu.ItemGroup title="Item 2">
-                <Menu.Item key="setting:3">Option 3</Menu.Item>
-                <Menu.Item key="setting:4">Option 4</Menu.Item>
-              </Menu.ItemGroup>
-            </SubMenu> */}
             <Menu.Item key="template" icon={<ContainerOutlined />}>
               <Link to="/template">Product Templates</Link>
             </Menu.Item>

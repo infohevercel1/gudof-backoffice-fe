@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Table, Button, notification } from 'antd';
 import { connect } from 'react-redux';
-import {instance as api} from '../../axios';
+import {instance as api} from '../../../axios';
 import './ProductList.css';
 
 class ProductList extends Component {
