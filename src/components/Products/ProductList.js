@@ -86,7 +86,7 @@ class ProductList extends Component {
                     // Due to asynchronous behaviour, the above line does not work without the setTimeout 
                     if (typeof a === 'object') {
                         setTimeout(() => {
-                            let path = `addproduct?category=${item.category}&template=${item.template}`;
+                            let path = `addproduct?category=${item.category._id}&template=${item.template._id}`;
                             window.location.href = path;
                         }, 1000)
                     }
@@ -104,7 +104,7 @@ class ProductList extends Component {
                     // Due to asynchronous behaviour, the above line does not work without the setTimeout
                     if (typeof a === 'object') {
                         setTimeout(() => {
-                            let path = `addproduct?category=${item.category}&template=${item.template}&product=${item.id}`
+                            let path = `addproduct?category=${item.category._id}&template=${item.template._id}&product=${item.id}`
                             window.location.href = path;
                         }, 1000)
                     }
@@ -117,7 +117,7 @@ class ProductList extends Component {
             width: 100,
             render: (item) => {
                 return (<a onClick={async (e) => {
-                    const resp = await api.delete(`/product/${item.category}/${item.id}`)
+                    const resp = await api.delete(`/product/${item.category._id}/${item.id}`)
                     if(resp.status === 204) {
                         notification['success']({
                             message: 'Product Deleted',
