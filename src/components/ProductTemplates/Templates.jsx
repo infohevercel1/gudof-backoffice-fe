@@ -17,6 +17,8 @@ class NewTemplate extends Component {
         templateId: null
     };
     componentDidMount () {
+      // To remove the inline icons (Delete, etc) which are present in Template page
+      this.props.updateSettings({ isInlineMode: true })
       const query = new URLSearchParams(this.props.location.search)
       let categoryId = query.get('category'), templateId = query.get('template')
       this.setState({categoryId, templateId})
@@ -122,6 +124,11 @@ export default connect(({ activeNodeKey, settings }) => ({
       type: 'FORM_DATA_SET',
       payload: formData,
     }),
+    updateSettings: (payload) =>
+      dispatch({
+        type: 'SETTINGS_UPDATE',
+        payload,
+      }),
 }))(NewTemplate);
 
 // export default NewTemplate;

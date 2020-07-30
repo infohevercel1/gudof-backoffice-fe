@@ -33,6 +33,8 @@ class Products extends Component {
     if (categoryId === 'null') {
       categoryId = template.category_id
     }
+    // To remove the inline icons (Delete, etc) which are present in Template page
+    this.props.updateSettings({ isInlineMode: false })
     this.props.setTree(JSON.parse(template.formSchema))
     this.setState({ schema: JSON.parse(template.formSchema), templateId, categoryId });
   }
@@ -76,7 +78,6 @@ class Products extends Component {
   };
 
   render() {
-    console.log(this.props.formData)
     return (
       <div className="product">
         <h4>Form Page</h4>
@@ -94,11 +95,13 @@ class Products extends Component {
 }
 
 export default connect(({ 
+  settings,
   formData, 
   tree: {
     present: [{ schema }]
   }
 }) => ({
+  settings,
   schema,
   formData
 }), (dispatch) => ({
@@ -113,5 +116,10 @@ export default connect(({
     dispatch({
       type: 'FORM_DATA_SET',
       payload: formData,
+    }),
+  updateSettings: (payload) =>
+    dispatch({
+      type: 'SETTINGS_UPDATE',
+      payload,
     }),
 }))(Products);
