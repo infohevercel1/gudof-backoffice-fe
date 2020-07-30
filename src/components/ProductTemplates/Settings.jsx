@@ -9,9 +9,6 @@ const tipFormatter = ((flag = false) => (number) => {
 })();
 
 class Settings extends React.Component {
-    componentDidMount() {
-        this.props.updateSettings({ isInlineMode: true })
-    }
     siderWidth() {
         const { leftSiderWidth, rightSiderWidth } = this.props.settings;
         return {

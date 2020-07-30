@@ -76,7 +76,7 @@ class Toolbar extends React.Component {
       } else {
         resp = await api.patch(
           "/templates",
-          body
+          {...body, id: this.state.templateId}
         );
       }
       const response = resp.status;
@@ -85,6 +85,12 @@ class Toolbar extends React.Component {
           message: 'Template Created',
           description:
           'Your new template was added to the database.'
+        });
+      } else if (response === 200) {
+        notification.open({
+          message: 'Template Update',
+          description:
+            'Your new template was updated in the database.'
         });
       }
     } catch (e) {
