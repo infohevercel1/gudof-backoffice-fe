@@ -15,6 +15,14 @@ const basic = {
         },
         uniqueItems: true,
       },
+      array: {
+        type: 'array', 
+        title: 'Array', 
+        items: {
+          type: 'string',
+          default: 'bazinga'
+        }
+      },
       dropdown: {
         type: 'string',
         title: 'Dropdown',

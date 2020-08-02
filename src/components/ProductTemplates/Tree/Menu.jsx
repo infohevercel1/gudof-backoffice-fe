@@ -28,6 +28,7 @@ class AddItemMenu extends React.Component {
       menuOpenKeys,
       menuOpenChange,
     } = this.props;
+    console.log(menuTree, menuOpenKeys)
     return (
       <Menu mode="inline" theme="dark" openKeys={menuOpenKeys} onOpenChange={menuOpenChange}>
         {menuTree.map((a) =>
