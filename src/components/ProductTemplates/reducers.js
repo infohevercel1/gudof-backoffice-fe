@@ -1,6 +1,7 @@
 import { schema2tree, schema2node, removeNode, addNode, moveNode, updateNode, getNodeByRjsfId } from './core';
 import defaultSettings from './default/settings';
 import defaultMenuSchema from './default/menu';
+import defaultOptions from './default/options';
 import undoable from 'redux-undo';
 import { includeAction } from 'redux-undo';
 import { combineReducers } from 'redux';
@@ -114,6 +115,19 @@ function menuOpenKeys(state = [], action) {
   }
 }
 
+function options(state = defaultOptions, action) {
+  switch (action.type) {
+    case 'OPTION_SET':
+      return {
+        categoryId: action.payload.categoryId ? action.payload.categoryId : state.categoryId,
+        templateId: action.payload.templateId ? action.payload.templateId : state.templateId,
+        productId: action.payload.productId ? action.payload.productId : state.productId,
+      };
+    default:
+      return state;
+  }
+}
+
 function removeUnnecessaryHistory(reducer) {
   return (state, action) => {
     let newState = reducer(state, action);
@@ -140,6 +154,7 @@ var reducer = combineReducers({
   menu,
   formData,
   menuOpenKeys,
+  options,
 });
 
 export default function (state, action) {
