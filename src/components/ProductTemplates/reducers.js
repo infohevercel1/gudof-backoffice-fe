@@ -117,11 +117,10 @@ function menuOpenKeys(state = [], action) {
 
 function options(state = defaultOptions, action) {
   switch (action.type) {
-    case 'OPTION_SET':
+    case 'SET_OPTIONS':
       return {
-        categoryId: action.payload.categoryId ? action.payload.categoryId : state.categoryId,
-        templateId: action.payload.templateId ? action.payload.templateId : state.templateId,
-        productId: action.payload.productId ? action.payload.productId : state.productId,
+        ...state,
+        ...action.payload
       };
     default:
       return state;

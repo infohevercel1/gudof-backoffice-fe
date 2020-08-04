@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {instance as api} from '../../axios';
 import './Categories.css';
 // after
+import { connect } from "react-redux";
 import SortableTree from 'react-sortable-tree';
 import { getTreeFromFlatData, addNodeUnderParent, removeNodeAtPath } from "react-sortable-tree";
 import "react-sortable-tree/style.css";
@@ -65,6 +66,7 @@ class Categories extends Component {
         console.log(tree)
         categories = tree; //populate this from API.
         this.setState({ categories });
+        this.props.setOptions({ options: categories })
     }
 
     async deleteFromBackend (id) {
@@ -110,7 +112,6 @@ class Categories extends Component {
       this.setState({newCategory})
     }
 
-    // Redundant function. Saved for new Category Modal
     async saveNewCategory (name) {
       const getNodeKey = ({ treeIndex }) => treeIndex;
       let newCategory = this.state.newCategory
@@ -361,7 +362,17 @@ class Categories extends Component {
       }
 }
 
-export default Categories;
+// export default Categories;
+
+export default connect(({ options }) => ({
+  options
+}), (dispatch) => ({
+  setOptions: ({ options }) => 
+    dispatch({
+      type: 'SET_OPTIONS',
+      payload: options
+    })
+}))(Categories);
 
 // // Case insensitive search of `node.title`
 // const customSearchMethod = ({ node, searchQuery }) =>
