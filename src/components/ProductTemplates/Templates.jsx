@@ -23,6 +23,7 @@ class NewTemplate extends Component {
       let categoryId = query.get('category'), templateId = query.get('template')
       this.setState({categoryId, templateId})
       this.props.setFormData({ formData: {}})
+      this.props.defaultMenu();
     }
     toggle = () => {
         this.setState({
@@ -128,6 +129,11 @@ export default connect(({ activeNodeKey, settings }) => ({
       dispatch({
         type: 'SETTINGS_UPDATE',
         payload,
+      }),
+    defaultMenu: () =>
+      dispatch({
+        type: 'MENU_DEFAULT',
+        payload: {},
       }),
 }))(NewTemplate);
 

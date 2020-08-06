@@ -345,7 +345,6 @@ function _addNodeByPath(tree, [head, ...tail], position, node2Add, arrayItemsFla
     let added = false;
     for (const i in tree) {
       const cn = tree[i];
-      console.log(cn);
       if (cn.name !== head) {
         newTree.push(cn);
         continue;
@@ -366,7 +365,6 @@ function _addNodeByPath(tree, [head, ...tail], position, node2Add, arrayItemsFla
         }
 
         let newNodeChildren = [...(cn.children || []), updateNodeParentKeyAndName(node2Add, cn.key)];
-        console.log(newNodeChildren)
         if (arrayItemsFlag === 1) {
           newNodeChildren = updateArrayIndex(newNodeChildren);
         }
@@ -400,6 +398,7 @@ function _addNodeByPath(tree, [head, ...tail], position, node2Add, arrayItemsFla
     } else {
       arrayItemsFlag = 0;
     }
+    console.log(arrayItemsFlag);
     const newChildren = _addNodeByPath(node.children, tail, position, node2Add, arrayItemsFlag);
     if (newChildren === node.children) {
       // no change

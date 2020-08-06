@@ -20,6 +20,7 @@ class AddItemMenu extends React.Component {
       node2add.name,
       this.props.node.children.map((a) => a.name)
     );
+    console.log(node2add)
     addNode({ ...node2add, name });
   };
   render() {
@@ -28,7 +29,8 @@ class AddItemMenu extends React.Component {
       menuOpenKeys,
       menuOpenChange,
     } = this.props;
-    console.log(menuTree, menuOpenKeys)
+    /* A modal can be added here that can ask for the title of the List element to be added. 
+    Or a patch file will need to be replicated in the rjsf-patch for specific List element. */
     return (
       <Menu mode="inline" theme="dark" openKeys={menuOpenKeys} onOpenChange={menuOpenChange}>
         {menuTree.map((a) =>
