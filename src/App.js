@@ -5,6 +5,7 @@ import "./index.css";
 import Category from './components/Categories/Categories';
 import Products from './components/Products';
 import NewTemplate from './components/ProductTemplates/Templates.jsx';
+import List from './components/ProductTemplates/List';
 import ProductList from './components/Products/List/ProductList';
 
 import { Provider, connect } from "react-redux";
@@ -59,7 +60,7 @@ class App extends Component {
               <Link to="/category">Categories</Link>
             </Menu.Item>
             <Menu.Item key="template" icon={<ContainerOutlined />}>
-              <Link to="/template">Product Templates</Link>
+              <Link to="/viewtemplates">Product Templates</Link>
             </Menu.Item>
             <Menu.Item key="product" icon={<DatabaseFilled />}>
               <Link to="/product">Products</Link>
@@ -71,6 +72,7 @@ class App extends Component {
                 <Category />
               </Route>
               <Route path="/template" component={NewTemplate} />
+              <Route path="/viewtemplates" component={List} />
               <Route path="/product" component={ProductList} />
               <Route path="/addproduct/" component={Products} />
             </Content>
