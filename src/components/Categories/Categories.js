@@ -44,7 +44,6 @@ class Categories extends Component {
     async componentDidMount () {
         const {data} = await api.get("/categories")
         let categories = data;
-        
         for (var i = 0; i < categories.length; i++) {
           // To remove certain null values. This bug had been rectified in the backend.
           // Condition still kept as a double check
@@ -207,6 +206,12 @@ class Categories extends Component {
               : 0,
         });
 
+      const customSearchMethod = ({ node, searchQuery }) => {
+        return (
+        searchQuery &&
+        node.title.toLowerCase().indexOf(searchQuery.toLowerCase()) > -1)
+      }
+
       const searchInputChange = (event) => this.setState({ searchString: event.target.value });
       return (
         <div className="Categories">
@@ -221,6 +226,7 @@ class Categories extends Component {
             onClick={() => this.newModalVisibility(true, null, null)}
           />
           <SortableTree
+            canDrag={false}
             treeData={this.state.categories}
             onChange={(treeData) => this.setState({ categories: treeData })}
             generateNodeProps={({ node, path }) => ({
@@ -286,7 +292,9 @@ class Categories extends Component {
                 </Button>) : null
               ],
             })}
-            // searchMethod={customSearchMethod}
+            searchMethod={customSearchMethod}
+
+            // onlyExpandSearchedNodes
             //
             // The query string used in the search. This is required for searching.
             searchQuery={searchString}
@@ -336,6 +344,3 @@ export default connect(({ options }) => ({
 }))(Categories);
 
 // // Case insensitive search of `node.title`
-// const customSearchMethod = ({ node, searchQuery }) =>
-//   searchQuery &&
-//   node.title.toLowerCase().indexOf(searchQuery.toLowerCase()) > -1;

@@ -35,6 +35,7 @@ class App extends Component {
     } else {
       location = pathname.slice(1, secondslash);
     }
+    location = location === '' ? 'category' : location;
     location = location === 'addproduct' ? 'product' : location;
     this.setState({ current: location })
   }
