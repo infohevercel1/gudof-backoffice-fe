@@ -6,10 +6,11 @@ import { connect } from "react-redux";
 import SortableTree from 'react-sortable-tree';
 import { getTreeFromFlatData, addNodeUnderParent, removeNodeAtPath } from "react-sortable-tree";
 import "react-sortable-tree/style.css";
-import { notification, Button, Input } from 'antd';
+import { notification, Button } from 'antd';
 
 import NewCategoryModal from './New';
 import DeleteCategoryModal  from './Delete';
+import Search from './Search';
 
 class Categories extends Component {
     constructor(props) {
@@ -205,48 +206,17 @@ class Categories extends Component {
               ? (searchFocusIndex + 1) % searchFoundCount
               : 0,
         });
+
+      const searchInputChange = (event) => this.setState({ searchString: event.target.value });
         return (
           <div className="Categories">
             <h3>List of Categories</h3>
-            <form
-              style={{ display: 'flex', width: '60%' }}
-              onSubmit={event => {
-                event.preventDefault();
-              }}
-            >
-              <Input
-                id="find-box"
-                type="text"
-                placeholder="Search..."
-                value={searchString}
-                onChange={event =>
-                  this.setState({ searchString: event.target.value })
-                }
-              />
-
-              <button
-                type="button"
-                disabled={!searchFoundCount}
-                onClick={selectPrevMatch}
-              >
-                &lt;
-          </button>
-
-              <button
-                type="submit"
-                disabled={!searchFoundCount}
-                onClick={selectNextMatch}
-              >
-                &gt;
-          </button>
-
-              <span>
-                &nbsp;
-            {searchFoundCount > 0 ? searchFocusIndex + 1 : 0}
-            &nbsp;/&nbsp;
-            {searchFoundCount || 0}
-              </span>
-            </form>
+            <Search
+              searchParams={{searchString, searchFocusIndex, searchFoundCount}}
+              selectPrevMatch={selectPrevMatch}
+              selectNextMatch={selectNextMatch}
+              inputChange={searchInputChange}
+            />
             <Button
               type="primary"
               onClick={() => {
