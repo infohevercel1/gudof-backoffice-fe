@@ -151,7 +151,15 @@ class Toolbar extends React.Component {
         <Tooltip title="Save">
           <Button
             style={buttonStyle}
-            onClick={this.save}
+            onClick={() => {
+              Modal.confirm({
+                title: 'Confirm',
+                content: `Are you sure you want to ${this.state.templateId === null ? 'save' : 'update'} this Template?`,
+                okText: 'OK',
+                cancelText: 'Cancel',
+                onOk: () => this.save()
+              });
+            }}
             icon={<SaveOutlined />}
           />
         </Tooltip>

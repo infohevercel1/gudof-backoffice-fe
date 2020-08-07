@@ -312,16 +312,12 @@ class Categories extends Component {
               ],
             })}
             searchMethod={customSearchMethod}
-
-            // onlyExpandSearchedNodes
-            //
+            onlyExpandSearchedNodes
             // The query string used in the search. This is required for searching.
             searchQuery={searchString}
-            //
             // When matches are found, this property lets you highlight a specific
             // match and scroll to it. This is optional.
             searchFocusOffset={searchFocusIndex}
-            //
             // This callback returns the matches from the search,
             // including their `node`s, `treeIndex`es, and `path`s
             // Here I just use it to note how many matches were found.
@@ -355,8 +351,6 @@ class Categories extends Component {
     }
 }
 
-// export default Categories;
-
 export default connect(({ options }) => ({
   options
 }), (dispatch) => ({
@@ -366,5 +360,3 @@ export default connect(({ options }) => ({
       payload: options
     })
 }))(Categories);
-
-// // Case insensitive search of `node.title`
