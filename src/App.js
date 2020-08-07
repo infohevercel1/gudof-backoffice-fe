@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import './App.css';
 import "./index.css";
 import Category from './components/Categories/Categories';
@@ -46,7 +46,6 @@ class App extends Component {
 
   render() {
     const { current } = this.state;
-    console.log(current)
     return (
       <Router>
         <div className="App">
@@ -92,5 +91,3 @@ export default () => (
     </PersistGate>
   </Provider>
 );
-
-// export default App;

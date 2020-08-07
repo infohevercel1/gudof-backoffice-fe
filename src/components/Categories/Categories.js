@@ -11,7 +11,7 @@ import { notification, Button } from 'antd';
 import NewCategoryModal from './New';
 import DeleteCategoryModal  from './Delete';
 import Search from './Search';
-
+import NewRootCategory from './New/RootCategory'; 
 class Categories extends Component {
     constructor(props) {
         super(props)
@@ -208,124 +208,119 @@ class Categories extends Component {
         });
 
       const searchInputChange = (event) => this.setState({ searchString: event.target.value });
-        return (
-          <div className="Categories">
-            <h3>List of Categories</h3>
-            <Search
-              searchParams={{searchString, searchFocusIndex, searchFoundCount}}
-              selectPrevMatch={selectPrevMatch}
-              selectNextMatch={selectNextMatch}
-              inputChange={searchInputChange}
-            />
-            <Button
-              type="primary"
-              onClick={() => {
-                this.newModalVisibility(true, null, null)
-              }}
-            >
-              Add New Category
-            </Button>
-            <SortableTree
-              treeData={this.state.categories}
-              onChange={(treeData) => this.setState({ categories: treeData })}
-              generateNodeProps={({ node, path }) => ({
-                buttons: [
-                  <Button
-                    onClick={async () => {
-                      this.newModalVisibility(true, node, path)
-                    }}
-                  >
-                    Add Child
-                  </Button>,
-                  // If a category has children or a category has an existing template, it cannot be deleted. 
-                  (!node.children && node.template_id == null) ? (<Button
-                    onClick={(event) => {
-                      this.deleteModalVisibility(true, node, path)
+      return (
+        <div className="Categories">
+          <h3>List of Categories</h3>
+          <Search
+            searchParams={{searchString, searchFocusIndex, searchFoundCount}}
+            selectPrevMatch={selectPrevMatch}
+            selectNextMatch={selectNextMatch}
+            inputChange={searchInputChange}
+          />
+          <NewRootCategory 
+            onClick={() => this.newModalVisibility(true, null, null)}
+          />
+          <SortableTree
+            treeData={this.state.categories}
+            onChange={(treeData) => this.setState({ categories: treeData })}
+            generateNodeProps={({ node, path }) => ({
+              buttons: [
+                <Button
+                  onClick={async () => {
+                    this.newModalVisibility(true, node, path)
+                  }}
+                >
+                  Add Child
+                </Button>,
+                // If a category has children or a category has an existing template, it cannot be deleted. 
+                (!node.children && node.template_id == null) ? (<Button
+                  onClick={(event) => {
+                    this.deleteModalVisibility(true, node, path)
+                  }
+                }>
+                  Remove
+                </Button>) : null,
+                (!node.template_id) ? (<Button
+                  href={`/template?category=${node._id}`}
+                >
+                  Add Template
+                </Button>) : [(<Button
+                  key={`edit-${node._id}`}
+                  href={`/template?category=${node._id}&template=${node.template_id}`}
+                >
+                  View/Edit Template
+                </Button>),
+                (<Button
+                  key={`addprod-${node._id}`}
+                  href={`/addproduct?category=${node._id}&template=${node.template_id}`}
+                >
+                  Add Product
+                </Button>),
+                (<Button
+                  key={`editprod-${node._id}`}
+                  href={`/product?category=${node._id}`}
+                >
+                  View/Edit Product
+                </Button>)],
+                (node.products === 0 && node.template_id !== null) ? (<Button
+                  key={`remove-${node._id}`}
+                  onClick={async (event) => {
+                    const resp = await api.delete(`/templates/${node.template_id}`)
+                    if (resp.status === 204) {
+                      notification['success']({
+                        message: 'Template Deleted',
+                        description:
+                        'The template has been removed from the database!',
+                      });
+                      let categories = this.state.categories;
+                      categories.forEach(cat => {
+                        if (cat._id === node._id) {
+                          cat.template_id = null;
+                        }
+                      })
+                      this.setState({ categories })
                     }
-                  }>
-                    Remove
-                  </Button>) : null,
-                  (!node.template_id) ? (<Button
-                    href={`/template?category=${node._id}`}
-                  >
-                    Add Template
-                  </Button>) : [(<Button
-                    key={`edit-${node._id}`}
-                    href={`/template?category=${node._id}&template=${node.template_id}`}
-                  >
-                    View/Edit Template
-                  </Button>),
-                  (<Button
-                    key={`addprod-${node._id}`}
-                    href={`/addproduct?category=${node._id}&template=${node.template_id}`}
-                  >
-                    Add Product
-                  </Button>),
-                  (<Button
-                    key={`editprod-${node._id}`}
-                    href={`/product?category=${node._id}`}
-                  >
-                    View/Edit Product
-                  </Button>)],
-                  (node.products === 0 && node.template_id !== null) ? (<Button
-                    key={`remove-${node._id}`}
-                    onClick={async (event) => {
-                      const resp = await api.delete(`/templates/${node.template_id}`)
-                      if (resp.status === 204) {
-                        notification['success']({
-                          message: 'Template Deleted',
-                          description:
-                          'The template has been removed from the database!',
-                        });
-                        let categories = this.state.categories;
-                        categories.forEach(cat => {
-                          if (cat._id === node._id) {
-                            cat.template_id = null;
-                          }
-                        })
-                        this.setState({ categories })
-                      }
-                    }}
-                  >
-                    Remove Template
-                  </Button>) : null
-                ],
-              })}
-              // searchMethod={customSearchMethod}
-              //
-              // The query string used in the search. This is required for searching.
-              searchQuery={searchString}
-              //
-              // When matches are found, this property lets you highlight a specific
-              // match and scroll to it. This is optional.
-              searchFocusOffset={searchFocusIndex}
-              //
-              // This callback returns the matches from the search,
-              // including their `node`s, `treeIndex`es, and `path`s
-              // Here I just use it to note how many matches were found.
-              // This is optional, but without it, the only thing searches
-              // do natively is outline the matching nodes.
-              searchFinishCallback={matches =>
-                this.setState({
-                  searchFoundCount: matches.length,
-                  searchFocusIndex:
-                  matches.length > 0 ? searchFocusIndex % matches.length : 0,
-                })
-              }
-            />
-            <NewCategoryModal
-              visibility={this.state.newCategory.ModalVisiblity}
-              setVisibility={this.newModalVisibility}
-              saveNewCategory={this.saveNewCategory}
-            />
-            <DeleteCategoryModal
-              visibility={this.state.deleteCategory.ModalVisiblity}
-              setVisibility={this.deleteModalVisibility}
-              deleteCategory={this.deleteCategory}
-            />
-          </div>
-        );
-      }
+                  }}
+                >
+                  Remove Template
+                </Button>) : null
+              ],
+            })}
+            // searchMethod={customSearchMethod}
+            //
+            // The query string used in the search. This is required for searching.
+            searchQuery={searchString}
+            //
+            // When matches are found, this property lets you highlight a specific
+            // match and scroll to it. This is optional.
+            searchFocusOffset={searchFocusIndex}
+            //
+            // This callback returns the matches from the search,
+            // including their `node`s, `treeIndex`es, and `path`s
+            // Here I just use it to note how many matches were found.
+            // This is optional, but without it, the only thing searches
+            // do natively is outline the matching nodes.
+            searchFinishCallback={matches =>
+              this.setState({
+                searchFoundCount: matches.length,
+                searchFocusIndex:
+                matches.length > 0 ? searchFocusIndex % matches.length : 0,
+              })
+            }
+          />
+          <NewCategoryModal
+            visibility={this.state.newCategory.ModalVisiblity}
+            setVisibility={this.newModalVisibility}
+            saveNewCategory={this.saveNewCategory}
+          />
+          <DeleteCategoryModal
+            visibility={this.state.deleteCategory.ModalVisiblity}
+            setVisibility={this.deleteModalVisibility}
+            deleteCategory={this.deleteCategory}
+          />
+        </div>
+      );
+    }
 }
 
 // export default Categories;
