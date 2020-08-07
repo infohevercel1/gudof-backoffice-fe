@@ -10,6 +10,7 @@ import { notification, Button } from 'antd';
 
 import NewCategoryModal from './New';
 import DeleteCategoryModal  from './Delete';
+import DeleteTemplateModal from './Delete/DeleteTemplate';
 import Search from './Search';
 import NewRootCategory from './New/RootCategory'; 
 class Categories extends Component {
@@ -27,6 +28,11 @@ class Categories extends Component {
             path: null
           },
           deleteCategory: {
+            ModalVisiblity: false,
+            node: null,
+            path: null
+          },
+          deleteTemplate: {
             ModalVisiblity: false,
             node: null,
             path: null
@@ -187,6 +193,35 @@ class Categories extends Component {
       this.deleteFromBackend(node._id)
     }
 
+    deleteTemplate = async () => {
+      const node = this.state.deleteTemplate.node
+      const resp = await api.delete(`/templates/${node.template_id}`)
+      if (resp.status === 204) {
+        notification['success']({
+          message: 'Template Deleted',
+          description:
+            'The template has been removed from the database!',
+        });
+        let categories = this.state.categories;
+        categories.forEach(cat => {
+          if (cat._id === node._id) {
+            cat.template_id = null;
+          }
+        })
+        this.setState({ categories })
+      }
+    }
+
+    deleteTemplateModalVisibility = (bool, node, path) => {
+      let deleteTemplate = this.state.deleteTemplate;
+      deleteTemplate = {
+        ModalVisiblity: bool,
+        node, 
+        path
+      };
+      this.setState({ deleteTemplate });
+    }
+
     render() {
       const { searchString, searchFocusIndex, searchFoundCount } = this.state;
       
@@ -270,23 +305,7 @@ class Categories extends Component {
                 </Button>)],
                 (node.products === 0 && node.template_id !== null) ? (<Button
                   key={`remove-${node._id}`}
-                  onClick={async (event) => {
-                    const resp = await api.delete(`/templates/${node.template_id}`)
-                    if (resp.status === 204) {
-                      notification['success']({
-                        message: 'Template Deleted',
-                        description:
-                        'The template has been removed from the database!',
-                      });
-                      let categories = this.state.categories;
-                      categories.forEach(cat => {
-                        if (cat._id === node._id) {
-                          cat.template_id = null;
-                        }
-                      })
-                      this.setState({ categories })
-                    }
-                  }}
+                  onClick={async (event) => this.deleteTemplateModalVisibility(true, node, path)}
                 >
                   Remove Template
                 </Button>) : null
@@ -325,6 +344,11 @@ class Categories extends Component {
             visibility={this.state.deleteCategory.ModalVisiblity}
             setVisibility={this.deleteModalVisibility}
             deleteCategory={this.deleteCategory}
+          />
+          <DeleteTemplateModal
+            visibility={this.state.deleteTemplate.ModalVisiblity}
+            setVisibility={this.deleteTemplateModalVisibility}
+            deleteTemplate={this.deleteTemplate}
           />
         </div>
       );

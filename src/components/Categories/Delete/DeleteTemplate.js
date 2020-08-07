@@ -1,10 +1,10 @@
 import React from 'react';
 import { Modal } from 'antd';
 
-const DeleteCategoryModal = ({ visibility, setVisibility, deleteCategory }) => {
+const DeleteTemplateModal = ({ visibility, setVisibility, deleteTemplate }) => {
 
     const handleOk = e => {
-        deleteCategory(true)
+        deleteTemplate()
         setVisibility(false)
     };
 
@@ -14,14 +14,14 @@ const DeleteCategoryModal = ({ visibility, setVisibility, deleteCategory }) => {
 
     return (
         <Modal
-            title="Confirm to delete Category"
+            title="Confirm to remove Template"
             visible={visibility}
             onOk={handleOk}
             onCancel={handleCancel}
         >
-            <p>Are you sure you want to delete this Category?</p>
+            <p>Are you sure you want to delete this Template?</p>
         </Modal>
     )
 }
 
-export default DeleteCategoryModal
+export default DeleteTemplateModal;
