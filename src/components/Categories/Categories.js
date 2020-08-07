@@ -43,6 +43,7 @@ class Categories extends Component {
     async componentDidMount () {
         const {data} = await api.get("/categories")
         let categories = data;
+        console.log(categories);
         for (var i = 0; i < categories.length; i++) {
           // To remove certain null values. This bug had been rectified in the backend.
           // Condition still kept as a double check
@@ -63,7 +64,6 @@ class Categories extends Component {
         }
 
         const tree = getTreeFromFlatData({flatData: categories, getKey, getParentKey, rootKey: null})
-        console.log(tree)
         categories = tree; //populate this from API.
         this.setState({ categories });
         this.props.setOptions({ options: categories })

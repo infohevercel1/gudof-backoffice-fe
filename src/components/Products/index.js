@@ -26,8 +26,15 @@ class Products extends Component {
         categoryId = query.get('category'),
         productId = query.get('product');
     
+    let uiSchema = {}
+    // If product is being Edited
     if (productId !== null) {
       this.setState({ productId })
+      // Lock the inputs manuf, model
+      uiSchema = {
+        manuf: { "ui:readonly": true },
+        model: { "ui:readonly": true}
+      }
     }
     const { data: template } = await api.get("/templates/" + templateId);
     if (categoryId === 'null') {
@@ -35,7 +42,7 @@ class Products extends Component {
     }
     // To remove the inline icons (Delete, etc) which are present in Template page
     this.props.updateSettings({ isInlineMode: false })
-    this.props.setTree(JSON.parse(template.formSchema))
+    this.props.setTree({schema: JSON.parse(template.formSchema), uiSchema})
     this.setState({ schema: JSON.parse(template.formSchema), templateId, categoryId });
   }
 
@@ -105,11 +112,12 @@ export default connect(({
   schema,
   formData
 }), (dispatch) => ({
-  setTree: (schema) =>
+  setTree: ({schema, uiSchema}) =>
     dispatch({
       type: 'TREE_SET_TREE',
       payload: {
         schema,
+        uiSchema
       },
     }),
   setFormData: ({ formData }) =>
