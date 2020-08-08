@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, Input } from 'antd';
+import { Modal, Input, Form } from 'antd';
 
 const NewCategoryModal = ({ visibility, setVisibility, saveNewCategory }) => {
 
@@ -21,8 +21,11 @@ const NewCategoryModal = ({ visibility, setVisibility, saveNewCategory }) => {
             visible={visibility}
             onOk={handleOk}
             onCancel={handleCancel}
+            destroyOnClose
         >
-            <Input size="large" placeholder="Enter category" onChange={e => setName(e.target.value)} defaultValue=''/>
+            <Form preserve={false}>
+                <Input size="large" placeholder="Enter category" onChange={e => setName(e.target.value)} defaultValue=''/>
+            </Form>
         </Modal>
     )
 }
