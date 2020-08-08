@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button, notification } from 'antd';
+import { Table, Button, notification, Modal } from 'antd';
 
 import { instance as api } from '../../../axios';
 
@@ -21,7 +21,6 @@ const List = () => {
                         category_id: el.category_id._id
                     };
                 });
-                console.log(templates)
                 setData(templates)
                 const columns = [
                     {

@@ -157,15 +157,10 @@ class Categories extends Component {
       }
       // After addition of the new node, the newCategory variable in state needs to be updated.
       // BUG: This code is not working. newCategory is not updated.
-      newCategory.ModalVisiblity = false
-      if (node) {
-        newCategory.node = node
-      }
-      if (path) {
-        newCategory.path = path
-      }
+      newCategory.ModalVisiblity = false;
+      newCategory.node = null;
+      newCategory.path = null;
       this.setState({ newCategory })
-      // Buggy code ends
     }
 
     deleteModalVisibility(bool, node, path) {

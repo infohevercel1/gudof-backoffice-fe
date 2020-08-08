@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Table, Button, notification } from 'antd';
 import { connect } from 'react-redux';
-import {instance as api} from '../../../axios';
+import { instance as api } from '../../../axios';
 import './ProductList.css';
 
 class ProductList extends Component {
@@ -81,7 +81,6 @@ class ProductList extends Component {
             width: 100,
             render: (item) => {
                 return (<span onClick={async (e) => {
-                    console.log(item)
                     let a = await this.props.setFormData({ formData: item.data });
                     // Due to asynchronous behaviour, the above line does not work without the setTimeout 
                     if (typeof a === 'object') {
