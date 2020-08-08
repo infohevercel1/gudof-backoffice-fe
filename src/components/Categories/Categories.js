@@ -6,7 +6,7 @@ import { connect } from "react-redux";
 import SortableTree from 'react-sortable-tree';
 import { getTreeFromFlatData, addNodeUnderParent, removeNodeAtPath } from "react-sortable-tree";
 import "react-sortable-tree/style.css";
-import { notification, Button } from 'antd';
+import { notification, Button, Skeleton } from 'antd';
 
 import NewCategoryModal from './New';
 import DeleteCategoryModal  from './Delete';
@@ -255,7 +255,7 @@ class Categories extends Component {
           <NewRootCategory 
             onClick={() => this.newModalVisibility(true, null, null)}
           />
-          <SortableTree
+          {this.state.categories.length ? (<SortableTree
             canDrag={false}
             treeData={this.state.categories}
             onChange={(treeData) => this.setState({ categories: treeData })}
@@ -286,24 +286,23 @@ class Categories extends Component {
                 >
                   View/Edit Template
                 </Button>),
+                ((node.products === 0 && node.template_id !== null) ? (<Button
+                  key={`remove-${node._id}`}
+                  onClick={async (event) => this.deleteTemplateModalVisibility(true, node, path)}
+                >
+                  Remove Template
+                </Button>) : (<Button
+                  key={`editprod-${node._id}`}
+                  href={`/product?category=${node._id}`}
+                >
+                  View/Edit Product
+                </Button>)),
                 (<Button
                   key={`addprod-${node._id}`}
                   href={`/addproduct?category=${node._id}&template=${node.template_id}`}
                 >
                   Add Product
-                </Button>),
-                (<Button
-                  key={`editprod-${node._id}`}
-                  href={`/product?category=${node._id}`}
-                >
-                  View/Edit Product
                 </Button>)],
-                (node.products === 0 && node.template_id !== null) ? (<Button
-                  key={`remove-${node._id}`}
-                  onClick={async (event) => this.deleteTemplateModalVisibility(true, node, path)}
-                >
-                  Remove Template
-                </Button>) : null
               ],
             })}
             searchMethod={customSearchMethod}
@@ -325,7 +324,7 @@ class Categories extends Component {
                 matches.length > 0 ? searchFocusIndex % matches.length : 0,
               })
             }
-          />
+          />) : <Skeleton active />}
           <NewCategoryModal
             visibility={this.state.newCategory.ModalVisiblity}
             setVisibility={this.newModalVisibility}

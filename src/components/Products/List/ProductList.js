@@ -10,6 +10,7 @@ class ProductList extends Component {
         this.state = {
             templateId: null,
             categoryId: null,
+            dataFetching: true,
             products: {
                 data: [],
                 names: []
@@ -27,7 +28,9 @@ class ProductList extends Component {
             this.setState({categoryId})
             let { data } = await api.get("/product/category/"+categoryId)
             products = data
-            this.setState({templateId: products[0].template})
+            this.setState({dataFetching: false})
+            if(products.length !== 0)
+                this.setState({templateId: products[0].template})
         } else {
             let { data } = await api.get("/product/")
             console.log(data)
@@ -145,7 +148,7 @@ class ProductList extends Component {
         <div className="container main-container">
             <h3>{this.state.templateId ? 'Listing Products based on Template' : 'Listing all Products'}</h3>
         <div style={{ display: 'flex' }}>
-                    {this.state.products.names.length ? <Table dataSource={this.state.products.names} columns={this.state.columns} /> : <Space size="middle"><Spin /></Space>}
+                    {!this.state.dataFetching ? <Table dataSource={this.state.products.names} columns={this.state.columns} /> : <Space size="middle"><Spin /></Space>}
         </div>
         {this.state.categoryId && this.state.templateId ? (
             <Button
