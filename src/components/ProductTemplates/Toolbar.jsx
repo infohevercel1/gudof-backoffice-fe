@@ -146,7 +146,9 @@ class Toolbar extends React.Component {
             style={buttonStyle}
             onClick={() => this.showTemplates()}
             icon={<FolderOpenOutlined />}
-          />
+          >
+            Open
+          </Button>
         </Tooltip>
         <Tooltip title="Save">
           <Button
@@ -161,7 +163,9 @@ class Toolbar extends React.Component {
               });
             }}
             icon={<SaveOutlined />}
-          />
+          >
+            {this.state.templateId === null ? 'Save' : 'Update'}
+          </Button>
         </Tooltip>
         <Tooltip title="Undo">
           <Button
@@ -169,7 +173,9 @@ class Toolbar extends React.Component {
             onClick={undo}
             disabled={!past.length}
             icon={<UndoOutlined />}
-          />
+          >
+            Undo
+          </Button>
         </Tooltip>
         <Tooltip title="Redo">
           <Button
@@ -177,7 +183,9 @@ class Toolbar extends React.Component {
             onClick={redo}
             disabled={!future.length}
             icon={<RedoOutlined />}
-          />
+          >
+            Redo
+          </Button>
         </Tooltip>
         <Modal
           title="View Existing Templates by Category"

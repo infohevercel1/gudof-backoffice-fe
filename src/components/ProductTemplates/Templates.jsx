@@ -16,14 +16,16 @@ class NewTemplate extends Component {
         categoryId: null,
         templateId: null
     };
+    componentWillMount() {
+      this.props.setFormData({ formData: {} })
+      this.props.defaultMenu();
+    }
     componentDidMount () {
       // To remove the inline icons (Delete, etc) which are present in Template page
       this.props.updateSettings({ isInlineMode: true })
       const query = new URLSearchParams(this.props.location.search)
       let categoryId = query.get('category'), templateId = query.get('template')
       this.setState({categoryId, templateId})
-      this.props.setFormData({ formData: {}})
-      this.props.defaultMenu();
     }
     toggle = () => {
         this.setState({
