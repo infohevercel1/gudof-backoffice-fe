@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, Button, notification } from 'antd';
+import { Table, Button, notification, Spin, Space } from 'antd';
 import { connect } from 'react-redux';
 import { instance as api } from '../../../axios';
 import './ProductList.css';
@@ -75,12 +75,11 @@ class ProductList extends Component {
             }
         ]
         columns.push({
-            title: 'Make a Copy',
+            title: 'Add a product using existing product',
             key: 'name',
-            fixed: 'right',
-            width: 100,
+            width: 200,
             render: (item) => {
-                return (<span onClick={async (e) => {
+                return (<Button onClick={async (e) => {
                     let a = await this.props.setFormData({ formData: item.data });
                     // Due to asynchronous behaviour, the above line does not work without the setTimeout 
                     if (typeof a === 'object') {
@@ -89,15 +88,14 @@ class ProductList extends Component {
                             window.location.href = path;
                         }, 1000)
                     }
-                }}>Make a Copy</span>)
+                }}>Make a Copy</Button>)
             },
         }, {
-            title: 'Edit',
+            title: 'Make changes to existing product',
             key: 'name',
-            fixed: 'right',
-            width: 100,
+            width: 200,
             render: (item) => {
-                return (<span
+                return (<Button
                     onClick={async (e) => {
                     let a = await this.props.setFormData({ formData: item.data })
                     // Due to asynchronous behaviour, the above line does not work without the setTimeout
@@ -107,15 +105,15 @@ class ProductList extends Component {
                             window.location.href = path;
                         }, 1000)
                     }
-                }}>Edit</span>)
+                }}>Edit</Button>)
             },
         }, {
-            title: 'Remove Product',
+            title: 'Delete Product',
             key: 'name',
             fixed: 'right',
             width: 100,
             render: (item) => {
-                return (<span onClick={async (e) => {
+                return (<Button onClick={async (e) => {
                     const resp = await api.delete(`/product/${item.category._id}/${item.id}`)
                     if(resp.status === 204) {
                         notification['success']({
@@ -128,7 +126,8 @@ class ProductList extends Component {
                             description: 'There was an error while deleting this product.'
                         })
                     }
-                }}>Remove Product</span>)
+                }}>Remove Product</Button>
+                )
             }
         })
         this.setState({products: {data, names}, columns})
@@ -144,8 +143,9 @@ class ProductList extends Component {
     render() {
         return (
         <div className="container main-container">
+            <h3>{this.state.templateId ? 'Listing Products based on Template' : 'Listing all Products'}</h3>
         <div style={{ display: 'flex' }}>
-            <Table dataSource={this.state.products.names} columns={this.state.columns} />
+                    {this.state.products.names.length ? <Table dataSource={this.state.products.names} columns={this.state.columns} /> : <Space size="middle"><Spin /></Space>}
         </div>
         {this.state.categoryId && this.state.templateId ? (
             <Button

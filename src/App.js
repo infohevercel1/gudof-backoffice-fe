@@ -38,6 +38,7 @@ class App extends Component {
     }
     location = location === '' ? 'category' : location;
     location = location === 'addproduct' ? 'product' : location;
+    location = location === 'viewtemplates' ? 'template' : location;
     this.setState({ current: location })
   }
 
@@ -52,6 +53,7 @@ class App extends Component {
       <Router>
         <div className="App">
           <Menu
+            theme="dark"
             onClick={this.handleClick}
             selectedKeys={[current]}
             mode="horizontal"

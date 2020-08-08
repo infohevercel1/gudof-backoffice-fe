@@ -18,6 +18,10 @@
     overflow: scroll;
 }
 
+span {
+  cursor: pointer;
+}
+
 /* .list-item:active {
   background-color: aquamarine;
   color: wheat;

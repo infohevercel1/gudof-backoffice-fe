@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Table, Button, notification, Modal } from 'antd';
 
 import { instance as api } from '../../../axios';
+import './list.css';
 
 const List = () => {
 
@@ -58,9 +59,10 @@ const List = () => {
         })();
     }, [])
     return (
-        <>
+        <div className="container main-container">
+            <h3>Listing all Templates</h3>
             <Table dataSource={data} columns={tableColumns} />
-        </>
+        </div>
     )
 }
 
