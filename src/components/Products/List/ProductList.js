@@ -28,7 +28,6 @@ class ProductList extends Component {
             this.setState({categoryId})
             let { data } = await api.get("/product/category/"+categoryId)
             products = data
-            this.setState({dataFetching: false})
             if(products.length !== 0)
                 this.setState({templateId: products[0].template})
         } else {
@@ -133,7 +132,7 @@ class ProductList extends Component {
                 )
             }
         })
-        this.setState({products: {data, names}, columns})
+        this.setState({products: {data, names}, columns, dataFetching: false})
     } catch (e) {
         console.log(e);
         notification['error']({

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button, notification, Modal } from 'antd';
+import { Table, Button, notification, Modal, Skeleton } from 'antd';
 
 import { instance as api } from '../../../axios';
 import './list.css';
@@ -8,6 +8,7 @@ const List = () => {
 
     const [data, setData] = useState()
     const [tableColumns, setColumns] = useState()
+    const [fetching, setFetch] = useState(true)
 
     useEffect(() => {
         (async () => {
@@ -39,7 +40,6 @@ const List = () => {
                         key: 'view/edit',
                         fixed: 'right',
                         render: (item) => {
-                            console.log(item)
                             return (<Button
                                 href={`/template?category=${item.category_id}&template=${item.key}`}
                             >
@@ -49,6 +49,7 @@ const List = () => {
                     }
                 ]
                 setColumns(columns);
+                setFetch(false);
             } catch (e) {
                 console.log(e);
                 notification['error']({
@@ -57,11 +58,11 @@ const List = () => {
                 })
             }
         })();
-    }, [])
+    }, []);
     return (
         <div className="container main-container">
             <h3>Listing all Templates</h3>
-            <Table dataSource={data} columns={tableColumns} />
+            {fetching === true ? <Skeleton active /> : <Table dataSource={data} columns={tableColumns} />}
         </div>
     )
 }
