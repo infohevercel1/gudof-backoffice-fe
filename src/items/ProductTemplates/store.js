@@ -14,63 +14,47 @@ var { schema2tree } = require('./core');
 
 var form = {
   schema: {
-    title: 'A registration form',
+    title: 'Template Form',
     description: 'A simple form example.',
     type: 'object',
-    required: ['firstName', 'lastName'],
+    required: ['name', 'image'],
     properties: {
-      firstName: {
+      name: {
         type: 'string',
-        title: 'First name',
+        title: 'Product Name',
       },
-      lastName: {
+      image: {
         type: 'string',
-        title: 'Last name',
+        title: 'Image Link',
       },
-      age: {
+      price: {
         type: 'integer',
-        title: 'Age',
-        description: '(earthian year)',
+        title: 'Price',
       },
-      bio: {
+      description: {
         type: 'string',
-        title: 'Bio',
+        title: 'Description',
       },
-      password: {
-        type: 'string',
-        title: 'Password',
-        minLength: 3,
-      },
-      telephone: {
-        type: 'string',
-        title: 'Telephone',
-        minLength: 10,
-      },
+     
     },
   },
   uiSchema: {
-    firstName: {
-      classNames: '',
+    name: {
       'ui:emptyValue': '',
     },
-    age: {
-      'ui:widget': 'updown',
+    image: {
+      'ui:emptyvalue':'',
     },
-    bio: {
-      'ui:widget': 'textarea',
+    price: {
+      'ui:emptyvalue':'',
     },
-    password: {
-      'ui:widget': 'password',
-      'ui:help': 'Hint: Make it strong!',
+    description: {
+      'ui:emptyvalue':'',
     },
     date: {
       'ui:widget': 'alt-datetime',
     },
-    telephone: {
-      'ui:options': {
-        inputType: 'tel',
-      },
-    },
+   
   },
 };
 

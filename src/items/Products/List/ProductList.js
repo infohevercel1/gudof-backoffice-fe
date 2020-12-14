@@ -47,7 +47,10 @@ class ProductList extends Component {
             }
             let updates = product.meta.update;
             return {
-                name: product.name, 
+                name: product.name,
+                image:product.image,
+                description:product.description,
+                price:product.price, 
                 data: JSON.parse(product.data), 
                 created_at: product.meta.created_at,
                 updated_at: updates.length > 0 ? updates.slice(updates.length-1)[0].updated_at : '-',

@@ -34,13 +34,13 @@ class Toolbar extends React.Component {
       let schema = {
         type: "object",
         properties: {
-          manuf: {
+          name: {
             type: "string",
-            title: "Manufacturer"
+            title: "name"
           },
-          model: {
+          image: {
             type: "string",
-            title: "Model"
+            title: "Image"
           }
         }
       },
@@ -58,7 +58,7 @@ class Toolbar extends React.Component {
   }
 
   save = async () => {
-    const { name, schema, uiSchema } = this.props.tree.present[0];
+    const {name , schema, uiSchema } = this.props.tree.present[0];
     const body = {
         name,
         category_id: this.state.categoryId,

@@ -2,14 +2,14 @@ import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import './App.css';
 import "./index.css";
-import Category from './components/Categories/Categories';
-import Products from './components/Products';
-import NewTemplate from './components/ProductTemplates/Templates.jsx';
-import List from './components/ProductTemplates/List';
-import ProductList from './components/Products/List/ProductList';
+import Category from './items/Categories/Categories';
+import Products from './items/Products';
+import NewTemplate from './items/ProductTemplates/Templates.jsx';
+import List from './items/ProductTemplates/List';
+import ProductList from './items/Products/List/ProductList';
 
 import { Provider, connect } from "react-redux";
-import { store, persistor } from "./components/ProductTemplates/store";
+import { store, persistor } from "./items/ProductTemplates/store";
 import { PersistGate } from "redux-persist/integration/react";
 import { Menu, Layout } from "antd";
 import {
