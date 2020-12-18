@@ -4,11 +4,14 @@ import { Modal, Input, Form } from 'antd';
 const NewCategoryModal = ({ visibility, setVisibility, saveNewCategory }) => {
 
     let [name, setName] = useState('')
+    let [image, setImage] = useState('')
 
     const handleOk = e => {
         let newName = name;
+        let newImage = image;
         setName('');
-        saveNewCategory(newName);
+        setImage('');
+        saveNewCategory(newName,newImage);
     };
 
     const handleCancel = e => {
@@ -25,6 +28,8 @@ const NewCategoryModal = ({ visibility, setVisibility, saveNewCategory }) => {
         >
             <Form preserve={false}>
                 <Input size="large" placeholder="Enter category" onChange={e => setName(e.target.value)} defaultValue=''/>
+                <Input size="large" placeholder="Enter category" onChange={e => setImage(e.target.value)} defaultValue=''/>
+
             </Form>
         </Modal>
     )

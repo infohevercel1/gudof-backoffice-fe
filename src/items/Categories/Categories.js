@@ -118,7 +118,7 @@ class Categories extends Component {
       this.setState({newCategory})
     }
 
-    async saveNewCategory (name) {
+    async saveNewCategory (name,image) {
       const getNodeKey = ({ treeIndex }) => treeIndex;
       let newCategory = this.state.newCategory
       let {node, path} = newCategory, title = name
@@ -128,6 +128,8 @@ class Categories extends Component {
       }
       const newNode = {
         title,
+        image:image,
+        hello:"hello",
         parent_id: node ? node._id : null,
         path: node ? node.path + '/' + title : title, 
       };

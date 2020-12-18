@@ -36,11 +36,19 @@ class Toolbar extends React.Component {
         properties: {
           name: {
             type: "string",
-            title: "name"
+            title: "Name"
           },
           image: {
             type: "string",
             title: "Image"
+          },
+          description: {
+            type: "string",
+            title: "Description"
+          },
+          price: {
+            type: "string",
+            title: "Price"
           }
         }
       },
