@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import './css';
 import { Layout, Tabs, Card } from 'antd';
 import Tree from './Tree';
-import { FormView, SchemaView, UiSchemaView } from "./views";
+import { FormView } from "./views";
 import NodeEditor from './Editor';
 import Toolbar from './Toolbar';
 import Settings from './Settings';
