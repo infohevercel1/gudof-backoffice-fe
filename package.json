@@ -2,6 +2,7 @@
   "name": "backoffice",
   "version": "0.1.0",
   "private": true,
+  "homepage":"https://infohevercel1.github.io/gudof-backoffice-fe",
   "engines": {
     "node": "12.x"
   },
