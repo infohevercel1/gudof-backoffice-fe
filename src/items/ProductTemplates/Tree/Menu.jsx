@@ -15,12 +15,13 @@ function nameGen(name, occupied) {
 
 class AddItemMenu extends React.Component {
   onAddNode = (node2add) => {
+    
     const { addNode } = this.props;
     const name = nameGen(
-      node2add.name,
-      this.props.node.children.map((a) => a.name)
+      node2add.schema.title,
+      this.props.node.children.map((a) => a.schema.title)
     );
-    console.log(node2add)
+    console.log("node2add",node2add)
     addNode({ ...node2add, name });
   };
   render() {
