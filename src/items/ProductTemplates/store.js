@@ -17,11 +17,15 @@ var form = {
     title: 'Template Form',
     description: 'A simple form example.',
     type: 'object',
-    required: ['name', 'image'],
+    required: ['manufacturer', 'model'],
     properties: {
-      name: {
+      manufacturer: {
         type: 'string',
-        title: 'Product Name',
+        title: 'Manufacturer',
+      },
+      model: {
+        type: 'string',
+        title: 'Model',
       },
       image: {
         type: 'string',
@@ -39,7 +43,10 @@ var form = {
     },
   },
   uiSchema: {
-    name: {
+    manufacturer: {
+      'ui:emptyValue': '',
+    },
+    model: {
       'ui:emptyValue': '',
     },
     image: {

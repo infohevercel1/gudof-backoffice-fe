@@ -41,16 +41,18 @@ class ProductList extends Component {
             return JSON.parse(product.data);
         })
         const names = products.map(product => {
-            if(product.name === undefined) {
+            if(JSON.parse(product.data).manufacturer === undefined) {
                 // For earlier products that didn't have manuf, model defined.
-                product.name = '--Not defined--'
+                product.manufacturer = '--Not defined--'
             }
             let updates = product.meta.update;
             return {
-                name: product.name,
-                image:product.image,
-                description:product.description,
-                price:product.price, 
+                manufacturer:JSON.parse(product.data).manufacturer,
+                model:JSON.parse(product.data).model,
+                name: JSON.parse(product.data).manufacturer+ "-" +JSON.parse(product.data).model,
+                image:JSON.parse(product.data).image,
+                description:JSON.parse(product.data).description,
+                price:JSON.parse(product.data).price, 
                 data: JSON.parse(product.data), 
                 created_at: product.meta.created_at,
                 updated_at: updates.length > 0 ? updates.slice(updates.length-1)[0].updated_at : '-',
@@ -60,6 +62,7 @@ class ProductList extends Component {
                 key: product._id
             };
         })
+        console.log("names",names)
         const columns = [
             {
                 title: 'Name', 

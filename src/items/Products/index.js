@@ -32,8 +32,8 @@ class Products extends Component {
       this.setState({ productId })
       // Lock the inputs manuf, model
       uiSchema = {
-        name: { "ui:readonly": true },
-        image: { "ui:readonly": true}
+        manufacturer: { "ui:readonly": true },
+        model: { "ui:readonly": true}
       }
     }
     const { data: template } = await api.get("/templates/" + templateId);
@@ -49,7 +49,7 @@ class Products extends Component {
   submitHandler = async () => {
   try {
     let name = '', formData = this.props.formData;
-    name = `${formData.name}`;
+    name = `${formData.manufacturer+ "-" +formData.model}`;
     const body = {
       template_id: this.state.templateId,
       category_id: this.state.categoryId,

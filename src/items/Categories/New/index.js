@@ -27,8 +27,8 @@ const NewCategoryModal = ({ visibility, setVisibility, saveNewCategory }) => {
             destroyOnClose
         >
             <Form preserve={false}>
-                <Input size="large" placeholder="Enter category" onChange={e => setName(e.target.value)} defaultValue=''/>
-                <Input size="large" placeholder="Enter category" onChange={e => setImage(e.target.value)} defaultValue=''/>
+                <Input size="large" placeholder="Enter Category" onChange={e => setName(e.target.value)} defaultValue=''/>
+                <Input size="large" placeholder="Enter Category icon link" onChange={e => setImage(e.target.value)} defaultValue=''/>
 
             </Form>
         </Modal>

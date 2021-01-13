@@ -323,7 +323,7 @@ function removeNodeByPath(tree, path) {
 }
 
 function removeNode(tree, key) {
-  if (key === `${tree[0].key}.name` || key === `${tree[0].key}.image`) {
+  if (key === `${tree[0].key}.manufacturer` || key === `${tree[0].key}.model`) {
     // Antd modal error notification.
     notification['error']({
       message: 'Cannot delete basic fields!',

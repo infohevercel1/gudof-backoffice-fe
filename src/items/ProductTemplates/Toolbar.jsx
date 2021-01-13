@@ -34,9 +34,13 @@ class Toolbar extends React.Component {
       let schema = {
         type: "object",
         properties: {
-          name: {
+          manufacturer: {
             type: "string",
-            title: "Name"
+            title: "Manufacturer"
+          },
+          model: {
+            type: "string",
+            title: "Model"
           },
           image: {
             type: "string",

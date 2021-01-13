@@ -129,7 +129,6 @@ class Categories extends Component {
       const newNode = {
         title,
         image:image,
-        hello:"hello",
         parent_id: node ? node._id : null,
         path: node ? node.path + '/' + title : title, 
       };
@@ -288,7 +287,7 @@ class Categories extends Component {
                 >
                   View/Edit Template
                 </Button>),
-                ((node.products === 0 && node.template_id !== null) ? (<Button
+                ((node.products <= 0 && node.template_id !== null) ? (<Button
                   key={`remove-${node._id}`}
                   onClick={async (event) => this.deleteTemplateModalVisibility(true, node, path)}
                 >

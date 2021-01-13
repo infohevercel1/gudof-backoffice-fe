@@ -44,7 +44,7 @@ class TreeNodeTitle extends PureComponent {
                 onConfirm={() => {
                   // This check is really not needed right now, but still
                   let thisKey = node.key.split('.')[1]
-                  if (thisKey === 'name' || thisKey === 'image') {
+                  if (thisKey === 'manufacturer' || thisKey === 'model') {
                     return notification['error']({
                       message: 'Cannot delete basic fields!',
                       description: 'You cannot delete the basic fields required for templates.'
