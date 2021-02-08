@@ -355,7 +355,7 @@ function _addNodeByPath(tree, [head, ...tail], position, node2Add, arrayItemsFla
           // name already exists;
           return tree;
         }
-        newTree.push(updateNodeParentKeyAndName(node2Add, getNodeParentKey(cn)));
+        newTree.push(updateNode(node2Add, getNodeParentKey(cn)));
       }
       if (position === 0) {
         if (isLeaf(cn)) return tree;
@@ -377,7 +377,7 @@ function _addNodeByPath(tree, [head, ...tail], position, node2Add, arrayItemsFla
           // name already exists;
           return tree;
         }
-        newTree.push(updateNodeParentKeyAndName(node2Add, getNodeParentKey(cn)));
+        newTree.push((node2Add, getNodeParentKey(cn)));
       }
     }
     if (!added) return tree;
