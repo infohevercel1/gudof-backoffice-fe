@@ -6,4 +6,4 @@ RUN mkdir -p /deploy/build
 WORKDIR ./deploy
 COPY ./build ./build
 EXPOSE 3000
-CMD serve -l 3000 -s build
+CMD serve -l $PORT -s build
