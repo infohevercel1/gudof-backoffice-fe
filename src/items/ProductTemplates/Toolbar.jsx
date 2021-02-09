@@ -1,7 +1,7 @@
 import React from 'react';
 import {instance as api} from "../../axios";
 import { connect } from 'react-redux';
-import { Button, Tooltip, Modal, notification, List } from 'antd';
+import { Button, Input,Tooltip, Modal, notification, List } from 'antd';
 import { FolderOpenOutlined, SaveOutlined, UndoOutlined, RedoOutlined } from '@ant-design/icons';
 import { ActionTypes } from 'redux-undo';
 import './index.css';
@@ -15,7 +15,9 @@ class Toolbar extends React.Component {
       templates: [],
       categories: [],
       templateId: null,
-      categoryId: null
+      categoryId: null,
+      filterable:'',
+      searchable:''
     };
   }
 
@@ -57,11 +59,14 @@ class Toolbar extends React.Component {
         }
       },
       uiSchema = {}
+ 
       const { data: category } = await api.get('/categories/'+this.state.categoryId)
       console.log(category)
+      const filterable = this.props.filterable
+      const searchable = this.props.searchable
       // Will receive category_name to add in name of template
       let name=`${category.name}-template`;
-      this.props.setTree({name, schema, uiSchema});
+      this.props.setTree({name, schema, uiSchema,filterable,searchable});
     }
   }
 
@@ -70,12 +75,14 @@ class Toolbar extends React.Component {
   }
 
   save = async () => {
-    const {name , schema, uiSchema } = this.props.tree.present[0];
+    const {name , schema, uiSchema,filterable,searchable } = this.props.tree.present[0];
     const body = {
         name,
         category_id: this.state.categoryId,
         formSchema: JSON.stringify(schema),
         uiSchema: (uiSchema !== undefined) ? JSON.stringify(uiSchema) : "",
+        filterable:this.props.filterable,
+        searchable:this.props.searchable
       };
     try {
       let resp;
@@ -132,12 +139,15 @@ class Toolbar extends React.Component {
   };
 
   renderThisTemplate = async (_id) => {
+    const filterable = this.props.filterable
+      const searchable = this.props.searchable
     let [thisTemplate] = this.state.templates.filter(template => template._id === _id)
     let schema = JSON.parse(thisTemplate.formSchema), uiSchema = {}, name = thisTemplate.name
     if (thisTemplate.uiSchema !== "") {
       uiSchema = JSON.parse(thisTemplate.uiSchema)
     }
-    this.props.setTree({ name, schema, uiSchema });
+    this.props.setTree({ name, schema, uiSchema,filterable,searchable });
+    console.log("tree",this.props.tree)
     this.setState({ visible: false, existingTemplate: true, templateId: thisTemplate._id })
   }
 
@@ -199,6 +209,7 @@ class Toolbar extends React.Component {
             Redo
           </Button>
         </Tooltip>
+         
         <Modal
           title="View Existing Templates by Category"
           visible={this.state.visible}
@@ -222,7 +233,9 @@ class Toolbar extends React.Component {
               </List.Item>
             )}
           />
+       
         </Modal>
+       
       </span>
     );
   }
