@@ -86,7 +86,7 @@ class Toolbar extends React.Component {
       };
     try {
       let resp;
-      console.log(body)
+      console.log("body",body)
       if(this.state.templateId === null) {
         resp = await api.post(
           "/templates",

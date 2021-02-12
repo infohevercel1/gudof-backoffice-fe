@@ -73,8 +73,10 @@ class NewTemplate extends Component {
                         >
                             <FormView />
                             Filterable
-        <Input type="text" placeholder="filterable" onChange={(e)=>this.setState({filterable:
-        e.target.value})}/>
+        <Input type="text" placeholder="filterable" onChange={(e)=>{
+          console.log(this.state.filterable)
+          this.setState({filterable:
+        e.target.value})}}/>
         Searchable
         <Input type="text" placeholder="searchable" onChange={(e)=>this.setState({searchable:
         e.target.value})}/>
