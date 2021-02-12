@@ -13,6 +13,11 @@ import DeleteCategoryModal  from './Delete';
 import DeleteTemplateModal from './Delete/DeleteTemplate';
 import Search from './Search';
 import NewRootCategory from './New/RootCategory'; 
+import UploadCSV from '../components/UploadCSV'
+
+
+
+
 class Categories extends Component {
     constructor(props) {
         super(props)
@@ -246,6 +251,7 @@ class Categories extends Component {
       const searchInputChange = (event) => this.setState({ searchString: event.target.value });
       return (
         <div className="Categories">
+            <UploadCSV/>
           <h3>List of Categories</h3>
           <Search
             searchParams={{searchString, searchFocusIndex, searchFoundCount}}
