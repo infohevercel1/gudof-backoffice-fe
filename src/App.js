@@ -53,6 +53,7 @@ class App extends Component {
     const fData = new FormData();
     fData.append("file", file[0], file[0].name);
     let resp = await api.post(`/user/fileupload/${category_name}`, fData);
+    console.log(resp)
   };
   render() {
     const { current } = this.state;

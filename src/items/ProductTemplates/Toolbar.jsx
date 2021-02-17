@@ -1,7 +1,7 @@
 import React from 'react';
 import {instance as api} from "../../axios";
 import { connect } from 'react-redux';
-import { Button, Input,Tooltip, Modal, notification, List } from 'antd';
+import { Button,Tooltip, Modal, notification, List } from 'antd';
 import { FolderOpenOutlined, SaveOutlined, UndoOutlined, RedoOutlined } from '@ant-design/icons';
 import { ActionTypes } from 'redux-undo';
 import './index.css';
@@ -16,8 +16,7 @@ class Toolbar extends React.Component {
       categories: [],
       templateId: null,
       categoryId: null,
-      filterable:'',
-      searchable:''
+      
     };
   }
 
@@ -75,7 +74,7 @@ class Toolbar extends React.Component {
   }
 
   save = async () => {
-    const {name , schema, uiSchema,filterable,searchable } = this.props.tree.present[0];
+    const {name , schema, uiSchema } = this.props.tree.present[0];
     const body = {
         name,
         category_id: this.state.categoryId,

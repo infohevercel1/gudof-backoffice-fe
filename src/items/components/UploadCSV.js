@@ -81,6 +81,7 @@ export default function FormDialog() {
       setMessage("Uploded successfully");
       setStatus("success");
       setSnackStatus(true);
+      console.log(result)
       
     } catch (err) {
       setMessage("Uplod failed");
@@ -164,7 +165,7 @@ export default function FormDialog() {
                 variant="contained"
                 size="large"
                 disabled={
-                  categoryName.length == 0 || fileName.length == 0 || loading
+                  categoryName.length === 0 || fileName.length === 0 || loading
                 }
               >
                 Submit
