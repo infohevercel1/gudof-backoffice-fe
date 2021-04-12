@@ -1,9 +1,7 @@
-FROM node:12-alpine
-
-
+FROM node:14.16-buster-slim
 RUN npm install -g serve
 RUN mkdir -p /deploy/build
-WORKDIR ./deploy
+WORKDIR ./deploy 
 COPY ./build ./build
 EXPOSE 3000
-CMD serve -l $PORT -s build
+CMD serve -s build
