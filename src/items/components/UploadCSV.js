@@ -30,6 +30,12 @@ const useStyles = makeStyles((theme) => ({
     width: "35ch",
     marginBottom: theme.spacing(2),
   },
+  otherBox:{
+    width: "35ch",
+  },
+  fileNameTextbox:{
+    marginBottom:theme.spacing(2)
+  },
   icon: {
     fontSize: theme.spacing(3),
   },
@@ -47,6 +53,9 @@ export default function FormDialog() {
   const [message, setMessage] = React.useState("");
   const [status, setStatus] = React.useState("");
   const [snackStatus, setSnackStatus] = React.useState(false);
+  const [searchable, setSearchable] = React.useState("");
+  const [stringFacets,setStringFacets]=React.useState("")
+  const [numberFacets,setNumberFacets]=React.useState("")
   const classes = useStyles();
   const handleClickOpen = () => {
     setOpen(true);
@@ -54,8 +63,11 @@ export default function FormDialog() {
   React.useEffect(() => {
     setCategoryName("");
     setFilename("");
-    setFile(Object)
-    setSnackStatus(false)
+    setSearchable('')
+    setNumberFacets('')
+    setStringFacets('')
+    setFile(Object);
+    setSnackStatus(false);
   }, [open]);
 
   const handleClose = () => {
@@ -76,13 +88,12 @@ export default function FormDialog() {
   const handleSubmit = async () => {
     try {
       setLoading(true);
-      const result = await api.post(`/user/fileupload/${categoryName}`, file);
+      const {data:{formSchema,json}} = await api.post(`/user/fileupload/${categoryName}`,file);
+      const res = await api.post('/user/insertDataTodb',{formSchema,json,searchable,numberFacets,stringFacets,categoryName})
       setLoading(false);
       setMessage("Uploded successfully");
       setStatus("success");
       setSnackStatus(true);
-      console.log(result)
-      
     } catch (err) {
       setMessage("Uplod failed");
       setStatus("error");
@@ -111,7 +122,7 @@ export default function FormDialog() {
           <Dialog
             open={open}
             onClose={handleClose}
-            maxWidth="lg"
+            maxWidth="md"
             className={classes.dialog}
           >
             {loading && <LinearProgress color="secondary" />}
@@ -132,6 +143,7 @@ export default function FormDialog() {
                     variant="outlined"
                     label={<Typography variant="h5">File Name</Typography>}
                     value={fileName}
+                    className={classes.fileNameTextbox}
                   />
                 </Grid>
                 <Grid item>
@@ -147,6 +159,40 @@ export default function FormDialog() {
                     hidden={true}
                     onChange={handleUpload}
                   ></input>
+                </Grid>
+              </Grid>
+              <Grid container direction="column">
+                <Grid item>
+                  <TextField
+                    variant="outlined"
+                    label={<Typography variant="h5">Searchable</Typography>}
+                    value={searchable}
+                    onChange={(e) => setSearchable(e.target.value)}
+                    placeholder='same attribute as in CSV'
+                    className={classes.textBox}
+                  />
+                </Grid>
+                <Grid item>
+                  <TextField
+                    variant="outlined"
+                    label={<Typography variant="h5">String Facets</Typography>}
+                    value={stringFacets}
+                    onChange={(e) => setStringFacets(e.target.value)}
+                    className={classes.textBox}
+                    placeholder='same attribute as in CSV'
+
+                  />
+                </Grid>
+                <Grid item>
+                  <TextField
+                    variant="outlined"
+                    label={<Typography variant="h5">Number Facets</Typography>}
+                    value={numberFacets}
+                    onChange={(e) => setNumberFacets(e.target.value)}
+                    className={classes.textBox}
+                    placeholder='same attribute as in CSV'
+                    
+                  />
                 </Grid>
               </Grid>
             </DialogContent>
@@ -168,7 +214,7 @@ export default function FormDialog() {
                   categoryName.length === 0 || fileName.length === 0 || loading
                 }
               >
-                Submit
+                upload
               </Button>
             </DialogActions>
           </Dialog>
