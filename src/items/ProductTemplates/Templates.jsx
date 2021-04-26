@@ -15,8 +15,9 @@ class NewTemplate extends Component {
         collapsed: false,
         categoryId: null,
         templateId: null,
-        searchable:'',
-        filterable:''
+        searchable:[],
+        stringFacet:[],
+        numberFacet:[]
     };
     componentWillMount() {
       this.props.setFormData({ formData: {} })
@@ -64,7 +65,7 @@ class NewTemplate extends Component {
                 </Sider>
                 <Layout style={{ marginLeft: settings.leftSiderWidth }}>
                     <Header style={{ background: '#fff', padding: 0 }}>
-                        <Toolbar category={this.state.categoryId} template={this.state.templateId} filterable={this.state.filterable} searchable={this.state.searchable}/>
+                        <Toolbar category={this.state.categoryId} template={this.state.templateId} stringFacet={this.state.stringFacet} numberFacet={this.state.numberFacet} searchable={this.state.searchable}/>
                     </Header>
                     <Content style={{ minHeight: 280, padding: '12px 8px' }}>
                         <Card
@@ -72,10 +73,15 @@ class NewTemplate extends Component {
                             style={{ width: settings.formWidth, margin: '12px 8px', display: 'inline-block', verticalAlign: 'top' }}
                         >
                             <FormView />
-                            Filterable
-        <Input type="text" placeholder="filterable" onChange={(e)=>{
-          console.log(this.state.filterable)
-          this.setState({filterable:
+                            String Facet
+        <Input type="text" placeholder="String facet" onChange={(e)=>{
+          console.log(this.state.stringFacet)
+          this.setState({stringFacet:
+        e.target.value})}}/>
+        Number Facet
+        <Input type="text" placeholder="Number facet" onChange={(e)=>{
+          console.log(this.state.numberFacet)
+          this.setState({numberFacet:
         e.target.value})}}/>
         Searchable
         <Input type="text" placeholder="searchable" onChange={(e)=>this.setState({searchable:

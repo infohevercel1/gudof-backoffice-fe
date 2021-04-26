@@ -61,11 +61,12 @@ class Toolbar extends React.Component {
  
       const { data: category } = await api.get('/categories/'+this.state.categoryId)
       console.log(category)
-      const filterable = this.props.filterable
-      const searchable = this.props.searchable
+      const stringFacet = this.props.stringFacet.join(',')
+      const numberFacet =this.props.numberFacet.join(',')
+      const searchable =this.props.searchable.join(',')
       // Will receive category_name to add in name of template
       let name=`${category.name}-template`;
-      this.props.setTree({name, schema, uiSchema,filterable,searchable});
+      this.props.setTree({name, schema, uiSchema,stringFacet,numberFacet,searchable});
     }
   }
 
@@ -80,7 +81,8 @@ class Toolbar extends React.Component {
         category_id: this.state.categoryId,
         formSchema: JSON.stringify(schema),
         uiSchema: (uiSchema !== undefined) ? JSON.stringify(uiSchema) : "",
-        filterable:this.props.filterable,
+        stringFacets:this.props.stringFacet,
+        numericFacets:this.props.numberFacet,
         searchable:this.props.searchable
       };
     try {
@@ -138,14 +140,17 @@ class Toolbar extends React.Component {
   };
 
   renderThisTemplate = async (_id) => {
-    const filterable = this.props.filterable
-      const searchable = this.props.searchable
+    
+    const stringFacet = this.props.stringFacet.join(',')
+      const numberFacet =this.props.numberFacet.join(',')
+      const searchable =this.props.searchable.join(',')
+      console.log(stringFacet,numberFacet)
     let [thisTemplate] = this.state.templates.filter(template => template._id === _id)
     let schema = JSON.parse(thisTemplate.formSchema), uiSchema = {}, name = thisTemplate.name
     if (thisTemplate.uiSchema !== "") {
       uiSchema = JSON.parse(thisTemplate.uiSchema)
     }
-    this.props.setTree({ name, schema, uiSchema,filterable,searchable });
+    this.props.setTree({ name, schema, uiSchema,stringFacet,numberFacet,searchable });
     console.log("tree",this.props.tree)
     this.setState({ visible: false, existingTemplate: true, templateId: thisTemplate._id })
   }
