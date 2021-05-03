@@ -1,5 +1,5 @@
 import React from "react";
-import { Upload, Button } from "antd";
+import { Button } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { instance as api } from "../../axios";
 import { notification } from "antd";

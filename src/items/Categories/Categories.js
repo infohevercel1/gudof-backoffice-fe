@@ -19,6 +19,7 @@ import Search from "./Search";
 import NewRootCategory from "./New/RootCategory";
 import UploadCSV from "../components/UploadCSV";
 import UploadButton from "../components/uploadComponent"
+import DownloadButton from '../components/downloadButton'
 
 class Categories extends Component {
   constructor(props) {
@@ -281,13 +282,15 @@ class Categories extends Component {
               buttons: [
                 <Button
                   onClick={async () => {
+                    console.log("node value",node)
                     this.newModalVisibility(true, node, path);
                   }}
                 >
                   Add Child
                 </Button>,
-                node.template_id==null?
+                node.products==0?
                 <UploadButton>UploadCSV</UploadButton>:<Button>Add More Products</Button>,
+                node.products==0?null:<DownloadButton category_id={node._id} name={node.name} >Download template</DownloadButton>,
                 // If a category has children or a category has an existing template, it cannot be deleted.
                 !node.children && node.template_id == null ? (
                   <Button
