@@ -289,7 +289,7 @@ class Categories extends Component {
                   Add Child
                 </Button>,
                 node.products==0?
-                <UploadButton>UploadCSV</UploadButton>:<Button>Add More Products</Button>,
+                <UploadButton category_id={node._id} >UploadCSV</UploadButton>:<Button>Add More Products</Button>,
                 node.products==0?null:<DownloadButton category_id={node._id} name={node.name} >Download template</DownloadButton>,
                 // If a category has children or a category has an existing template, it cannot be deleted.
                 !node.children && node.template_id == null ? (
