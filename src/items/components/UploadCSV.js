@@ -1,48 +1,10 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import Button from "@material-ui/core/Button";
-import TextField from "@material-ui/core/TextField";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
-import CloudUploadIcon from "@material-ui/icons/CloudUpload";
-import IconButton from "@material-ui/core/IconButton";
-import LinearProgress from "@material-ui/core/LinearProgress";
-import { instance as api } from "../../axios";
-import Snackbar from "./SnackBar";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    "& > *": {
-      marginTop: theme.spacing(4),
-    },
-  },
-  button: {
-    marginLeft: theme.spacing(10),
-    alignSelf: "center",
-  },
-  dialog: {},
-  textBox: {
-    marginRight: theme.spacing(20),
-    width: "35ch",
-    marginBottom: theme.spacing(2),
-  },
-  otherBox:{
-    width: "35ch",
-  },
-  fileNameTextbox:{
-    marginBottom:theme.spacing(2)
-  },
-  icon: {
-    fontSize: theme.spacing(3),
-  },
-  SubmitAndCancel: {
-    margin: theme.spacing(3),
-  },
-}));
+
+import { instance as api } from "../../axios";
+import { Button,notification, Input ,Row,Col, Alert} from "antd";
+import Modal from "antd/lib/modal/Modal";
+import { LoadingOutlined, UploadOutlined } from "@ant-design/icons";
 
 export default function FormDialog() {
   const [open, setOpen] = React.useState(false);
@@ -56,7 +18,6 @@ export default function FormDialog() {
   const [searchable, setSearchable] = React.useState("");
   const [stringFacets,setStringFacets]=React.useState("")
   const [numberFacets,setNumberFacets]=React.useState("")
-  const classes = useStyles();
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -85,6 +46,7 @@ export default function FormDialog() {
     formData.append("file", file, file.name);
     setFile(formData);
   };
+  const textboxStyle={width:300,margin:10,marginLeft:0}
   const handleSubmit = async () => {
     try {
       setLoading(true);
@@ -103,123 +65,99 @@ export default function FormDialog() {
       console.log(err);
     }
   };
+  const showNotification =( msg,status) => {
+    return notification['success']({
+      message: msg,
+      description: 'This csv is uploaded in the database.'
+  })
+  }
   return (
-    <div className={classes.root}>
-      <Grid container spacing={5}>
-        <Grid item lg={4} md={4} sm={3} xs={2}></Grid>
-        <Grid item lg={4} md={4} sm={3} xs={2}></Grid>
-        <Grid item>
+    <div>
+      <br/>
+      <Row  gutter={{lg:4,md:4,sm:3,xs:2}}>
+        <Col span={16}></Col>
+        <Col >
           <Button
             variant="contained"
-            color="primary"
+            type="primary"
             onClick={handleClickOpen}
             size="large"
-            className={classes.button}
           >
             Upload CSV
           </Button>
-          {snackStatus && <Snackbar message={message} status={status} />}
-          <Dialog
-            open={open}
-            onClose={handleClose}
+          {snackStatus && showNotification(message,status)}
+          <Modal
+          okButtonProps={{disabled:
+            categoryName.length === 0 || fileName.length === 0 || loading
+          }}
+            title="Upload CSV file"
+            visible={open}
+            onOk={handleSubmit}
+            onCancel={handleClose}
             maxWidth="md"
-            className={classes.dialog}
+            okText="Submit"
           >
-            {loading && <LinearProgress color="secondary" />}
-            <DialogTitle id="form-dialog-title">
-              <Typography variant="h4">Upload CSV file</Typography>
-            </DialogTitle>
-            <DialogContent>
-              <TextField
+            {loading && <LoadingOutlined/>}
+         
+              <Input
                 variant="outlined"
-                label={<Typography variant="h5">Category Name</Typography>}
-                className={classes.textBox}
+                placeholder="Category Name"
+                style={textboxStyle}
                 onChange={(e) => setCategoryName(e.target.value)}
                 value={categoryName}
               />
-              <Grid container direction="row">
-                <Grid item>
-                  <TextField
+              <Row style={textboxStyle}>
+                <Col item>
+                  <Input
                     variant="outlined"
-                    label={<Typography variant="h5">File Name</Typography>}
+                    placeholder="File Name"
                     value={fileName}
-                    className={classes.fileNameTextbox}
                   />
-                </Grid>
-                <Grid item>
-                  <IconButton
-                    color="secondary"
-                    onClick={handleUploadButtonClick}
-                  >
-                    <CloudUploadIcon className={classes.icon} />
-                  </IconButton>
+                </Col>
+                <Col item>
+                  
+                  <Button icon={<UploadOutlined/>} 
+                  type="primary" onClick={handleUploadButtonClick}></Button>
                   <input
                     type="file"
                     id="uploadBtn"
                     hidden={true}
                     onChange={handleUpload}
                   ></input>
-                </Grid>
-              </Grid>
-              <Grid container direction="column">
-                <Grid item>
-                  <TextField
+                </Col>
+              </Row>
+              <Col>
+                <Row>
+                  <Input
                     variant="outlined"
-                    label={<Typography variant="h5">Searchable</Typography>}
                     value={searchable}
                     onChange={(e) => setSearchable(e.target.value)}
-                    placeholder='same attribute as in CSV'
-                    className={classes.textBox}
+                    placeholder='Searchable - same attribute as in CSV'
+                    style={textboxStyle}
                   />
-                </Grid>
-                <Grid item>
-                  <TextField
+                </Row>
+                <Row item>
+                  <Input
                     variant="outlined"
-                    label={<Typography variant="h5">String Facets</Typography>}
                     value={stringFacets}
                     onChange={(e) => setStringFacets(e.target.value)}
-                    className={classes.textBox}
-                    placeholder='same attribute as in CSV'
-
+                    placeholder='StringFacets - same attribute as in CSV'
+                    style={textboxStyle}
                   />
-                </Grid>
-                <Grid item>
-                  <TextField
+                </Row>
+                <Row item>
+                  <Input
                     variant="outlined"
-                    label={<Typography variant="h5">Number Facets</Typography>}
                     value={numberFacets}
                     onChange={(e) => setNumberFacets(e.target.value)}
-                    className={classes.textBox}
-                    placeholder='same attribute as in CSV'
-                    
+                    placeholder='Number Facet - same attribute as in CSV'
+                    style={textboxStyle}
                   />
-                </Grid>
-              </Grid>
-            </DialogContent>
-            <DialogActions className={classes.SubmitAndCancel}>
-              <Button
-                onClick={handleClose}
-                color="primary"
-                variant="outlined"
-                size="large"
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleSubmit}
-                color="primary"
-                variant="contained"
-                size="large"
-                disabled={
-                  categoryName.length === 0 || fileName.length === 0 || loading
-                }
-              >
-                upload
-              </Button>
-            </DialogActions>
-          </Dialog>
-        </Grid>
-      </Grid>
+                </Row>
+              </Col>
+          </Modal>
+        </Col>
+      </Row>
     </div>
   );
 }
