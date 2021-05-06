@@ -61,9 +61,9 @@ class Toolbar extends React.Component {
  
       const { data: category } = await api.get('/categories/'+this.state.categoryId)
       console.log(category)
-      const stringFacet = this.props.stringFacet.join(',')
-      const numberFacet =this.props.numberFacet.join(',')
-      const searchable =this.props.searchable.join(',')
+      const stringFacet = this.props.stringFacet
+      const numberFacet =this.props.numberFacet
+      const searchable =this.props.searchable
       // Will receive category_name to add in name of template
       let name=`${category.name}-template`;
       this.props.setTree({name, schema, uiSchema,stringFacet,numberFacet,searchable});

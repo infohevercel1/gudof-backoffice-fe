@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
 import './css';
-import { Layout, Tabs, Card ,Input} from 'antd';
+import { Layout, Tabs, Card ,Input, Button,Checkbox} from 'antd';
 import Tree from './Tree';
 import { FormView } from "./views";
 import NodeEditor from './Editor';
@@ -17,7 +17,10 @@ class NewTemplate extends Component {
         templateId: null,
         searchable:[],
         stringFacet:[],
-        numberFacet:[]
+        numberFacet:[],
+        schema:Object.values(this.props.schema.properties).map(function (key) {
+          return {label:key['title'],value:key['title']};
+      })
     };
     componentWillMount() {
       this.props.setFormData({ formData: {} })
@@ -74,18 +77,20 @@ class NewTemplate extends Component {
                         >
                             <FormView />
                             String Facet
-        <Input type="text" placeholder="String facet" onChange={(e)=>{
-          console.log(this.state.stringFacet)
-          this.setState({stringFacet:
-        e.target.value})}}/>
-        Number Facet
-        <Input type="text" placeholder="Number facet" onChange={(e)=>{
-          console.log(this.state.numberFacet)
-          this.setState({numberFacet:
-        e.target.value})}}/>
-        Searchable
-        <Input type="text" placeholder="searchable" onChange={(e)=>this.setState({searchable:
-        e.target.value})}/>
+                            <Checkbox.Group options={Object.values(this.props.schema.properties).map(function (val) {
+                                return {label:val['title'],value:val['title']};
+                            })} onChange={(e)=>{this.setState({stringFacet:e})}}/>
+                          
+                              Number Facet
+                              <Checkbox.Group options={Object.values(this.props.schema.properties).map(function (val) {
+                                return {label:val['title'],value:val['title']};
+                            })} onChange={(e)=>{this.setState({numberFacet:e})}}/>
+
+                              Searchable
+                              <Checkbox.Group options={Object.values(this.props.schema.properties).map(function (val) {
+                                return {label:val['title'],value:val['title']};
+                            })} onChange={(e)=>{this.setState({searchable:e})}}/>
+
                         </Card>
                         <br/>
         
@@ -137,7 +142,14 @@ class NewTemplate extends Component {
     }
 }
 
-export default connect(({ activeNodeKey, settings }) => ({
+export default connect(({
+  tree: {
+    present: [{ name, schema, uiSchema }],
+  },
+  formData,
+  settings: { isLiveValidate },
+activeNodeKey, settings }) => ({
+  name,schema,uiSchema,formData,
   activeNodeKey,
   settings,
 }), (dispatch) => ({
