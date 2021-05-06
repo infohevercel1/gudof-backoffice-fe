@@ -1,19 +1,22 @@
-import React,{useState} from "react";
+import React, { useState } from "react";
 import { Button } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { instance as api } from "../../axios";
-import { notification,Spin} from "antd";
+import { notification, Upload } from "antd";
 
 export default function (props) {
   const { category_id } = props;
-  const [loading,setLoading]=useState(false)
-  const handleUpload = async (e) => {
-    const file = e.target.files[0];
-    const formData = new FormData();
-    formData.append("file", file, file.name);
+  const [loading, setLoading] = useState(false);
+
+  const handleUpload = async (file) => {
+    console.log(category_id)
+    const formData =new FormData()
+    formData.append('file',file,file.name)
     try {
-      setLoading(true)
-      const {data:{json,formSchema}} = await api.post("user/fileupload",formData);
+      setLoading(true);
+      const {
+        data: { json, formSchema },
+      } = await api.post("user/fileupload",formData);
 
       notification["success"]({
         message: "file uploaded successfully",
@@ -23,35 +26,40 @@ export default function (props) {
         json,
         formSchema,
       });
-      console.log(response)
+      console.log(response);
       notification["success"]({
         message: response.data.message,
       });
-      setLoading(false)
-
+      setLoading(false);
     } catch (err) {
-      setLoading(false)
+      setLoading(false);
       notification["error"]({
-        message:err.response.data.message===undefined?err.message:err.response.data.message,
+        message:
+          err.response.data.message === undefined
+            ? err.message
+            : err.response.data.message,
       });
     }
   };
-  const handleUploadButtonClick = () => {
-    const button = document.getElementById("uploadBtn");
-    button.click();
+  const prop = {
+    name: "file",
+    action: handleUpload,
+    headers: {
+      authorization: "authorization-text",
+    },
+    showUploadList:false
   };
   return (
     <div>
-      <Button icon={<UploadOutlined />} onClick={handleUploadButtonClick} disabled={loading}>
-        {!loading?null:<Spin/>}
-        Upload CSV
-      </Button>
-      <input
-        type="file"
-        id="uploadBtn"
-        hidden={true}
-        onChange={handleUpload}
-      ></input>
+      <Upload {...prop}>
+        <Button
+          icon={<UploadOutlined />}
+          disabled={loading}
+          loading={loading}
+        >
+          UploadCSV
+        </Button>
+      </Upload>
     </div>
   );
 }

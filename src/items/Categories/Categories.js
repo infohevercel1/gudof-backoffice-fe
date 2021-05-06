@@ -20,6 +20,8 @@ import NewRootCategory from "./New/RootCategory";
 import UploadCSV from "../components/UploadCSV";
 import UploadButton from "../components/uploadComponent"
 import DownloadButton from '../components/downloadButton'
+import AddMoreProduct from '../components/addMoreProducts'
+
 
 class Categories extends Component {
   constructor(props) {
@@ -54,7 +56,8 @@ class Categories extends Component {
     this.deleteModalVisibility = this.deleteModalVisibility.bind(this);
     this.deleteCategory = this.deleteCategory.bind(this);
   }
-  async componentDidMount() {
+  
+  async componentDidMount(){
     const { data } = await api.get("/categories");
     let categories = data;
     for (var i = 0; i < categories.length; i++) {
@@ -175,7 +178,8 @@ class Categories extends Component {
     newCategory.ModalVisiblity = false;
     newCategory.node = null;
     newCategory.path = null;
-    this.setState({ newCategory });
+    console.log(newCategory)
+    this.setState({newCategory});
   }
 
   deleteModalVisibility(bool, node, path) {
@@ -272,7 +276,6 @@ class Categories extends Component {
         <NewRootCategory
           onClick={() => this.newModalVisibility(true, null, null)}
         />
-        {console.log(this.state.categories)}
         {this.state.categories.length ? (
           <SortableTree
             canDrag={false}
@@ -289,7 +292,7 @@ class Categories extends Component {
                   Add Child
                 </Button>,
                 node.products==0?
-                <UploadButton category_id={node._id} >UploadCSV</UploadButton>:<Button>Add More Products</Button>,
+                <UploadButton category_id={node._id}/ >:(<AddMoreProduct category_id={node._id}/>),
                 node.products==0?null:<DownloadButton category_id={node._id} name={node.name} >Download template</DownloadButton>,
                 // If a category has children or a category has an existing template, it cannot be deleted.
                 !node.children && node.template_id == null ? (
