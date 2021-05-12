@@ -5,7 +5,7 @@ import { instance as api } from "../../axios";
 import { notification, Upload } from "antd";
 
 export default function (props) {
-  const { category_id } = props;
+  const { category_id,name } = props;
   const [loading, setLoading] = useState(false);
 
   const handleUpload = async (file) => {
@@ -25,6 +25,7 @@ export default function (props) {
         category_id,
         json,
         formSchema,
+        category_name:name
       });
       console.log(response);
       notification["success"]({
