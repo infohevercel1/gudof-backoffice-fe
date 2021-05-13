@@ -5,7 +5,7 @@ import { instance as api } from "../../axios";
 import { notification, Upload } from "antd";
 
 export default function (props) {
-  const { category_id,name } = props;
+  const { category_id,name,addedProducts} = props;
   const [loading, setLoading] = useState(false);
 
   const handleUpload = async (file) => {
@@ -36,11 +36,12 @@ export default function (props) {
       setLoading(false);
       notification["error"]({
         message:
-          err.response.data.message === undefined
+          err.response.data === undefined
             ? err.message
             : err.response.data.message,
       });
     }
+    addedProducts()
   };
   const prop = {
     name: "file",

@@ -47,6 +47,7 @@ class Categories extends Component {
         path: null,
       },
       addedNewCategory: false,
+      addedNewProducts: false,
     };
     this.saveToBackend = this.saveToBackend.bind(this);
     this.newModalVisibility = this.newModalVisibility.bind(this);
@@ -56,9 +57,44 @@ class Categories extends Component {
     this.deleteModalVisibility = this.deleteModalVisibility.bind(this);
     this.deleteCategory = this.deleteCategory.bind(this);
     this.getOneCategory = this.getOneCategory.bind(this);
+    this.handleAddProducts=this.handleAddProducts.bind(this)
   }
 
-  async componentDidUpdate(prevProps, prevState, snapShort) {}
+  async componentDidUpdate(prevProps, prevState, snapShort) {
+    if (this.state.addedNewProducts === true) {
+      const { data } = await api.get("/categories");
+      let categories = data;
+      for (var i = 0; i < categories.length; i++) {
+        // To remove certain null values. This bug had been rectified in the backend.
+        // Condition still kept as a double check
+        if (categories[i] === null) {
+          categories.splice(i, 1);
+          i--;
+          continue;
+        }
+        categories[i].title = categories[i].name;
+      }
+
+      function getKey(node) {
+        return node._id;
+      }
+
+      function getParentKey(node) {
+        return node.parent_id;
+      }
+
+      const tree = getTreeFromFlatData({
+        flatData: categories,
+        getKey,
+        getParentKey,
+        rootKey: null,
+      });
+      categories = tree; //populate this from API.
+      this.setState({ categories });
+      this.props.setOptions({ options: categories });
+      this.setState({addedNewProducts:false})
+    }
+  }
 
   async componentDidMount() {
     const { data } = await api.get("/categories");
@@ -208,10 +244,12 @@ class Categories extends Component {
     this.setState({ deleteCategory });
   }
 
-  async   deleteCategory(bool) {
+  async deleteCategory(bool) {
     const getNodeKey = ({ treeIndex }) => treeIndex;
+    this.setState({ removeButtonLoading: true });
     let { node, path } = this.state.deleteCategory;
     await this.deleteFromBackend(node._id);
+    this.setState({ removeButtonLoading: false });
     this.setState((state) => ({
       categories: removeNodeAtPath({
         treeData: state.categories,
@@ -248,7 +286,9 @@ class Categories extends Component {
     };
     this.setState({ deleteTemplate });
   };
-
+  handleAddProducts(){
+    this.setState({addedNewProducts:true})
+  }
   render() {
     const { searchString, searchFocusIndex, searchFoundCount } = this.state;
 
@@ -306,7 +346,7 @@ class Categories extends Component {
                   Add Child
                 </Button>,
                 node.products == 0 ? (
-                  <UploadButton category_id={node._id} name={node.name} />
+                  <UploadButton category_id={node._id} name={node.name} addedProducts={this.handleAddProducts} />
                 ) : (
                   <AddMoreProduct category_id={node._id} />
                 ),
@@ -318,7 +358,7 @@ class Categories extends Component {
                 // If a category has children or a category has an existing template, it cannot be deleted.
                 !node.children && node.template_id == null ? (
                   <Button
-                    onClick={(event) => {
+                    onClick={() => {
                       this.deleteModalVisibility(true, node, path);
                     }}
                   >
