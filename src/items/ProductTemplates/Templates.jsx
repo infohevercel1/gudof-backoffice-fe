@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
 import './css';
-import { Layout, Tabs, Card ,Input} from 'antd';
+import { Layout, Tabs, Card ,Input, Button,Checkbox} from 'antd';
 import Tree from './Tree';
 import { FormView } from "./views";
 import NodeEditor from './Editor';
@@ -15,8 +15,12 @@ class NewTemplate extends Component {
         collapsed: false,
         categoryId: null,
         templateId: null,
-        searchable:'',
-        filterable:''
+        searchable:[],
+        stringFacet:[],
+        numberFacet:[],
+        schema:Object.values(this.props.schema.properties).map(function (key) {
+          return {label:key['title'],value:key['title']};
+      })
     };
     componentWillMount() {
       this.props.setFormData({ formData: {} })
@@ -64,7 +68,7 @@ class NewTemplate extends Component {
                 </Sider>
                 <Layout style={{ marginLeft: settings.leftSiderWidth }}>
                     <Header style={{ background: '#fff', padding: 0 }}>
-                        <Toolbar category={this.state.categoryId} template={this.state.templateId} filterable={this.state.filterable} searchable={this.state.searchable}/>
+                        <Toolbar category={this.state.categoryId} template={this.state.templateId} stringFacet={this.state.stringFacet} numberFacet={this.state.numberFacet} searchable={this.state.searchable}/>
                     </Header>
                     <Content style={{ minHeight: 280, padding: '12px 8px' }}>
                         <Card
@@ -72,14 +76,21 @@ class NewTemplate extends Component {
                             style={{ width: settings.formWidth, margin: '12px 8px', display: 'inline-block', verticalAlign: 'top' }}
                         >
                             <FormView />
-                            Filterable
-        <Input type="text" placeholder="filterable" onChange={(e)=>{
-          console.log(this.state.filterable)
-          this.setState({filterable:
-        e.target.value})}}/>
-        Searchable
-        <Input type="text" placeholder="searchable" onChange={(e)=>this.setState({searchable:
-        e.target.value})}/>
+                            String Facet
+                            <Checkbox.Group options={Object.values(this.props.schema.properties).map(function (val) {
+                                return {label:val['title'],value:val['title']};
+                            })} onChange={(e)=>{this.setState({stringFacet:e})}}/>
+                          
+                              Number Facet
+                              <Checkbox.Group options={Object.values(this.props.schema.properties).map(function (val) {
+                                return {label:val['title'],value:val['title']};
+                            })} onChange={(e)=>{this.setState({numberFacet:e})}}/>
+
+                              Searchable
+                              <Checkbox.Group options={Object.values(this.props.schema.properties).map(function (val) {
+                                return {label:val['title'],value:val['title']};
+                            })} onChange={(e)=>{this.setState({searchable:e})}}/>
+
                         </Card>
                         <br/>
         
@@ -131,7 +142,14 @@ class NewTemplate extends Component {
     }
 }
 
-export default connect(({ activeNodeKey, settings }) => ({
+export default connect(({
+  tree: {
+    present: [{ name, schema, uiSchema }],
+  },
+  formData,
+  settings: { isLiveValidate },
+activeNodeKey, settings }) => ({
+  name,schema,uiSchema,formData,
   activeNodeKey,
   settings,
 }), (dispatch) => ({
