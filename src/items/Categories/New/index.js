@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { Modal, Input, Form } from 'antd';
 
 const NewCategoryModal = ({ visibility, setVisibility, saveNewCategory }) => {
 
     let [name, setName] = useState('')
     let [image, setImage] = useState('')
-
+    let [loading,setLoading]=useState(false)
     const handleOk = e => {
+        setLoading(true)
         let newName = name;
         let newImage = image;
         setName('');
@@ -23,6 +24,7 @@ const NewCategoryModal = ({ visibility, setVisibility, saveNewCategory }) => {
             title="Add Category Name"
             visible={visibility}
             onOk={handleOk}
+            confirmLoading={loading}
             onCancel={handleCancel}
             destroyOnClose
         >

@@ -18,10 +18,9 @@ import DeleteTemplateModal from "./Delete/DeleteTemplate";
 import Search from "./Search";
 import NewRootCategory from "./New/RootCategory";
 import UploadCSV from "../components/UploadCSV";
-import UploadButton from "../components/uploadComponent"
-import DownloadButton from '../components/downloadButton'
-import AddMoreProduct from '../components/addMoreProducts'
-
+import UploadButton from "../components/uploadComponent";
+import DownloadButton from "../components/downloadButton";
+import AddMoreProduct from "../components/addMoreProducts";
 
 class Categories extends Component {
   constructor(props) {
@@ -47,6 +46,8 @@ class Categories extends Component {
         node: null,
         path: null,
       },
+      addedNewCategory: false,
+      addedNewProducts: false,
     };
     this.saveToBackend = this.saveToBackend.bind(this);
     this.newModalVisibility = this.newModalVisibility.bind(this);
@@ -55,9 +56,47 @@ class Categories extends Component {
     this.deleteFromBackend = this.deleteFromBackend.bind(this);
     this.deleteModalVisibility = this.deleteModalVisibility.bind(this);
     this.deleteCategory = this.deleteCategory.bind(this);
+    this.getOneCategory = this.getOneCategory.bind(this);
+    this.handleAddProducts=this.handleAddProducts.bind(this)
   }
-  
-  async componentDidMount(){
+
+  async componentDidUpdate(prevProps, prevState, snapShort) {
+    if (this.state.addedNewProducts === true) {
+      const { data } = await api.get("/categories");
+      let categories = data;
+      for (var i = 0; i < categories.length; i++) {
+        // To remove certain null values. This bug had been rectified in the backend.
+        // Condition still kept as a double check
+        if (categories[i] === null) {
+          categories.splice(i, 1);
+          i--;
+          continue;
+        }
+        categories[i].title = categories[i].name;
+      }
+
+      function getKey(node) {
+        return node._id;
+      }
+
+      function getParentKey(node) {
+        return node.parent_id;
+      }
+
+      const tree = getTreeFromFlatData({
+        flatData: categories,
+        getKey,
+        getParentKey,
+        rootKey: null,
+      });
+      categories = tree; //populate this from API.
+      this.setState({ categories });
+      this.props.setOptions({ options: categories });
+      this.setState({addedNewProducts:false})
+    }
+  }
+
+  async componentDidMount() {
     const { data } = await api.get("/categories");
     let categories = data;
     for (var i = 0; i < categories.length; i++) {
@@ -91,7 +130,7 @@ class Categories extends Component {
   }
 
   async deleteFromBackend(id) {
-    const resp = await api.delete("/categories/" + id);
+    const resp = await api.delete(`/categories/${id}`);
     if (resp.status === 204) {
       notification["success"]({
         message: "Category Deleted",
@@ -111,17 +150,23 @@ class Categories extends Component {
             message: "New Category Saved",
             description: "The new category has been added to the database!",
           });
-          console.log(resp)
-          return true;
+          console.log(resp);
+
+          return { status: true, id: resp.data.id };
         } else {
-          return false;
+          return { status: false };
         }
       })
       .catch((e) => false);
   }
-
+  async getOneCategory(id) {
+    console.log(typeof id, id);
+    return api.get(`/categories/${id}`).then((data) => data);
+  }
   newModalVisibility(bool, node, path) {
-    let newCategory = this.state.newCategory;
+    var newCategory = {};
+    newCategory.path = null;
+    newCategory.node = null;
     newCategory.ModalVisiblity = bool;
     // We need to save the node and path of the current node so that
     // the modal will send the data and we can have the parent_id to send to the backend.
@@ -132,6 +177,7 @@ class Categories extends Component {
       newCategory.path = path;
     }
     this.setState({ newCategory });
+    console.log(this.state.newCategory);
   }
 
   async saveNewCategory(name, image) {
@@ -143,19 +189,23 @@ class Categories extends Component {
     if (!title) {
       return;
     }
-    const newNode = {
+    let newNode = {
       title,
       image: image,
       parent_id: node ? node._id : null,
       path: node ? node.path + "/" + title : title,
     };
 
-    const savedToBackend = await this.saveToBackend(newNode);
-    if (!savedToBackend) {
+    const { status, id } = await this.saveToBackend(newNode);
+    if (!status) {
       return notification["error"]({
         message: "An Error Occurred",
         description: "The new category was not added to the database!",
       });
+    } else {
+      const { data } = await this.getOneCategory(String(id));
+      newNode = { ...data, ...newNode };
+      console.log(newNode);
     }
     if (node === null) {
       this.setState((state) => ({
@@ -178,8 +228,8 @@ class Categories extends Component {
     newCategory.ModalVisiblity = false;
     newCategory.node = null;
     newCategory.path = null;
-    console.log(newCategory)
-    this.setState({newCategory});
+    console.log(newCategory);
+    this.setState({ newCategory });
   }
 
   deleteModalVisibility(bool, node, path) {
@@ -194,9 +244,12 @@ class Categories extends Component {
     this.setState({ deleteCategory });
   }
 
-  deleteCategory(bool) {
+  async deleteCategory(bool) {
     const getNodeKey = ({ treeIndex }) => treeIndex;
+    this.setState({ removeButtonLoading: true });
     let { node, path } = this.state.deleteCategory;
+    await this.deleteFromBackend(node._id);
+    this.setState({ removeButtonLoading: false });
     this.setState((state) => ({
       categories: removeNodeAtPath({
         treeData: state.categories,
@@ -204,7 +257,6 @@ class Categories extends Component {
         getNodeKey,
       }),
     }));
-    this.deleteFromBackend(node._id);
   }
 
   deleteTemplate = async () => {
@@ -234,7 +286,9 @@ class Categories extends Component {
     };
     this.setState({ deleteTemplate });
   };
-
+  handleAddProducts(){
+    this.setState({addedNewProducts:true})
+  }
   render() {
     const { searchString, searchFocusIndex, searchFoundCount } = this.state;
 
@@ -285,19 +339,26 @@ class Categories extends Component {
               buttons: [
                 <Button
                   onClick={async () => {
-                    console.log("node value",node)
+                    console.log("node value", node);
                     this.newModalVisibility(true, node, path);
                   }}
                 >
                   Add Child
                 </Button>,
-                node.products==0?
-                <UploadButton category_id={node._id}/ >:(<AddMoreProduct category_id={node._id}/>),
-                node.products==0?null:<DownloadButton category_id={node._id} name={node.name} >Download template</DownloadButton>,
+                node.products == 0 ? (
+                  <UploadButton category_id={node._id} name={node.name} addedProducts={this.handleAddProducts} />
+                ) : (
+                  <AddMoreProduct category_id={node._id} />
+                ),
+                node.products == 0 ? null : (
+                  <DownloadButton category_id={node._id} name={node.name}>
+                    Download template
+                  </DownloadButton>
+                ),
                 // If a category has children or a category has an existing template, it cannot be deleted.
                 !node.children && node.template_id == null ? (
                   <Button
-                    onClick={(event) => {
+                    onClick={() => {
                       this.deleteModalVisibility(true, node, path);
                     }}
                   >
