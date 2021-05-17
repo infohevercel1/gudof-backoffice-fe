@@ -18,6 +18,8 @@ import {
   UnorderedListOutlined,
   DatabaseFilled,
 } from "@ant-design/icons";
+import SoftProductList from "./items/SoftDeletedProducts/List/ProductList";
+import { Delete } from "@material-ui/icons";
 
 const { Content } = Layout;
 class App extends Component {
@@ -75,7 +77,10 @@ class App extends Component {
             <Menu.Item key="product" icon={<DatabaseFilled />}>
               <Link to="/product">Products</Link>
             </Menu.Item>
-            <Menu.Item key="product" icon={<DatabaseFilled />}></Menu.Item>
+            {/* <Menu.Item key="product" icon={<DatabaseFilled />}></Menu.Item> */}
+            <Menu.Item key="soft" icon={<Delete />}>
+              <Link to="/softdeleted">Soft Deleted Products</Link>
+            </Menu.Item>
           </Menu>
           <Layout>
             <Content>
@@ -87,6 +92,7 @@ class App extends Component {
               <Route path="/viewtemplates" component={List} />
               <Route path="/product" component={ProductList} />
               <Route path="/addproduct/" component={Products} />
+              <Route path="/softdeleted" component={SoftProductList}/>
             </Content>
           </Layout>
         </div>
