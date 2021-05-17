@@ -18,9 +18,7 @@ class ProductList extends Component {
             columns: []
         }
     }
-
-    async componentDidMount () {
-    try {
+    async refreshProducts() {
         const query = new URLSearchParams(this.props.location.search)
         let categoryId = query.get('category');
         let products = []
@@ -35,34 +33,43 @@ class ProductList extends Component {
             console.log(data)
             products = data
         }
-        // For earlier products that didn't have any data
-        products = products.filter(prod => prod.data !== "{}")
-        const data = products.map(product => {
-            return JSON.parse(product.data);
-        })
-        const names = products.map(product => {
-            if(JSON.parse(product.data).manufacturer === undefined) {
-                // For earlier products that didn't have manuf, model defined.
-                product.manufacturer = '--Not defined--'
-            }
-            let updates = product.meta.update;
-            return {
-                manufacturer:JSON.parse(product.data).manufacturer,
-                model:JSON.parse(product.data).model,
-                name: JSON.parse(product.data).manufacturer+ "-" +JSON.parse(product.data).model,
-                image:JSON.parse(product.data).image,
-                description:JSON.parse(product.data).description,
-                price:JSON.parse(product.data).price, 
-                data: JSON.parse(product.data), 
-                created_at: product.meta.created_at,
-                updated_at: updates.length > 0 ? updates.slice(updates.length-1)[0].updated_at : '-',
-                template: product.template,
-                category: product.category,
-                id: product._id,
-                key: product._id
-            };
-        })
-        console.log("names",names)
+        
+            
+            // For earlier products that didn't have any data
+            products = products.filter(prod => prod.data !== "{}")
+            const sdatas = products.map(product => {
+                return JSON.parse(product.data);
+            })
+            const namesm = products.map(product => {
+                if(JSON.parse(product.data).manufacturer === undefined) {
+                    // For earlier products that didn't have manuf, model defined.
+                    product.manufacturer = '--Not defined--'
+                }
+                let updates = product.meta.update;
+                return {
+                    manufacturer:JSON.parse(product.data).manufacturer,
+                    model:JSON.parse(product.data).model,
+                    name: JSON.parse(product.data).manufacturer+ "-" +JSON.parse(product.data).model,
+                    image:JSON.parse(product.data).image,
+                    description:JSON.parse(product.data).description,
+                    price:JSON.parse(product.data).price, 
+                    data: JSON.parse(product.data), 
+                    created_at: product.meta.created_at,
+                    updated_at: updates.length > 0 ? updates.slice(updates.length-1)[0].updated_at : '-',
+                    template: product.template,
+                    category: product.category,
+                    id: product._id,
+                    key: product._id
+                };
+            })
+            this.setState({products:{data:sdatas,names:namesm}})
+    }
+    async componentDidMount () {
+    try {
+        await this.refreshProducts()
+        let names = this.state.products.names
+        let data = this.state.products.data
+
         const columns = [
             {
                 title: 'Name', 
@@ -128,6 +135,8 @@ class ProductList extends Component {
                             message: 'Product Deleted',
                             description: 'This product was deleted from the database.'
                         })
+                        await this.refreshProducts()
+                        // window.location.href = 'product'
                     } else {
                         notification['error']({
                             message: 'An Error Occurred',
@@ -138,6 +147,7 @@ class ProductList extends Component {
                 )
             }
         })
+        
         this.setState({products: {data, names}, columns, dataFetching: false})
     } catch (e) {
         console.log(e);
@@ -167,6 +177,7 @@ class ProductList extends Component {
         )
     }
 }
+
 
 export default connect(({
     formData
