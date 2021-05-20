@@ -15,12 +15,13 @@ const List = () => {
             try {
                 let { data: templates } = await api.get('/templates')
                 templates = templates.filter(el => el.category_id !== null);
+                console.log(templates)
                 templates = templates.map((el) => {
                     return {
                         name: el.name,
                         category: el.category_id.name,
                         key: el._id,
-                        category_id: el.category_id._id
+                        category_id: el.category_id
                     };
                 });
                 setData(templates)
