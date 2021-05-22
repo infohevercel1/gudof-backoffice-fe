@@ -345,12 +345,12 @@ class Categories extends Component {
                 >
                   Add Child
                 </Button>,
-                node.products == 0 ? (
+                node.products <= 0 ? (
                   <UploadButton category_id={node._id} name={node.name} addedProducts={this.handleAddProducts} />
                 ) : (
                   <AddMoreProduct category_id={node._id} />
                 ),
-                node.products == 0 ? null : (
+                node.products <= 0 ? null : (
                   <DownloadButton category_id={node._id} name={node.name}>
                     Download template
                   </DownloadButton>
