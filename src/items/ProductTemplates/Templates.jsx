@@ -18,8 +18,8 @@ class NewTemplate extends Component {
         searchable:[],
         stringFacet:[],
         numberFacet:[],
-        schema:Object.values(this.props.schema.properties).map(function (key) {
-          return {label:key['title'],value:key['title']};
+        schema:Object.entries(this.props.schema.properties).map(function ([key,val]) {
+           return {label:val.title,value:key};
       })
     };
     componentWillMount() {
@@ -76,20 +76,24 @@ class NewTemplate extends Component {
                             style={{ width: settings.formWidth, margin: '12px 8px', display: 'inline-block', verticalAlign: 'top' }}
                         >
                             <FormView />
+                           
+                           {/* If no template exists show this */}
+                           {/* Else put a button to update facets */}
                             String Facet
-                            <Checkbox.Group options={Object.values(this.props.schema.properties).map(function (val) {
-                                return {label:val['title'],value:val['title']};
+                            <Checkbox.Group options={Object.entries(this.props.schema.properties).map(function ([key,val]) {
+                                return {label:val.title,value:key};
                             })} onChange={(e)=>{this.setState({stringFacet:e})}}/>
-                          
-                              Number Facet
-                              <Checkbox.Group options={Object.values(this.props.schema.properties).map(function (val) {
-                                return {label:val['title'],value:val['title']};
+                                                        Number Facet
+                            <Checkbox.Group options={Object.entries(this.props.schema.properties).map(function ([key,val]) {
+                                return {label:val.title,value:key};
                             })} onChange={(e)=>{this.setState({numberFacet:e})}}/>
 
                               Searchable
-                              <Checkbox.Group options={Object.values(this.props.schema.properties).map(function (val) {
-                                return {label:val['title'],value:val['title']};
+                              <Checkbox.Group options={Object.entries(this.props.schema.properties).map(function ([key,val]) {
+                                return {label:val.title,value:key};
                             })} onChange={(e)=>{this.setState({searchable:e})}}/>
+
+
 
                         </Card>
                         <br/>
