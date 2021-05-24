@@ -36,11 +36,13 @@ export default class JsonEditor extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     if (!shallowEqual(nextProps.value, this.state.value)) {
+      
       this.setState({
         value: nextProps.value,
         string: JSON.stringify(nextProps.value, null, 2),
         error: null,
       });
+      
     }
   }
 

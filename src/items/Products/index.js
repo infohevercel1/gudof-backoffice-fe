@@ -32,7 +32,7 @@ class Products extends Component {
       this.setState({ productId })
       // Lock the inputs manuf, model
       uiSchema = {
-        manuf: { "ui:readonly": true },
+        manufacturer: { "ui:readonly": true },
         model: { "ui:readonly": true}
       }
     }
@@ -49,7 +49,7 @@ class Products extends Component {
   submitHandler = async () => {
   try {
     let name = '', formData = this.props.formData;
-    name = `${formData.manuf}-${formData.model}`;
+    name = `${formData.manufacturer+ "-" +formData.model}`;
     const body = {
       template_id: this.state.templateId,
       category_id: this.state.categoryId,

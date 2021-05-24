@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
 import './css';
-import { Layout, Tabs, Card } from 'antd';
+import { Layout, Tabs, Card ,Input, Button,Checkbox} from 'antd';
 import Tree from './Tree';
-import { FormView, SchemaView, UiSchemaView } from "./views";
+import { FormView } from "./views";
 import NodeEditor from './Editor';
 import Toolbar from './Toolbar';
 import Settings from './Settings';
@@ -14,7 +14,13 @@ class NewTemplate extends Component {
     state = {
         collapsed: false,
         categoryId: null,
-        templateId: null
+        templateId: null,
+        searchable:[],
+        stringFacet:[],
+        numberFacet:[],
+        schema:Object.values(this.props.schema.properties).map(function (key) {
+          return {label:key['title'],value:key['title']};
+      })
     };
     componentWillMount() {
       this.props.setFormData({ formData: {} })
@@ -62,7 +68,7 @@ class NewTemplate extends Component {
                 </Sider>
                 <Layout style={{ marginLeft: settings.leftSiderWidth }}>
                     <Header style={{ background: '#fff', padding: 0 }}>
-                        <Toolbar category={this.state.categoryId} template={this.state.templateId}/>
+                        <Toolbar category={this.state.categoryId} template={this.state.templateId} stringFacet={this.state.stringFacet} numberFacet={this.state.numberFacet} searchable={this.state.searchable}/>
                     </Header>
                     <Content style={{ minHeight: 280, padding: '12px 8px' }}>
                         <Card
@@ -70,7 +76,25 @@ class NewTemplate extends Component {
                             style={{ width: settings.formWidth, margin: '12px 8px', display: 'inline-block', verticalAlign: 'top' }}
                         >
                             <FormView />
+                            String Facet
+                            <Checkbox.Group options={Object.values(this.props.schema.properties).map(function (val) {
+                                return {label:val['title'],value:val['title']};
+                            })} onChange={(e)=>{this.setState({stringFacet:e})}}/>
+                          
+                              Number Facet
+                              <Checkbox.Group options={Object.values(this.props.schema.properties).map(function (val) {
+                                return {label:val['title'],value:val['title']};
+                            })} onChange={(e)=>{this.setState({numberFacet:e})}}/>
+
+                              Searchable
+                              <Checkbox.Group options={Object.values(this.props.schema.properties).map(function (val) {
+                                return {label:val['title'],value:val['title']};
+                            })} onChange={(e)=>{this.setState({searchable:e})}}/>
+
                         </Card>
+                        <br/>
+        
+        
                         {/* {(settings.subViews || []).map((a) => {
                             const style = { margin: '12px 8px', width: 400, display: 'inline-block', verticalAlign: 'top' };
                             switch (a) {
@@ -118,7 +142,14 @@ class NewTemplate extends Component {
     }
 }
 
-export default connect(({ activeNodeKey, settings }) => ({
+export default connect(({
+  tree: {
+    present: [{ name, schema, uiSchema }],
+  },
+  formData,
+  settings: { isLiveValidate },
+activeNodeKey, settings }) => ({
+  name,schema,uiSchema,formData,
   activeNodeKey,
   settings,
 }), (dispatch) => ({

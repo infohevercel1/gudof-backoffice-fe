@@ -14,63 +14,54 @@ var { schema2tree } = require('./core');
 
 var form = {
   schema: {
-    title: 'A registration form',
+    title: 'Template Form',
     description: 'A simple form example.',
     type: 'object',
-    required: ['firstName', 'lastName'],
+    required: ['manufacturer', 'model'],
     properties: {
-      firstName: {
+      manufacturer: {
         type: 'string',
-        title: 'First name',
+        title: 'Manufacturer',
       },
-      lastName: {
+      model: {
         type: 'string',
-        title: 'Last name',
+        title: 'Model',
       },
-      age: {
+      image: {
+        type: 'string',
+        title: 'Image Link',
+      },
+      price: {
         type: 'integer',
-        title: 'Age',
-        description: '(earthian year)',
+        title: 'Price',
       },
-      bio: {
+      description: {
         type: 'string',
-        title: 'Bio',
+        title: 'Description',
       },
-      password: {
-        type: 'string',
-        title: 'Password',
-        minLength: 3,
-      },
-      telephone: {
-        type: 'string',
-        title: 'Telephone',
-        minLength: 10,
-      },
+     
     },
   },
   uiSchema: {
-    firstName: {
-      classNames: '',
+    manufacturer: {
       'ui:emptyValue': '',
     },
-    age: {
-      'ui:widget': 'updown',
+    model: {
+      'ui:emptyValue': '',
     },
-    bio: {
-      'ui:widget': 'textarea',
+    image: {
+      'ui:emptyvalue':'',
     },
-    password: {
-      'ui:widget': 'password',
-      'ui:help': 'Hint: Make it strong!',
+    price: {
+      'ui:emptyvalue':'',
+    },
+    description: {
+      'ui:emptyvalue':'',
     },
     date: {
       'ui:widget': 'alt-datetime',
     },
-    telephone: {
-      'ui:options': {
-        inputType: 'tel',
-      },
-    },
+   
   },
 };
 

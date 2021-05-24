@@ -1,7 +1,7 @@
 import React from 'react';
 import {instance as api} from "../../axios";
 import { connect } from 'react-redux';
-import { Button, Tooltip, Modal, notification, List } from 'antd';
+import { Button,Tooltip, Modal, notification, List } from 'antd';
 import { FolderOpenOutlined, SaveOutlined, UndoOutlined, RedoOutlined } from '@ant-design/icons';
 import { ActionTypes } from 'redux-undo';
 import './index.css';
@@ -15,7 +15,8 @@ class Toolbar extends React.Component {
       templates: [],
       categories: [],
       templateId: null,
-      categoryId: null
+      categoryId: null,
+      
     };
   }
 
@@ -34,22 +35,38 @@ class Toolbar extends React.Component {
       let schema = {
         type: "object",
         properties: {
-          manuf: {
+          manufacturer: {
             type: "string",
             title: "Manufacturer"
           },
           model: {
             type: "string",
             title: "Model"
+          },
+          image: {
+            type: "string",
+            title: "Image"
+          },
+          description: {
+            type: "string",
+            title: "Description"
+          },
+          price: {
+            type: "string",
+            title: "Price"
           }
         }
       },
       uiSchema = {}
+ 
       const { data: category } = await api.get('/categories/'+this.state.categoryId)
       console.log(category)
+      const stringFacet = this.props.stringFacet
+      const numberFacet =this.props.numberFacet
+      const searchable =this.props.searchable
       // Will receive category_name to add in name of template
       let name=`${category.name}-template`;
-      this.props.setTree({name, schema, uiSchema});
+      this.props.setTree({name, schema, uiSchema,stringFacet,numberFacet,searchable});
     }
   }
 
@@ -58,16 +75,19 @@ class Toolbar extends React.Component {
   }
 
   save = async () => {
-    const { name, schema, uiSchema } = this.props.tree.present[0];
+    const {name , schema, uiSchema } = this.props.tree.present[0];
     const body = {
         name,
         category_id: this.state.categoryId,
         formSchema: JSON.stringify(schema),
         uiSchema: (uiSchema !== undefined) ? JSON.stringify(uiSchema) : "",
+        stringFacets:this.props.stringFacet,
+        numericFacets:this.props.numberFacet,
+        searchable:this.props.searchable
       };
     try {
       let resp;
-      console.log(body)
+      console.log("body",body)
       if(this.state.templateId === null) {
         resp = await api.post(
           "/templates",
@@ -120,12 +140,18 @@ class Toolbar extends React.Component {
   };
 
   renderThisTemplate = async (_id) => {
+    
+    const stringFacet = this.props.stringFacet.join(',')
+      const numberFacet =this.props.numberFacet.join(',')
+      const searchable =this.props.searchable.join(',')
+      console.log(stringFacet,numberFacet)
     let [thisTemplate] = this.state.templates.filter(template => template._id === _id)
     let schema = JSON.parse(thisTemplate.formSchema), uiSchema = {}, name = thisTemplate.name
     if (thisTemplate.uiSchema !== "") {
       uiSchema = JSON.parse(thisTemplate.uiSchema)
     }
-    this.props.setTree({ name, schema, uiSchema });
+    this.props.setTree({ name, schema, uiSchema,stringFacet,numberFacet,searchable });
+    console.log("tree",this.props.tree)
     this.setState({ visible: false, existingTemplate: true, templateId: thisTemplate._id })
   }
 
@@ -187,6 +213,7 @@ class Toolbar extends React.Component {
             Redo
           </Button>
         </Tooltip>
+         
         <Modal
           title="View Existing Templates by Category"
           visible={this.state.visible}
@@ -210,7 +237,9 @@ class Toolbar extends React.Component {
               </List.Item>
             )}
           />
+       
         </Modal>
+       
       </span>
     );
   }

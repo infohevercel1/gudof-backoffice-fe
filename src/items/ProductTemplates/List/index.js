@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button, notification, Modal, Skeleton } from 'antd';
+import { Table, Button, notification, Skeleton } from 'antd';
 
 import { instance as api } from '../../../axios';
 import './list.css';
@@ -15,12 +15,13 @@ const List = () => {
             try {
                 let { data: templates } = await api.get('/templates')
                 templates = templates.filter(el => el.category_id !== null);
+                console.log(templates)
                 templates = templates.map((el) => {
                     return {
                         name: el.name,
                         category: el.category_id.name,
                         key: el._id,
-                        category_id: el.category_id._id
+                        category_id: el.category_id
                     };
                 });
                 setData(templates)

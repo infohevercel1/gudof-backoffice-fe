@@ -10,13 +10,13 @@ const defaultMenu = schema2node(['menu'], defaultMenuSchema.schema, defaultMenuS
 const DEFAULT_TREE_NAME = 'root';
 
 const emptyTree = schema2tree(DEFAULT_TREE_NAME, { type: 'object', properties: {
-  manuf: {
+  accuracy: {
     type: 'string',
-    title: 'Manufacturer'
+    title: 'Accuracy'
   },
-  model: {
+  limit: {
     type: 'string',
-    title: 'Model'
+    title: 'Limit'
   }
 } });
 
