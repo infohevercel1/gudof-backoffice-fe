@@ -21,6 +21,7 @@ import UploadCSV from "../components/UploadCSV";
 import UploadButton from "../components/uploadComponent";
 import DownloadButton from "../components/downloadButton";
 import AddMoreProduct from "../components/addMoreProducts";
+import BulkAdd from '../components/bulkAddPop';
 
 class Categories extends Component {
   constructor(props) {
@@ -348,13 +349,8 @@ class Categories extends Component {
                 (node.template_id === undefined) || node.template_id===null ? (
                   <UploadButton category_id={node._id} name={node.name} addedProducts={this.handleAddProducts} />
                 ) : (
-                  <AddMoreProduct category_id={node._id} />
+                  <BulkAdd category_id={node._id} name={node.name}/>
                 ),
-                (node.template_id !== undefined && node.template_id!==null) ?(
-                  <DownloadButton category_id={node._id} name={node.name}>
-                    Download template
-                  </DownloadButton>
-                ):null,
                 // If a category has children or a category has an existing template, it cannot be deleted.
                 !node.children && node.template_id == null ? (
                   <Button
