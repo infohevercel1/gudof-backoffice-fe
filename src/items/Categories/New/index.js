@@ -6,16 +6,18 @@ const NewCategoryModal = ({ visibility, setVisibility, saveNewCategory }) => {
     let [name, setName] = useState('')
     let [image, setImage] = useState('')
     let [loading,setLoading]=useState(false)
-    const handleOk = e => {
+    const handleOk = async(e) => {
         setLoading(true)
         let newName = name;
         let newImage = image;
         setName('');
         setImage('');
-        saveNewCategory(newName,newImage);
+        await saveNewCategory(newName,newImage);
+        setLoading(false)
     };
 
     const handleCancel = e => {
+        setLoading(false)
         setVisibility(false)
     };
 
