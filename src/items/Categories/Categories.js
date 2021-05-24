@@ -339,22 +339,22 @@ class Categories extends Component {
               buttons: [
                 <Button
                   onClick={async () => {
-                    console.log("node value", node);
+                    console.log("node value", node.template_id);
                     this.newModalVisibility(true, node, path);
                   }}
                 >
                   Add Child
                 </Button>,
-                node.products <= 0 ? (
+                (node.template_id === undefined) || node.template_id===null ? (
                   <UploadButton category_id={node._id} name={node.name} addedProducts={this.handleAddProducts} />
                 ) : (
                   <AddMoreProduct category_id={node._id} />
                 ),
-                node.products <= 0 ? null : (
+                (node.template_id !== undefined && node.template_id!==null) ?(
                   <DownloadButton category_id={node._id} name={node.name}>
                     Download template
                   </DownloadButton>
-                ),
+                ):null,
                 // If a category has children or a category has an existing template, it cannot be deleted.
                 !node.children && node.template_id == null ? (
                   <Button
