@@ -19,9 +19,8 @@ import Search from "./Search";
 import NewRootCategory from "./New/RootCategory";
 import UploadCSV from "../components/UploadCSV";
 import UploadButton from "../components/uploadComponent";
-import DownloadButton from "../components/downloadButton";
-import AddMoreProduct from "../components/addMoreProducts";
 import BulkAdd from '../components/bulkAddPop';
+import BulkEdit from '../components/bulkEditPopUp'
 
 class Categories extends Component {
   constructor(props) {
@@ -350,6 +349,11 @@ class Categories extends Component {
                   <UploadButton category_id={node._id} name={node.name} addedProducts={this.handleAddProducts} />
                 ) : (
                   <BulkAdd category_id={node._id} name={node.name}/>
+                ),
+                (node.template_id === undefined) || node.template_id===null ? (
+                  null
+                ) : (
+                  <BulkEdit category_id={node._id} name={node.name}/>
                 ),
                 // If a category has children or a category has an existing template, it cannot be deleted.
                 !node.children && node.template_id == null ? (
