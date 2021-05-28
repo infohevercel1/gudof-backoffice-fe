@@ -19,7 +19,7 @@ const List = () => {
                 templates = templates.map((el) => {
                     return {
                         name: el.name,
-                        category: el.category_id.name,
+                        category: el.name.split('-')[0],
                         key: el._id,
                         category_id: el.category_id
                     };

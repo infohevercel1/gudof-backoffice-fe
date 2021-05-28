@@ -18,9 +18,7 @@ class SoftProductList extends Component {
             columns: []
         }
     }
-
-    async componentDidMount () {
-    try {
+    async refreshProducts () {
         const query = new URLSearchParams(this.props.location.search)
         let categoryId = query.get('category');
         let products = []
@@ -37,10 +35,10 @@ class SoftProductList extends Component {
         }
         // For earlier products that didn't have any data
         products = products.filter(prod => prod.data !== "{}")
-        const data = products.map(product => {
+        const sdatas = products.map(product => {
             return JSON.parse(product.data);
         })
-        const names = products.map(product => {
+        const namesm = products.map(product => {
             if(JSON.parse(product.data).manufacturer === undefined) {
                 // For earlier products that didn't have manuf, model defined.
                 product.manufacturer = '--Not defined--'
@@ -62,7 +60,14 @@ class SoftProductList extends Component {
                 key: product._id
             };
         })
-        console.log("names",names)
+        this.setState({products:{data:sdatas,names:namesm}})
+    }
+    async componentDidMount () {
+    try {
+        await this.refreshProducts()
+        const names = this.state.products.names
+        const data = this.state.products.data
+
         const columns = [
             {
                 title: 'Name', 
@@ -83,6 +88,30 @@ class SoftProductList extends Component {
             }
         ]
         columns.push( {
+            title: 'Restore Product',
+            key: 'name',
+            fixed: 'right',
+            width: 100,
+            render: (item) => {
+                return (<Button onClick={async (e) => {
+                    const resp = await api.get(`/product/restore/${item.category._id}/${item.id}`)
+                    if(resp.status === 204) {
+                        notification['success']({
+                            message: 'Product Restored',
+                            description: 'This product is restored into the database.'
+                        })
+                        await this.refreshProducts()
+                    } else {
+                        notification['error']({
+                            message: 'An Error Occurred',
+                            description: 'There was an error while restoring this product.'
+                        })
+                    }
+                }}>Restore Product</Button>
+                )
+            }
+        },
+        {
             title: 'Delete Product',
             key: 'name',
             fixed: 'right',
@@ -95,6 +124,7 @@ class SoftProductList extends Component {
                             message: 'Product Deleted',
                             description: 'This product was hard deleted from the database.'
                         })
+                        await this.refreshProducts()
                     } else {
                         notification['error']({
                             message: 'An Error Occurred',
