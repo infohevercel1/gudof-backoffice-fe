@@ -7,6 +7,8 @@ import { FormView } from "./views";
 import NodeEditor from './Editor';
 import Toolbar from './Toolbar';
 import Settings from './Settings';
+import { instance as api } from "../../axios";
+
 const { Header, Sider, Content } = Layout;
 const { TabPane } = Tabs;
 
@@ -18,6 +20,10 @@ class NewTemplate extends Component {
         searchable:[],
         stringFacet:[],
         numberFacet:[],
+        def_searchable:[],
+        def_stringFacet:[],
+        def_numericFacets:[],
+        viewfacets:false,
         schema:Object.entries(this.props.schema.properties).map(function ([key,val]) {
            return {label:val.title,value:key};
       })
@@ -31,7 +37,28 @@ class NewTemplate extends Component {
       this.props.updateSettings({ isInlineMode: true })
       const query = new URLSearchParams(this.props.location.search)
       let categoryId = query.get('category'), templateId = query.get('template')
+      let res = this.getTemplate(templateId)
+      console.log("res",res)
       this.setState({categoryId, templateId})
+    }
+    async getTemplate(templateId) {
+      try{
+        if(templateId!==null){
+          let template = await api.get(`templates/${templateId}`)
+          console.log("tempalte",template.data)
+          this.setState({
+            def_stringFacet:template.data.stringFacet,
+            def_numericFacets:template.data.numericFacets,
+            def_searchable:template.data.searchable,
+          })
+        }
+        this.setState({viewfacets:true})
+        
+        
+      }catch (e){
+        return e
+      }
+      
     }
     toggle = () => {
         this.setState({
@@ -79,22 +106,24 @@ class NewTemplate extends Component {
                            
                            {/* If no template exists show this */}
                            {/* Else put a button to update facets */}
-                            String Facet
-                            <Checkbox.Group options={Object.entries(this.props.schema.properties).map(function ([key,val]) {
-                                return {label:val.title,value:key};
-                            })} onChange={(e)=>{this.setState({stringFacet:e})}}/>
+                         {this.state.viewfacets &&  
+                          <div>String Facet
+                             <Checkbox.Group options={Object.entries(this.props.schema.properties).map(function ([key,val]) {
+                                return {label:key,value:key};
+                            })} defaultValue={this.state.def_stringFacet} onChange={(e)=>{this.setState({stringFacet:e})}} />
                                                         Number Facet
                             <Checkbox.Group options={Object.entries(this.props.schema.properties).map(function ([key,val]) {
                                 return {label:val.title,value:key};
-                            })} onChange={(e)=>{this.setState({numberFacet:e})}}/>
+                            })} defaultValue={this.state.def_numericFacets} onChange={(e)=>{this.setState({numberFacet:e})}}/>
 
                               Searchable
-                              <Checkbox.Group options={Object.entries(this.props.schema.properties).map(function ([key,val]) {
+                              <Checkbox.Group defaultValue={this.state.def_searchable} options={Object.entries(this.props.schema.properties).map(function ([key,val]) {
                                 return {label:val.title,value:key};
                             })} onChange={(e)=>{this.setState({searchable:e})}}/>
 
+</div>}
 
-
+                            <Button onClick={async()=>{await api.post(`templates/${this.state.templateId}`)}}>Set Facets</Button>
                         </Card>
                         <br/>
         
