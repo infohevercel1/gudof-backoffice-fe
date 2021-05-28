@@ -1,13 +1,13 @@
 import React from 'react'
 import { Popover, Button } from "antd";
 import DownloadButton from "../components/downloadAllProducts";
-import AddMoreProduct from "../components/addMoreProducts";
+import EditProducts from "../components/uploadEditedCSV";
 
 export default function (props) {
     const {category_id,name} =props
     const content = (
         <div>
-            <AddMoreProduct category_id={category_id}/>
+            <EditProducts category_id={category_id}/>
             <DownloadButton category_id={category_id} name={name}/>
         </div>
       );
