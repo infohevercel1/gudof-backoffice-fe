@@ -100,6 +100,7 @@ class Toolbar extends React.Component {
         );
       }
       const response = resp.status;
+      console.log(response,resp)
       if (response === 201) {
         notification.open({
           message: 'Template Created',
@@ -113,11 +114,18 @@ class Toolbar extends React.Component {
             'Your new template was updated in the database.'
         });
       }
+      else if (response === 202) {
+        notification.open({
+          message: 'Template Update Failed',
+          description:
+            resp.data.message
+        });
+      }
     } catch (e) {
       console.log(e);
       notification.open({
         message: 'Sorry, Template could not be created.',
-        description: 'There was some error in the backend'
+        description: e.message
       })
     }
   };
