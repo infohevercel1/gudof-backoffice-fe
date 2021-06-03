@@ -33,7 +33,10 @@ export default function (handleClick,current) {
           <Link to="/">Login</Link>
         </Menu.Item>}
         {isAuthenticated && <Menu.Item key="login">
-          <Button onClick={()=>auth.logout({returnTo:'http://localhost:3000'})}>Logout</Button>
+          <Button onClick={()=>auth.logout({
+            //   returnTo:'http://localhost:3000'
+            returnTo:'http://dashboard.gudof.com'
+              })}>Logout</Button>
         </Menu.Item>}
       </Menu>
     )

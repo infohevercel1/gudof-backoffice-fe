@@ -11,7 +11,9 @@ ReactDOM.render(
   <Auth0Provider
   domain="gudof-dev-app.us.auth0.com"
   clientId="SPadl4RZ9YsM8y64CdlWSxjjKV23xqnO"
-  redirectUri={'http://localhost:3000/category'}
+  // redirectUri={'http://localhost:3000/category'}
+    redirectUri={'http://dashboard.gudof.com/category'}
+
 >
     <App />
     {/* <SignIn/> */}
