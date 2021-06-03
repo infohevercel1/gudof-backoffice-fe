@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { Card } from '@material-ui/core';
 import { FormView } from '../ProductTemplates/views/index';
 import { notification } from 'antd';
+import { withAuthenticationRequired } from "@auth0/auth0-react";
 
 import './Products.css';
 
@@ -130,4 +131,4 @@ export default connect(({
       type: 'SETTINGS_UPDATE',
       payload,
     }),
-}))(SoftProducts);
+}))(withAuthenticationRequired(SoftProducts));

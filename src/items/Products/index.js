@@ -3,7 +3,8 @@ import {instance as api} from '../../axios';
 import { connect } from 'react-redux';
 import { Card } from '@material-ui/core';
 import { FormView } from '../ProductTemplates/views/index';
-import { notification } from 'antd';
+import { Button, notification } from 'antd';
+import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 
 import './Products.css';
 
@@ -40,6 +41,7 @@ class Products extends Component {
     if (categoryId === 'null') {
       categoryId = template.category_id
     }
+    const {data: totalData} = await api.get(`product/template/${templateId}`)
     // To remove the inline icons (Delete, etc) which are present in Template page
     this.props.updateSettings({ isInlineMode: false })
     this.props.setTree({schema: JSON.parse(template.formSchema), uiSchema})
@@ -130,4 +132,4 @@ export default connect(({
       type: 'SETTINGS_UPDATE',
       payload,
     }),
-}))(Products);
+}))(withAuthenticationRequired(Products));

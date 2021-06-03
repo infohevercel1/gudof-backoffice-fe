@@ -1,27 +1,28 @@
 import { Input } from '@material-ui/core'
 import React, { Component } from 'react'
+import { useAuth0 } from "@auth0/auth0-react";
+import { Button } from 'antd';
+export default function () { 
+    
+    const auth= useAuth0();
 
-export class SignIn extends Component {
-    state = {
-        email : '',
-        password:''
+    const handleSubmit =() => {
+        
+        auth.loginWithRedirect()
     }
-    handleSubmit =() => {
+    const getUsernameAndPassword = async() => {
 
     }
-    getUsernameAndPassword = async() => {
-
-    }
-    render() {
         return (
-            <div>
-                    <h5>Login</h5>
-                    <Input type="text" onChange={(e)=>this.setState({email:e.target.value})} placeholder="username"/>
+            <div style={{margin:'30px'}}>
+                    {/* <h1>Login</h1> */}
+                    {/* <Input type="text" onChange={(e)=>this.setState({email:e.target.value})} placeholder="username"/>
                     <Input type="password" onChange={(e)=>this.setState({password:e.target.value})} placeholder="password"/>
-                    <Button onClick={this.handleSubmit}>Submit</Button>
+                     */}
+                     <Button type="primary" onClick={()=>handleSubmit()}>Sign In</Button>
+                    {/* <Button onClick={()=>auth.logout()}>Logout</Button> */}
             </div>
         )
-    }
+    
 }
 
-export default SignIn

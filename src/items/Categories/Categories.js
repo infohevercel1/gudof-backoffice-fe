@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { instance as api } from "../../axios";
 import "./Categories.css";
 // after
+import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import { connect } from "react-redux";
 import SortableTree from "react-sortable-tree";
 import {
@@ -458,4 +459,4 @@ export default connect(
         payload: options,
       }),
   })
-)(Categories);
+)(withAuthenticationRequired(Categories));

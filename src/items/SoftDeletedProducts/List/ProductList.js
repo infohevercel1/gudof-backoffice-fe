@@ -3,6 +3,7 @@ import { Table, Button, notification, Spin, Space } from 'antd';
 import { connect } from 'react-redux';
 import { instance as api } from '../../../axios';
 import './ProductList.css';
+import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 
 class SoftProductList extends Component {
     constructor (props) {
@@ -175,4 +176,4 @@ export default connect(({
             type: 'FORM_DATA_SET',
             payload: formData,
         }),
-}))(SoftProductList);
+}))(withAuthenticationRequired(SoftProductList));
