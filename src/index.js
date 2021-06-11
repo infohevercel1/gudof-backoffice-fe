@@ -4,17 +4,17 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import { Auth0Provider } from '@auth0/auth0-react';
-import SignIn from './items/Auth/Signin';
+// export const URL_LOCAL = 'dashboard.gudof.com'
+export const URL_LOCAL = 'localhost:3000'
 
 ReactDOM.render(
   // <React.StrictMode>
   <Auth0Provider
-  domain="gudof-dev-app.us.auth0.com"
-  clientId="SPadl4RZ9YsM8y64CdlWSxjjKV23xqnO"
-  // redirectUri={'http://localhost:3000/category'}
-    redirectUri={'http://dashboard.gudof.com/category'}
-
->
+    domain="gudof-dev-app.us.auth0.com"
+    clientId="SPadl4RZ9YsM8y64CdlWSxjjKV23xqnO"
+    // redirectUri={`http://${process.env.URL_LOCAL}/category`}
+    redirectUri={`${window.location.origin}/category`}
+  >
     <App />
     {/* <SignIn/> */}
     </Auth0Provider>,

@@ -169,13 +169,6 @@ class Toolbar extends React.Component {
     const { past, future } = tree;
     return (
       <span>
-        {/* <Tooltip title="New" onClick={this.newTemplate}>
-          <Button
-            style={buttonStyle}
-            onClick={newForm}
-            icon={<FileAddOutlined />}
-          />
-        </Tooltip> */}
         <Tooltip title="Open">  
           <Button
             style={buttonStyle}

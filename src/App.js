@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Route } from "react-router-dom";
 import "./App.css";
 import "./index.css";
 import { instance as api } from "./axios.js";
@@ -12,15 +12,10 @@ import ProductList from "./items/Products/List/ProductList";
 import { Provider, connect } from "react-redux";
 import { store, persistor } from "./items/ProductTemplates/store";
 import { PersistGate } from "redux-persist/integration/react";
-import { Menu, Layout } from "antd";
-import {
-  ContainerOutlined,
-  UnorderedListOutlined,
-  DatabaseFilled,
-} from "@ant-design/icons";
+import {  Layout } from "antd";
+
 import SoftProductList from "./items/SoftDeletedProducts/List/ProductList";
-import { Delete } from "@material-ui/icons";
-import { Auth0Provider } from "@auth0/auth0-react";
+
 import Signin from "./items/Auth/Signin";
 import Navbar from "./items/Navbar";
 const { Content } = Layout;
@@ -36,6 +31,7 @@ class App extends Component {
   }
 
   componentWillMount() {
+    require('dotenv').config()
     // const auth = useAuth0();
     // this.setState({isAuthenticated:auth.isAuthenticated})
     const pathname = window.location.pathname,

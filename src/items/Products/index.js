@@ -26,7 +26,7 @@ class Products extends Component {
     let templateId = query.get('template'), 
         categoryId = query.get('category'),
         productId = query.get('product');
-    
+    console.log(templateId,categoryId,productId,"IDS")
     let uiSchema = {}
     // If product is being Edited
     if (productId !== null) {
@@ -41,11 +41,12 @@ class Products extends Component {
     if (categoryId === 'null') {
       categoryId = template.category_id
     }
-    const {data: totalData} = await api.get(`product/template/${templateId}`)
+    // const {data: totalData} = await api.get(`product/template/${templateId}`)
     // To remove the inline icons (Delete, etc) which are present in Template page
     this.props.updateSettings({ isInlineMode: false })
     this.props.setTree({schema: JSON.parse(template.formSchema), uiSchema})
     this.setState({ schema: JSON.parse(template.formSchema), templateId, categoryId });
+    console.log(this.state.templateId,"template id")
   }
 
   submitHandler = async () => {
@@ -58,6 +59,7 @@ class Products extends Component {
       data: JSON.stringify(formData),
       name
     };
+    console.log("BODY",body,"state",this.state.templateId)
     let data;
     if (this.state.productId !== null) {
       body.id = this.state.productId

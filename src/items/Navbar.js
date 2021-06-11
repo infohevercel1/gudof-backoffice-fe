@@ -5,6 +5,7 @@ import { Delete } from "@material-ui/icons";
 import { Menu, Layout, Button } from "antd";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
+import { URL_LOCAL } from '..';
 
 export default function (handleClick,current) {
     const auth = useAuth0()
@@ -35,7 +36,7 @@ export default function (handleClick,current) {
         {isAuthenticated && <Menu.Item key="login">
           <Button onClick={()=>auth.logout({
             //   returnTo:'http://localhost:3000'
-            returnTo:'http://dashboard.gudof.com'
+            returnTo:`http://${URL_LOCAL}`
               })}>Logout</Button>
         </Menu.Item>}
       </Menu>
