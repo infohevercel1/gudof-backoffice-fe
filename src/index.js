@@ -9,15 +9,13 @@ import SignIn from './items/Auth/Signin';
 ReactDOM.render(
   // <React.StrictMode>
   <Auth0Provider
-  domain="gudof-dev-app.us.auth0.com"
-  clientId="SPadl4RZ9YsM8y64CdlWSxjjKV23xqnO"
-  // redirectUri={'http://localhost:3000/category'}
-    redirectUri={'http://dashboard.gudof.com/category'}
-
->
+    domain="gudof-dev-app.us.auth0.com"
+    clientId="SPadl4RZ9YsM8y64CdlWSxjjKV23xqnO"
+    redirectUri={process.env.REACT_APP_REDIRECT}
+  >
     <App />
     {/* <SignIn/> */}
-    </Auth0Provider>,
+  </Auth0Provider>,
   // </React.StrictMode>,
   document.getElementById('root')
 );
