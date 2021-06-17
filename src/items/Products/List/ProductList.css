@@ -21,7 +21,10 @@
 span {
   cursor: pointer;
 }
-
+.space{
+  margin-left: 85%;
+  margin-bottom: 2%;
+}
 /* .list-item:active {
   background-color: aquamarine;
   color: wheat;
