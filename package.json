@@ -19,6 +19,7 @@
     "axios": "^0.19.2",
     "dayjs": "^1.8.29",
     "downloadjs": "^1.4.7",
+    "env-cmd": "^10.1.0",
     "firebase": "^7.15.5",
     "form-data": "^3.0.0",
     "prompt-boxes": "^2.0.6",
@@ -40,7 +41,10 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "deploy": "gh-pages -d build",
+    "start:dev":"env-cmd -e development npm start",
+    "start:prod":"env-cmd -e production npm start",
+    "build:prod":"env-cmd -e production react-scripts build"
   },
   "eslintConfig": {
     "extends": "react-app"
