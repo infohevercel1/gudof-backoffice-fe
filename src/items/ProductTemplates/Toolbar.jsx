@@ -5,6 +5,7 @@ import { Button,Tooltip, Modal, notification, List } from 'antd';
 import { FolderOpenOutlined, SaveOutlined, UndoOutlined, RedoOutlined } from '@ant-design/icons';
 import { ActionTypes } from 'redux-undo';
 import './index.css';
+import { withAuthenticationRequired } from "@auth0/auth0-react";
 
 const buttonStyle = { marginLeft: 8 };
 class Toolbar extends React.Component {
@@ -275,4 +276,4 @@ export default connect(
                 payload: { subViews },
             }),
     })
-)(Toolbar);
+)(withAuthenticationRequired(Toolbar));

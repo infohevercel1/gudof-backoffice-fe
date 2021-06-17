@@ -20,21 +20,26 @@ import {
 } from "@ant-design/icons";
 import SoftProductList from "./items/SoftDeletedProducts/List/ProductList";
 import { Delete } from "@material-ui/icons";
-
+import { Auth0Provider } from "@auth0/auth0-react";
+import Signin from "./items/Auth/Signin";
+import Navbar from "./items/Navbar";
 const { Content } = Layout;
+
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
       current: "category",
       categname: "",
+      isAuthenticated:true,
     };
   }
 
   componentWillMount() {
+    // const auth = useAuth0();
+    // this.setState({isAuthenticated:auth.isAuthenticated})
     const pathname = window.location.pathname,
-      secondslash =
-        pathname.indexOf("/", 1) > 0 ? pathname.indexOf("/", 1) + 1 : -1;
+      secondslash = pathname.indexOf("/", 1) > 0 ? pathname.indexOf("/", 1) + 1 : -1;
     let location;
     if (secondslash === -1) {
       location = pathname.slice(1);
@@ -58,36 +63,21 @@ class App extends Component {
     console.log(resp)
   };
   render() {
+    
     const { current } = this.state;
     return (
       <Router>
         <div className="App">
-          <Menu
-            theme="dark"
-            onClick={this.handleClick}
-            selectedKeys={[current]}
-            mode="horizontal"
-          >
-            <Menu.Item key="category" icon={<UnorderedListOutlined />}>
-              <Link to="/category">Categories</Link>
-            </Menu.Item>
-            <Menu.Item key="template" icon={<ContainerOutlined />}>
-              <Link to="/viewtemplates">Product Templates</Link>
-            </Menu.Item>
-            <Menu.Item key="product" icon={<DatabaseFilled />}>
-              <Link to="/product">Products</Link>
-            </Menu.Item>
-            {/* <Menu.Item key="product" icon={<DatabaseFilled />}></Menu.Item> */}
-            <Menu.Item key="soft" icon={<Delete />}>
-              <Link to="/softdeleted">Soft Deleted Products</Link>
-            </Menu.Item>
-          </Menu>
+          <Navbar handleFiles={this.handleFiles} current={current}/>
           <Layout>
             <Content>
       
-              <Route path={["/category", "/"]} exact>
+              {/* <Route path={["/category", "/"]} exact> */}
+              <Route path={"/category"}>
+
                 <Category />
               </Route>
+              <Route exact path="/" component={Signin} />
               <Route path="/template" component={NewTemplate} />
               <Route path="/viewtemplates" component={List} />
               <Route path="/product" component={ProductList} />
@@ -106,9 +96,12 @@ const AppContainer = connect(({ activeNodeKey, settings }) => ({
   settings,
 }))(App);
 export default () => (
-  <Provider store={store}>
+ 
+ <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
       <AppContainer />
     </PersistGate>
   </Provider>
+  
+ 
 );

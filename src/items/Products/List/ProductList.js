@@ -10,6 +10,7 @@ import {
 import { connect } from 'react-redux';
 import { instance as api } from '../../../axios';
 import './ProductList.css';
+import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 
 class ProductList extends Component {
   constructor(props) {
@@ -275,9 +276,8 @@ export default connect(
   }),
   (dispatch) => ({
     setFormData: ({ formData }) =>
-      dispatch({
-        type: 'FORM_DATA_SET',
-        payload: formData,
-      }),
-  })
-)(ProductList);
+        dispatch({
+            type: 'FORM_DATA_SET',
+            payload: formData,
+        }),
+}))(withAuthenticationRequired(ProductList));
