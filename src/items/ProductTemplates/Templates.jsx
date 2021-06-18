@@ -123,7 +123,6 @@ class NewTemplate extends Component {
 
 </div>}
 
-                            <Button onClick={async()=>{await api.post(`templates/${this.state.templateId}`)}}>Set Facets</Button>
                         </Card>
                         <br/>
         
