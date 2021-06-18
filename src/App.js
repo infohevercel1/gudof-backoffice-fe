@@ -73,7 +73,7 @@ class App extends Component {
 
                 <Category />
               </Route>
-              <Route exact path="/" component={Signin} />
+              <Route exact path="/" component={Category} />
               <Route path="/template" component={NewTemplate} />
               <Route path="/viewtemplates" component={List} />
               <Route path="/product" component={ProductList} />

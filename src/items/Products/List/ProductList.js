@@ -190,4 +190,4 @@ export default connect(({
             type: 'FORM_DATA_SET',
             payload: formData,
         }),
-}))(withAuthenticationRequired(ProductList));
+}))((ProductList));

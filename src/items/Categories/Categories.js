@@ -459,4 +459,4 @@ export default connect(
         payload: options,
       }),
   })
-)(withAuthenticationRequired(Categories));
+)((Categories));

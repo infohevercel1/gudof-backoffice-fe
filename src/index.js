@@ -8,17 +8,17 @@ import { Auth0Provider } from '@auth0/auth0-react';
 export const URL_LOCAL = 'localhost:3000'
 
 ReactDOM.render(
-  // <React.StrictMode>
-  <Auth0Provider
+  <React.StrictMode>
+  {/* <Auth0Provider
     domain="gudof-dev-app.us.auth0.com"
     clientId="SPadl4RZ9YsM8y64CdlWSxjjKV23xqnO"
     // redirectUri={`http://${process.env.URL_LOCAL}/category`}
     redirectUri={`${window.location.origin}/category`}
-  >
+  > */}
     <App />
     {/* <SignIn/> */}
-    </Auth0Provider>,
-  // </React.StrictMode>,
+    {/* </Auth0Provider>, */}
+  </React.StrictMode>,
   document.getElementById('root')
 );
 

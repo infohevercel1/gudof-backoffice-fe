@@ -131,4 +131,4 @@ export default connect(({
       type: 'SETTINGS_UPDATE',
       payload,
     }),
-}))(withAuthenticationRequired(SoftProducts));
+}))((SoftProducts));

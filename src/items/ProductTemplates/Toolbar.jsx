@@ -269,4 +269,4 @@ export default connect(
                 payload: { subViews },
             }),
     })
-)(withAuthenticationRequired(Toolbar));
+)((Toolbar));

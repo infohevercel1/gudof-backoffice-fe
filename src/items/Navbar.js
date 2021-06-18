@@ -9,7 +9,7 @@ import { URL_LOCAL } from '..';
 
 export default function (handleClick,current) {
     const auth = useAuth0()
-    const {isAuthenticated} = auth
+    const isAuthenticated = true
     return(
         <Menu
         theme="dark"
@@ -33,12 +33,7 @@ export default function (handleClick,current) {
         {!isAuthenticated && <Menu.Item key="login" icon={<UnorderedListOutlined />}>
           <Link to="/">Login</Link>
         </Menu.Item>}
-        {isAuthenticated && <Menu.Item key="login">
-          <Button onClick={()=>auth.logout({
-            //   returnTo:'http://localhost:3000'
-            returnTo:`http://${URL_LOCAL}`
-              })}>Logout</Button>
-        </Menu.Item>}
+     
       </Menu>
     )
 }
